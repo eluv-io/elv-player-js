@@ -612,7 +612,11 @@ export class EluvioPlayer {
 
         this.controls.SetQualityControls({
           GetLevels: () => hlsPlayer.levels.map((level, index) => ({index, active: index === hlsPlayer.currentLevel, resolution: level.attrs.RESOLUTION, bitrate: level.bitrate})),
-          SetLevel: levelIndex => hlsPlayer.nextLevel = levelIndex
+          SetLevel: levelIndex => hlsPlayer.nextLevel = levelIndex,
+          GetPlaybackRate: () => this.video.playbackRate,
+          SetPlaybackRate: rate => {
+            this.video.playbackRate = rate;
+          }
         });
 
         hlsPlayer.on(HLSPlayer.Events.FRAG_LOADED, () => {

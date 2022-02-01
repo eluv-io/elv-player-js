@@ -614,6 +614,14 @@ class PlayerControls {
     this.settingsMenuContent = "settings";
     this.settingsMenu.classList.remove("eluvio-player__controls__settings-menu-hidden");
 
+    const FocusOnFirstMenuItem = () => {
+      // Focus on first element in list when menu opened
+      const firstItem = this.settingsMenu.querySelector("button");
+      if(firstItem) {
+        firstItem.focus();
+      }
+    };
+
     // Resolution settings
     if(this.GetLevels) {
       const levels = this.GetLevels();
@@ -662,15 +670,49 @@ class PlayerControls {
                 });
               });
 
-            // Focus on first element in list when menu opened
-            const firstItem = this.settingsMenu.querySelector("button");
-            if(firstItem) {
-              firstItem.focus();
-            }
+            FocusOnFirstMenuItem();
           });
         }
       }
     }
+
+    // Playback speed
+    if(this.GetPlaybackRate) {
+      const currentPlaybackRate = this.GetPlaybackRate();
+
+      if(this.SetPlaybackRate) {
+        const playbackSpeedButton = CreateElement({
+          parent: this.settingsMenu,
+          type: this.SetPlaybackRate ? "button" : "div",
+          classes: ["eluvio-player__controls__settings-menu__option"]
+        });
+
+        playbackSpeedButton.innerHTML = `Playback speed: ${currentPlaybackRate === 1 ? "Normal" : currentPlaybackRate}`;
+
+        playbackSpeedButton.addEventListener("click", () => {
+          this.settingsMenu.innerHTML = "";
+
+          Array.from({length: 8}, (_, i) => ((i / 4) + 0.25)).forEach(rate => {
+            const rateOption = CreateElement({
+              parent: this.settingsMenu,
+              type: "button",
+              classes: ["eluvio-player__controls__settings-menu__option", rate === currentPlaybackRate ? "eluvio-player__controls__settings-menu__option-selected" : ""]
+            });
+
+            rateOption.innerHTML = rate === 1 ? "Normal" : `${rate}`;
+
+            rateOption.addEventListener("click", () => {
+              this.SetPlaybackRate(rate);
+              this.HideSettingsMenu();
+            });
+
+            FocusOnFirstMenuItem();
+          });
+        });
+      }
+
+    }
+
 
     // Focus on first element in list when menu opened
     const firstItem = this.settingsMenu.querySelector("button");
@@ -693,7 +735,7 @@ class PlayerControls {
     this.settingsButton.addEventListener("click", () => this.ToggleSettings());
   }
 
-  SetQualityControls({GetLevels, SetLevel}) {
+  SetQualityControls({GetLevels, SetLevel, GetPlaybackRate, SetPlaybackRate}) {
     if(
       this.playerOptions.controls === EluvioPlayerParameters.controls.DEFAULT ||
       this.playerOptions.controls === EluvioPlayerParameters.controls.OFF
@@ -706,6 +748,8 @@ class PlayerControls {
 
     this.GetLevels = GetLevels;
     this.SetLevel = SetLevel;
+    this.GetPlaybackRate = GetPlaybackRate;
+    this.SetPlaybackRate = SetPlaybackRate;
   }
 
   InitializeMultiViewControls({AvailableViews, SwitchView}) {
