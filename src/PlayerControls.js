@@ -4,6 +4,7 @@ import PauseIcon from "./static/icons/media/Pause icon.svg";
 import FullscreenIcon from "./static/icons/media/Full Screen icon.svg";
 import ExitFullscreenIcon from "./static/icons/minimize.svg";
 import SettingsIcon from "./static/icons/media/Settings icon.svg";
+import CastIcon from "./static/icons/media/cast icon.svg"
 import CloseIcon from "./static/icons/x.svg";
 import MutedIcon from "./static/icons/media/no volume icon.svg";
 import VolumeLowIcon from "./static/icons/media/low volume icon.svg";
@@ -14,6 +15,10 @@ import LeftArrow from "./static/icons/arrow-left.svg";
 import Logo from "./static/images/ELUV.IO white 20 px V2.png";
 
 import {EluvioPlayerParameters} from "./index";
+
+import "./jqmin.js";
+import "./cast_sender.js";
+import {StartCasting} from "./cast-script"
 
 const lsKeyPrefix = "@eluvio/elv-player";
 export const LocalStorage = {
@@ -562,6 +567,14 @@ class PlayerControls {
     });
 
     fullscreenButton.addEventListener("click", () => ToggleFullscreen(this.target));
+
+    // Cast button. TODO: hide when no screens available
+    const castButton = CreateImageButton({
+      parent: this.rightButtonsContainer,
+      svg: CastIcon,
+      label: "Cast"
+    });
+    castButton.addEventListener("click", () => StartCasting(this.video));
 
     // Settings Menu
     this.settingsMenu = CreateElement({
