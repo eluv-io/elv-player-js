@@ -6,6 +6,7 @@ export const InitializeMuxMonitoring = async ({
   elvPlayer,
   playoutUrl,
   authorizationToken,
+  disableCookies
 }) => {
   playoutUrl = new URL(playoutUrl);
 
@@ -67,6 +68,7 @@ export const InitializeMuxMonitoring = async ({
 
   const options = {
     debug: false,
+    disableCookies,
     data: {
       env_key: muxKey,
       video_id: objectId,

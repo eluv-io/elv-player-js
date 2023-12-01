@@ -69,6 +69,11 @@ export const EluvioPlayerParameters = {
   capLevelToPlayerSize: {
     OFF: false,
     ON: true
+  },
+  collectVideoAnalytics: {
+    OFF: false,
+    ON: true,
+    DISABLE_COOKIES: "disable_cookies"
   }
 };
 
@@ -127,6 +132,7 @@ const DefaultParameters = {
     hlsjsOptions: undefined,
     dashjsOptions: undefined,
     debugLogging: false,
+    collectVideoAnalytics: true,
     // eslint-disable-next-line no-unused-vars
     playerCallback: ({player, videoElement, hlsPlayer, dashPlayer, posterUrl}) => {},
     // eslint-disable-next-line no-unused-vars
@@ -679,13 +685,16 @@ export class EluvioPlayer {
         await this.InitializeDash({playoutUrl, authorizationToken, drm, drms, multiviewOptions});
       }
 
-      import("./Monitoring")
-        .then(({InitializeMuxMonitoring}) => InitializeMuxMonitoring({
-          appName: this.playerOptions.appName || "elv-player-js",
-          elvPlayer: this,
-          playoutUrl,
-          authorizationToken
-        }));
+      if(this.playerOptions.collectVideoAnalytics) {
+        import("./Analytics")
+          .then(({InitializeMuxMonitoring}) => InitializeMuxMonitoring({
+            appName: this.playerOptions.appName || "elv-player-js",
+            elvPlayer: this,
+            playoutUrl,
+            authorizationToken,
+            disableCookies: this.playerOptions.collectVideoAnalytics === EluvioPlayerParameters.collectVideoAnalytics.DISABLE_COOKIES
+          }));
+      }
 
       if(this.playerOptions.playerCallback) {
         this.playerOptions.playerCallback({
