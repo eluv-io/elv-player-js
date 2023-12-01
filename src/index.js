@@ -113,6 +113,7 @@ const DefaultParameters = {
     }
   },
   playerOptions: {
+    appName: undefined,
     controls: EluvioPlayerParameters.controls.AUTO_HIDE,
     autoplay: EluvioPlayerParameters.autoplay.OFF,
     muted: EluvioPlayerParameters.muted.OFF,
@@ -502,6 +503,8 @@ export class EluvioPlayer {
 
     this.__DestroyPlayer();
 
+    this.initTime = Date.now();
+
     this.target = target;
 
     // Clear target
@@ -656,6 +659,7 @@ export class EluvioPlayer {
           this.target.classList.remove("eluvio-player-landscape");
         }
       });
+
       this.resizeObserver.observe(this.target);
 
       let { protocol, drm, playoutUrl, drms, multiviewOptions } = await playoutOptionsPromise;
@@ -674,6 +678,14 @@ export class EluvioPlayer {
       } else {
         await this.InitializeDash({playoutUrl, authorizationToken, drm, drms, multiviewOptions});
       }
+
+      import("./Monitoring")
+        .then(({InitializeMuxMonitoring}) => InitializeMuxMonitoring({
+          appName: this.playerOptions.appName || "elv-player-js",
+          elvPlayer: this,
+          playoutUrl,
+          authorizationToken
+        }));
 
       if(this.playerOptions.playerCallback) {
         this.playerOptions.playerCallback({
@@ -758,9 +770,9 @@ export class EluvioPlayer {
   }
 
   async InitializeHLS({playoutUrl, authorizationToken, drm, multiviewOptions}) {
-    const HLSPlayer = (await import("hls.js")).default;
+    this.HLS = (await import("hls.js")).default;
 
-    if(["fairplay", "sample-aes"].includes(drm) || !HLSPlayer.isSupported()) {
+    if(["fairplay", "sample-aes"].includes(drm) || !this.HLS.isSupported()) {
       // HLS JS NOT SUPPORTED - Handle native player
 
       if(drm === "fairplay") {
@@ -828,7 +840,7 @@ export class EluvioPlayer {
         ...customProfileSettings
       };
 
-      const hlsPlayer = new HLSPlayer({
+      const hlsPlayer = new this.HLS({
         xhrSetup: xhr => {
           xhr.setRequestHeader("Authorization", `Bearer ${authorizationToken}`);
 
@@ -892,11 +904,11 @@ export class EluvioPlayer {
           }
         };
 
-        hlsPlayer.on(HLSPlayer.Events.SUBTITLE_TRACKS_UPDATED, () => this.UpdateTextTracks());
-        hlsPlayer.on(HLSPlayer.Events.LEVEL_LOADED, () => UpdateQualityOptions());
-        hlsPlayer.on(HLSPlayer.Events.LEVEL_SWITCHED, () => UpdateQualityOptions());
-        hlsPlayer.on(HLSPlayer.Events.SUBTITLE_TRACK_SWITCH, () => this.UpdateTextTracks());
-        hlsPlayer.on(HLSPlayer.Events.AUDIO_TRACKS_UPDATED, () => {
+        hlsPlayer.on(this.HLS.Events.SUBTITLE_TRACKS_UPDATED, () => this.UpdateTextTracks());
+        hlsPlayer.on(this.HLS.Events.LEVEL_LOADED, () => UpdateQualityOptions());
+        hlsPlayer.on(this.HLS.Events.LEVEL_SWITCHED, () => UpdateQualityOptions());
+        hlsPlayer.on(this.HLS.Events.SUBTITLE_TRACK_SWITCH, () => this.UpdateTextTracks());
+        hlsPlayer.on(this.HLS.Events.AUDIO_TRACKS_UPDATED, () => {
           this.controls.SetAudioTrackControls({
             GetAudioTracks: () => {
               const tracks = hlsPlayer.audioTracks.map(track => ({
@@ -954,7 +966,7 @@ export class EluvioPlayer {
               this.controls.ShowHLSOptionsForm({
                 hlsOptions: this.hlsOptions,
                 SetPlayerProfile,
-                hlsVersion: HLSPlayer.version
+                hlsVersion: this.HLS.version
               });
             } else {
               SetPlayerProfile({profile: key});
@@ -963,12 +975,12 @@ export class EluvioPlayer {
         });
       }
 
-      hlsPlayer.on(HLSPlayer.Events.FRAG_LOADED, () => {
+      hlsPlayer.on(this.HLS.Events.FRAG_LOADED, () => {
         this.errors = 0;
         clearTimeout(this.bufferFullRestartTimeout);
       });
 
-      hlsPlayer.on(HLSPlayer.Events.ERROR, async (event, error) => {
+      hlsPlayer.on(this.HLS.Events.ERROR, async (event, error) => {
         this.errors += 1;
 
         this.Log(`Encountered ${error.details}`);
@@ -1000,8 +1012,8 @@ export class EluvioPlayer {
   }
 
   async InitializeDash({playoutUrl, authorizationToken, drm, drms, multiviewOptions}) {
-    const DashPlayer = (await import("dashjs")).default;
-    const dashPlayer = DashPlayer.MediaPlayer().create();
+    this.Dash = (await import("dashjs")).default;
+    const dashPlayer = this.Dash.MediaPlayer().create();
 
     dashPlayer.updateSettings({
       "streaming": {
@@ -1119,12 +1131,12 @@ export class EluvioPlayer {
       });
     };
 
-    dashPlayer.on(DashPlayer.MediaPlayer.events.QUALITY_CHANGE_RENDERED, () => UpdateQualityOptions());
-    dashPlayer.on(DashPlayer.MediaPlayer.events.TRACK_CHANGE_RENDERED, () => {
+    dashPlayer.on(this.Dash.MediaPlayer.events.QUALITY_CHANGE_RENDERED, () => UpdateQualityOptions());
+    dashPlayer.on(this.Dash.MediaPlayer.events.TRACK_CHANGE_RENDERED, () => {
       UpdateAudioTracks();
       this.UpdateTextTracks({dashPlayer});
     });
-    dashPlayer.on(DashPlayer.MediaPlayer.events.MANIFEST_LOADED, () => {
+    dashPlayer.on(this.Dash.MediaPlayer.events.MANIFEST_LOADED, () => {
       UpdateQualityOptions();
       UpdateAudioTracks();
     });
@@ -1188,6 +1200,8 @@ export class EluvioPlayer {
     });
   }
 }
+
+EluvioPlayer.EluvioPlayerParameters = EluvioPlayerParameters;
 
 export default EluvioPlayer;
 
