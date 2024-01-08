@@ -795,6 +795,7 @@ class PlayerControls {
           event.preventDefault();
           break;
 
+        case "Enter":
         case " ":
           PlayPause(this.video, this.video.paused);
           event.preventDefault();
