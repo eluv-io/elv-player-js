@@ -1126,20 +1126,10 @@ export class EluvioPlayer {
       hlsPlayer.on(this.HLS.Events.ERROR, async (event, error) => {
         this.errors += 1;
 
-        this.Log(`Encountered ${error.details}`);
-        this.Log(error);
+        this.Log(`Encountered ${error.details}`, true);
+        this.Log(error, true);
 
-        if(error.details === "bufferStalledError") {
-          const stallTime = this.video.currentTime;
-
-          setTimeout(() => {
-            if(!this.video.paused && this.video.currentTime === stallTime) {
-              this.Log("Buffer stalled error, no progress in 5 seconds - Restarting player", true);
-            }
-          }, 5000);
-        }
-
-        if(error.fatal || this.errors === 3) {
+        if(error.fatal || this.errors === 5) {
           if(error.response && error.response.code === 403) {
             // Not allowed to access
             this.Destroy();
