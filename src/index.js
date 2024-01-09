@@ -809,6 +809,7 @@ export class EluvioPlayer {
         await this.InitializeDash({playoutUrl, authorizationToken, drm, drms, multiviewOptions});
       }
 
+      /*
       if(this.playerOptions.collectVideoAnalytics) {
         import("./Analytics")
           .then(({InitializeMuxMonitoring}) => InitializeMuxMonitoring({
@@ -819,6 +820,8 @@ export class EluvioPlayer {
             disableCookies: this.playerOptions.collectVideoAnalytics === EluvioPlayerParameters.collectVideoAnalytics.DISABLE_COOKIES
           }));
       }
+
+       */
 
       if(this.playerOptions.playerCallback) {
         this.playerOptions.playerCallback({
