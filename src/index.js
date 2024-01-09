@@ -98,8 +98,17 @@ const DefaultParameters = {
       EluvioPlayerParameters.drms.SAMPLE_AES,
       EluvioPlayerParameters.drms.AES128,
       EluvioPlayerParameters.drms.WIDEVINE,
-      EluvioPlayerParameters.drms.CLEAR,
+      EluvioPlayerParameters.drms.CLEAR
     ],
+    contentOptions: {
+      title: undefined,
+      description: undefined
+    },
+    playlistOptions: {
+      mediaLibraryObjectId: undefined,
+      mediaLibraryVersionHash: undefined,
+      playlistId: undefined
+    },
     playoutOptions: undefined,
     playoutParameters: {
       objectId: undefined,
@@ -183,6 +192,9 @@ export class EluvioPlayer {
     }
 
     this.DetectRemoval = this.DetectRemoval.bind(this);
+
+    this.target = target;
+    this.originalParameters = parameters;
 
     this.Initialize(target, parameters);
 
@@ -340,6 +352,11 @@ export class EluvioPlayer {
 
   async PlayoutOptions() {
     const client = await this.Client();
+
+    if(this.playlistInfo) {
+      const activeMedia = this.ActivePlaylistMedia();
+      this.sourceOptions.playoutParameters.versionHash = activeMedia.mediaHash;
+    }
 
     let offeringURI, options = {};
     if(this.sourceOptions.playoutParameters.clipStart || this.sourceOptions.playoutParameters.clipEnd) {
@@ -504,6 +521,93 @@ export class EluvioPlayer {
     }
   }
 
+  ActivePlaylistMedia() {
+    if(!this.playlistInfo || !this.playlistInfo.content) { return; }
+
+    return this.playlistInfo.content[this.playlistInfo.mediaIndex];
+  }
+
+  PlaylistPlay({mediaIndex, mediaId}) {
+    if(mediaId) {
+      mediaIndex = this.playlistInfo.content.find(media => media.id === mediaId);
+    }
+
+    this.playlistInfo.mediaIndex = mediaIndex;
+    this.Initialize(
+      this.target,
+      this.originalParameters,
+      !this.video ? null :
+        {
+          muted: this.video.muted,
+          volume: this.video.volume,
+          playing: !this.video.paused
+        }
+    );
+  }
+
+  PlaylistPlayNext() {
+    const nextIndex = Math.min(this.playlistInfo.mediaIndex + 1, this.playlistInfo.mediaLength - 1);
+
+    if(nextIndex === this.playlistInfo.mediaIndex) { return; }
+
+    this.PlaylistPlay({mediaIndex: nextIndex});
+  }
+
+  PlaylistPlayPrevious() {
+    const previousIndex = Math.max(0, this.playlistInfo.mediaIndex - 1);
+
+    if(previousIndex === this.playlistInfo.mediaIndex) { return; }
+
+    this.PlaylistPlay({mediaIndex: previousIndex});
+  }
+
+  async LoadPlaylist() {
+    if(this.playlistInfo) { return; }
+
+    let {mediaLibraryObjectId, mediaLibraryVersionHash, playlistId} = (this.sourceOptions?.playlistOptions || {});
+
+    if(!playlistId) { return; }
+
+    if(!mediaLibraryObjectId && !mediaLibraryVersionHash) {
+      throw "Invalid playlist options: Media library not specified";
+    }
+
+    const client = await this.Client();
+
+    try {
+      const authorizationToken = this.sourceOptions.playoutParameters.authorizationToken;
+
+      mediaLibraryVersionHash = mediaLibraryVersionHash || await client.LatestVersionHash({objectId: mediaLibraryObjectId});
+      const playlists = (await client.ContentObjectMetadata({
+        versionHash: mediaLibraryVersionHash,
+        metadataSubtree: "public/asset_metadata/info/playlists",
+        authorizationToken
+      })) || [];
+
+      const playlistInfo = playlists.find(playlist => playlist.id === playlistId);
+
+      if(!playlistInfo) {
+        throw `No playlist with id ${playlistId} found for playlist ${mediaLibraryObjectId || mediaLibraryVersionHash}`;
+      }
+
+      playlistInfo.content = playlistInfo.content
+        .filter(content => content.media)
+        .map(content => ({
+          ...content,
+          mediaHash: content.media?.["/"]?.split("/").find(segment => segment.startsWith("hq__"))
+        }));
+
+      this.playlistInfo = {
+        ...playlistInfo,
+        mediaIndex: 0,
+        mediaLength: playlistInfo.content.length
+      };
+    } catch (error) {
+      this.Log("Failed to load playlist:");
+      throw error;
+    }
+  }
+
   async Initialize(target, parameters, restartParameters) {
     if(this.__destroyed) { return; }
 
@@ -540,11 +644,13 @@ export class EluvioPlayer {
 
     this.errors = 0;
 
-
     this.target.classList.add("eluvio-player");
 
     // Start client loading
     this.Client();
+
+    // Load playlist info, if present
+    await this.LoadPlaylist();
 
     if(this.clientOptions.promptTicket && !this.ticketInitialized) {
       if(!this.clientOptions.tenantId) {
@@ -565,8 +671,6 @@ export class EluvioPlayer {
     }
 
     try {
-      const playoutOptionsPromise = this.PlayoutOptions();
-
       this.target.classList.add("eluvio-player");
 
       if(this.restarted) {
@@ -603,11 +707,27 @@ export class EluvioPlayer {
         className: this.playerOptions.controlsClassName
       });
 
+      if(this.playerOptions.controls !== EluvioPlayerParameters.controls.DEFAULT) {
+        if(this.ActivePlaylistMedia()) {
+          const {name, description} = this.ActivePlaylistMedia();
+
+          this.controls.InitializeContentTitle({title: name, description});
+        } else if(this.sourceOptions.contentOptions.title) {
+          this.controls.InitializeContentTitle({
+            title: this.sourceOptions.contentOptions.title,
+            description: this.sourceOptions.contentOptions.description
+          });
+        }
+      }
+
       if(restartParameters) {
         this.video.addEventListener("loadedmetadata", async () => {
           this.video.volume = restartParameters.volume;
           this.video.muted = restartParameters.muted;
-          this.video.currentTime = restartParameters.currentTime;
+
+          if(restartParameters.currentTime) {
+            this.video.currentTime = restartParameters.currentTime;
+          }
 
           if(restartParameters.playing) {
             PlayPause(this.video, true);
@@ -668,7 +788,11 @@ export class EluvioPlayer {
 
       this.resizeObserver.observe(this.target);
 
-      let { protocol, drm, playoutUrl, drms, multiviewOptions } = await playoutOptionsPromise;
+      if(this.playlistInfo && this.playlistInfo.mediaIndex < this.playlistInfo.mediaLength - 1) {
+        this.video.addEventListener("ended", () => this.PlaylistPlayNext());
+      }
+
+      let { protocol, drm, playoutUrl, drms, multiviewOptions } = await this.PlayoutOptions();
 
       this.PosterUrl().then(posterUrl => this.controls.SetPosterUrl(posterUrl));
 
@@ -767,7 +891,14 @@ export class EluvioPlayer {
         } catch (error) {}
       }
 
-      error.permission_message = permissionErrorMessage;
+      if(permissionErrorMessage) {
+        if(typeof error === "object") {
+          error.permission_message = permissionErrorMessage;
+        } else {
+          this.Log(permissionErrorMessage, true);
+        }
+      }
+
       if(this.playerOptions.errorCallback) {
         this.playerOptions.errorCallback(error, this);
       }
@@ -1006,7 +1137,7 @@ export class EluvioPlayer {
         }
 
         if(error.fatal || this.errors === 3) {
-          if(error.response.code === 403) {
+          if(error.response && error.response.code === 403) {
             // Not allowed to access
             this.Destroy();
           } else {

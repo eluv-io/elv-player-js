@@ -10,7 +10,10 @@ import {
   VolumeLowIcon,
   VolumeHighIcon,
   MultiViewIcon,
-  LeftArrowIcon
+  LeftArrowIcon,
+  PreviousTrackIcon,
+  NextTrackIcon,
+  PlaylistIcon
 } from "./static/icons/Icons";
 // Icons are generated from .svg files to an importable JS file. To add a new icon, modify and run src/BuildIcons.js
 
@@ -188,7 +191,8 @@ export const InitializeTicketPrompt = (target, callback) => {
 };
 
 class PlayerControls {
-  constructor({target, video, playerOptions, posterUrl, className}) {
+  constructor({player, target, video, playerOptions, posterUrl, className}) {
+    this.player = player;
     this.target = target;
     this.video = video;
     this.playerOptions = playerOptions;
@@ -267,7 +271,7 @@ class PlayerControls {
     }
   }
 
-  AutohideControls(controls) {
+  AutohideControls({controls, titleOnly=false}) {
     this.video.addEventListener("play", () => {
       this.played = true;
     });
@@ -289,14 +293,14 @@ class PlayerControls {
     const PlayerMove = () => {
       this.FadeIn({
         key: "controls",
-        elements: [controls, this.settingsMenu, this.toolTip],
+        elements: titleOnly ? [this.titleContainer] : [controls, this.settingsMenu, this.toolTip, this.titleContainer],
         callback: () => {
           this.target.classList.remove("-elv-no-cursor");
         }
       });
       this.FadeOut({
         key: "controls",
-        elements: [controls, this.settingsMenu, this.toolTip],
+        elements: titleOnly ? [this.titleContainer] : [controls, this.settingsMenu, this.toolTip, this.titleContainer],
         delay: 3000,
         unless: () => ControlsShouldShow(),
         callback: () => {
@@ -350,7 +354,40 @@ class PlayerControls {
     this.accountWatermark.innerText = address;
   }
 
+  InitializeContentTitle({title, description}) {
+    if(!title && !description) { return; }
+
+    this.titleContainer = CreateElement({
+      parent: this.target,
+      type: "div",
+      classes: ["eluvio-player__title-container"],
+      prepend: true
+    });
+
+    if(title) {
+      const titleElement = CreateElement({
+        parent: this.titleContainer,
+        type: "div",
+        classes: ["eluvio-player__title"]
+      });
+
+      titleElement.innerHTML = title;
+    }
+
+    if(description) {
+      const descriptionElement = CreateElement({
+        parent: this.titleContainer,
+        type: "div",
+        classes: ["eluvio-player__description"]
+      });
+
+      descriptionElement.innerHTML = description;
+    }
+  }
+
   InitializeControls(className="") {
+    const playlistInfo = this.player.playlistInfo;
+
     this.target.setAttribute("tabindex", "0");
 
     if(this.playerOptions.watermark) {
@@ -434,7 +471,7 @@ class PlayerControls {
           volumeButton.innerHTML = this.video.muted || this.video.volume === 0 ? MutedIcon : (this.video.volume < 0.5 ? VolumeLowIcon : VolumeHighIcon);
         });
 
-        this.AutohideControls(controls);
+        this.AutohideControls({controls, titleOnly: false});
       };
 
       const HasAudio = () => (this.video.mozHasAudio || Boolean(this.video.webkitAudioDecodedByteCount) || Boolean(this.video.audioTracks && this.video.audioTracks.length));
@@ -559,6 +596,21 @@ class PlayerControls {
       volumeBar.value = volumeSlider.value;
     });
 
+    // Playlist previous track
+    if(playlistInfo) {
+      const playlistPreviousButton = CreateImageButton({
+        parent: controls,
+        svg: PreviousTrackIcon,
+        classes: ["eluvio-player__controls__previous-track"],
+        label: "Previous Track",
+        options: {
+          disabled: playlistInfo.mediaIndex === 0
+        }
+      });
+
+      playlistPreviousButton.addEventListener("click", () => this.player.PlaylistPlayPrevious());
+    }
+
     const progressTime = CreateElement({
       parent: controls,
       type: "div",
@@ -643,6 +695,34 @@ class PlayerControls {
     });
 
     totalTime.innerHTML = "00:00";
+
+    // Playlist previous track
+    if(playlistInfo) {
+      const playlistNextButton = CreateImageButton({
+        parent: controls,
+        svg: NextTrackIcon,
+        classes: ["eluvio-player__controls__next-track"],
+        label: "Next Track",
+        options: {
+          disabled: playlistInfo.mediaIndex >= playlistInfo.mediaLength - 1
+        }
+      });
+
+      playlistNextButton.addEventListener("click", () => this.player.PlaylistPlayNext());
+
+      this.playlistButton = CreateImageButton({
+        parent: controls,
+        svg: PlaylistIcon,
+        classes: ["eluvio-player__controls__playlist"],
+        label: "Playlist Info"
+      });
+
+      this.playlistButton.addEventListener("click", () => {
+        this.settingsMenu.dataset.mode === "playlist" ?
+          this.HideSettingsMenu() :
+          this.ShowPlaylistMenu();
+      });
+    }
 
     // Right buttons container
     this.rightButtonsContainer = CreateElement({
@@ -805,9 +885,7 @@ class PlayerControls {
       }
     });
 
-    if(this.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE) {
-      this.AutohideControls(controls);
-    }
+    this.AutohideControls({controls, titleOnly: this.playerOptions.controls !== EluvioPlayerParameters.controls.AUTO_HIDE});
   }
 
   ShowHLSOptionsForm({hlsOptions={}, SetPlayerProfile, hlsVersion}) {
@@ -1049,6 +1127,8 @@ class PlayerControls {
       this.settingsButton.focus();
     } else if(mode === "multiview") {
       this.multiviewButton.focus();
+    } else if(mode === "playlist") {
+      this.playlistButton.focus();
     }
 
     this.settingsMenu.innerHTML = "";
@@ -1067,14 +1147,58 @@ class PlayerControls {
       });
 
       this.settingsButton.addEventListener("click", () => {
-        this.settingsMenu.dataset.mode === "hidden" ?
-          this.ShowSettingsMenu() :
-          this.HideSettingsMenu();
+        this.settingsMenu.dataset.mode.startsWith("settings") ?
+          this.HideSettingsMenu() :
+          this.ShowSettingsMenu();
       });
     }
 
     if(this.settingsMenu.dataset.mode === "settings") {
       this.ShowSettingsMenu();
+    }
+  }
+
+  ShowPlaylistMenu() {
+    if(
+      !this.player.playlistInfo ||
+      !this.player.playlistInfo.content ||
+      this.player.playlistInfo.content.length <= 1
+    ) {
+      return;
+    }
+
+    this.InitializeMenu("playlist");
+
+    const playlistTitle = CreateElement({
+      parent: this.settingsMenu,
+      type: "div",
+      classes: ["eluvio-player__controls__settings-menu__title"]
+    });
+
+    playlistTitle.innerHTML = this.player.playlistInfo.name;
+
+
+    this.player.playlistInfo.content
+      .forEach((option, index) => {
+        const active = this.player.playlistInfo.mediaIndex === index;
+        const optionButton = CreateElement({
+          parent: this.settingsMenu,
+          type: "button",
+          classes: ["eluvio-player__controls__settings-menu__option", active ? "eluvio-player__controls__settings-menu__option-selected" : ""]
+        });
+
+        optionButton.innerHTML = option.name;
+
+        optionButton.addEventListener("click", () => {
+          this.player.PlaylistPlay({mediaIndex: index});
+          this.HideSettingsMenu();
+        });
+      });
+
+    // Focus on first element in list when menu opened
+    const firstItem = this.settingsMenu.querySelector("button");
+    if(firstItem) {
+      firstItem.focus();
     }
   }
 
