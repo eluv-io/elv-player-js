@@ -1129,13 +1129,20 @@ export class EluvioPlayer {
         this.Log(`Encountered ${error.details}`, true);
         this.Log(error, true);
 
-        if(error.fatal || this.errors === 5) {
-          if(error.response && error.response.code === 403) {
-            // Not allowed to access
-            this.Destroy();
-          } else {
-            this.HardReload(error);
+        if(error.response && error.response.code === 403) {
+          // Not allowed to access
+          this.Destroy();
+        } else if(this.errors < 5) {
+          if(error.fatal) {
+            if(data.type === this.HLS.ErrorTypes.MEDIA_ERROR) {
+              this.Log("Attempting to recover using hlsPlayer.recoverMediaError");
+              hlsPlayer.recoverMediaError();
+            } else {
+              this.HardReload(error);
+            }
           }
+        } else {
+          this.HardReload(error);
         }
       });
 
