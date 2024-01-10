@@ -110,6 +110,7 @@ The library includes a helpful collection of configuration options in `EluvioPla
     controlsClassName: undefined,
     hlsjsOptions: undefined,
     dashjsOptions: undefined,
+    maxBitrate: undefined,
     playerCallback: ({player, videoElement, hlsPlayer, dashPlayer, posterUrl}) => {},
     errorCallback: (error, player) => {},
     restartCallback: async (error) => {}
@@ -145,6 +146,7 @@ The library includes a helpful collection of configuration options in `EluvioPla
   * `ON (default)` - Player performance analytics will be collected
   * `DISABLE_COOKIES`- Player performance analytics will be collected, but browser cookies will not be used
   * `OFF` - Player performance analytics will not be collected
+* `maxBitrate` - Maximum bitrate that the player will automatically use, in bits/second.
 * `posterUrl` - Specify a URL for the poster image for the player
 * `className` - HTML class to be added to the player
 * `controlsClassName` - HTML class to be added to the player controls container

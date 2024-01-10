@@ -16,16 +16,24 @@ const Initialize = async () => {
     document.getElementById("player-target"),
     {
       clientOptions: {
-        network: EluvioPlayerParameters.networks.MAIN
+        network: EluvioPlayerParameters.networks.DEMO
       },
       sourceOptions: {
+        playlistOptions: {
+          mediaCatalogObjectId: "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2",
+          playlistId: "JN8ecVA5Jt5cK2PjHXz12A"
+        },
         playoutParameters: {
           versionHash
         }
       },
       playerOptions: {
         muted: true,
-        controls: EluvioPlayerParameters.controls.AUTO_HIDE
+        controls: EluvioPlayerParameters.controls.ON,
+        watermark: EluvioPlayerParameters.watermark.OFF,
+        autoplay: EluvioPlayerParameters.autoplay.ON,
+        maxBitrate: 5000000,
+        debugLogging: true
       }
     }
   );

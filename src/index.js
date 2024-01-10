@@ -105,8 +105,8 @@ const DefaultParameters = {
       description: undefined
     },
     playlistOptions: {
-      mediaLibraryObjectId: undefined,
-      mediaLibraryVersionHash: undefined,
+      mediaCatalogObjectId: undefined,
+      mediaCatalogVersionHash: undefined,
       playlistId: undefined
     },
     playoutOptions: undefined,
@@ -142,6 +142,7 @@ const DefaultParameters = {
     dashjsOptions: undefined,
     debugLogging: false,
     collectVideoAnalytics: true,
+    maxBitrate: undefined,
     // eslint-disable-next-line no-unused-vars
     playerCallback: ({player, videoElement, hlsPlayer, dashPlayer, posterUrl}) => {},
     // eslint-disable-next-line no-unused-vars
@@ -564,12 +565,12 @@ export class EluvioPlayer {
   async LoadPlaylist() {
     if(this.playlistInfo) { return; }
 
-    let {mediaLibraryObjectId, mediaLibraryVersionHash, playlistId} = (this.sourceOptions?.playlistOptions || {});
+    let {mediaCatalogObjectId, mediaCatalogVersionHash, playlistId} = (this.sourceOptions?.playlistOptions || {});
 
     if(!playlistId) { return; }
 
-    if(!mediaLibraryObjectId && !mediaLibraryVersionHash) {
-      throw "Invalid playlist options: Media library not specified";
+    if(!mediaCatalogObjectId && !mediaCatalogVersionHash) {
+      throw "Invalid playlist options: Media catalog not specified";
     }
 
     const client = await this.Client();
@@ -577,9 +578,9 @@ export class EluvioPlayer {
     try {
       const authorizationToken = this.sourceOptions.playoutParameters.authorizationToken;
 
-      mediaLibraryVersionHash = mediaLibraryVersionHash || await client.LatestVersionHash({objectId: mediaLibraryObjectId});
+      mediaCatalogVersionHash = mediaCatalogVersionHash || await client.LatestVersionHash({objectId: mediaCatalogObjectId});
       const playlists = (await client.ContentObjectMetadata({
-        versionHash: mediaLibraryVersionHash,
+        versionHash: mediaCatalogVersionHash,
         metadataSubtree: "public/asset_metadata/info/playlists",
         authorizationToken
       })) || [];
@@ -587,7 +588,7 @@ export class EluvioPlayer {
       const playlistInfo = playlists.find(playlist => playlist.id === playlistId);
 
       if(!playlistInfo) {
-        throw `No playlist with id ${playlistId} found for playlist ${mediaLibraryObjectId || mediaLibraryVersionHash}`;
+        throw `No playlist with id ${playlistId} found for playlist ${mediaCatalogObjectId || mediaCatalogVersionHash}`;
       }
 
       playlistInfo.content = playlistInfo.content
@@ -809,7 +810,6 @@ export class EluvioPlayer {
         await this.InitializeDash({playoutUrl, authorizationToken, drm, drms, multiviewOptions});
       }
 
-      /*
       if(this.playerOptions.collectVideoAnalytics) {
         import("./Analytics")
           .then(({InitializeMuxMonitoring}) => InitializeMuxMonitoring({
@@ -820,8 +820,6 @@ export class EluvioPlayer {
             disableCookies: this.playerOptions.collectVideoAnalytics === EluvioPlayerParameters.collectVideoAnalytics.DISABLE_COOKIES
           }));
       }
-
-       */
 
       if(this.playerOptions.playerCallback) {
         this.playerOptions.playerCallback({
@@ -995,6 +993,34 @@ export class EluvioPlayer {
         },
         ...this.hlsOptions
       });
+
+      // Limit playback to maximum bitrate, if specified
+      if(this.playerOptions.maxBitrate) {
+        hlsPlayer.on(this.HLS.Events.MANIFEST_PARSED, (_, {levels, firstLevel}) => {
+          let levelsToRemove = levels
+            .map((level, i) => level.bitrate > this.playerOptions.maxBitrate ? i : undefined)
+            .filter(i => typeof i !== "undefined")
+            // Note: Remove levels from highest to lowest index
+            .reverse();
+
+          if(levelsToRemove.length === levels.length) {
+            this.Log(`Warning: Max bitrate '${this.playerOptions.maxBitrate}bps' is less than all available levels for this content.`);
+            // Keep first level
+            levelsToRemove = levelsToRemove.filter(i => i > 0);
+          }
+
+          this.Log("Removing the following levels due to maxBitrate setting:");
+          this.Log(levelsToRemove.map(i => [levels[i].width, "x", levels[i].height, ` (${(levels[i].bitrate / 1000 / 1000).toFixed(1)}Mbps)`].join("")).join(", "));
+
+          if(levelsToRemove.find(i => firstLevel === i)) {
+            // Player will start on level that is being removed - switch to highest level that will not be removed
+            hlsPlayer.startLevel = levels.map((_, i) => i).filter(i => !levelsToRemove.includes(i)).reverse()[0];
+          }
+
+          levelsToRemove.map(i => hlsPlayer.removeLevel(i));
+        });
+      }
+
       hlsPlayer.loadSource(playoutUrl.toString());
       hlsPlayer.attachMedia(this.video);
 
@@ -1155,17 +1181,21 @@ export class EluvioPlayer {
     this.Dash = (await import("dashjs")).default;
     const dashPlayer = this.Dash.MediaPlayer().create();
 
+    const customDashOptions = this.playerOptions.dashjsOptions || {};
     dashPlayer.updateSettings({
+      ...customDashOptions,
       "streaming": {
         "buffer": {
           "fastSwitchEnabled": true
         },
         "text": {
-          "defaultEnabled": false
-        }
+          "defaultEnabled": false,
+        },
+        ...(customDashOptions.streaming || {})
       },
       "text": {
-        "defaultEnabled": false
+        "defaultEnabled": false,
+        ...(customDashOptions.text || {})
       }
     });
 
@@ -1174,6 +1204,16 @@ export class EluvioPlayer {
         "streaming": {
           "abr": {
             "limitBitrateByPortal": true
+          }
+        }
+      });
+    }
+
+    if(this.playerOptions.maxBitrate) {
+      dashPlayer.updateSettings({
+        "streaming": {
+          "abr": {
+            "maxBitrate": { "video": this.playerOptions.maxBitrate / 1000 }
           }
         }
       });
