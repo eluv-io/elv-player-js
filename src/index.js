@@ -650,9 +650,6 @@ export class EluvioPlayer {
     // Start client loading
     this.Client();
 
-    // Load playlist info, if present
-    await this.LoadPlaylist();
-
     if(this.clientOptions.promptTicket && !this.ticketInitialized) {
       if(!this.clientOptions.tenantId) {
         throw Error("ELUVIO PLAYER: Tenant ID must be provided if ticket code is needed.");
@@ -670,6 +667,10 @@ export class EluvioPlayer {
         return;
       }
     }
+
+    // Load playlist info, if present
+    await this.LoadPlaylist();
+
 
     try {
       this.target.classList.add("eluvio-player");
