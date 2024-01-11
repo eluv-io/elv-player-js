@@ -19,7 +19,6 @@ const Initialize = async () => {
         network: EluvioPlayerParameters.networks.DEMO,
       },
       sourceOptions: {
-        protocols: ["dash"],
         mediaCollectionOptions: {
           mediaCatalogObjectId: "iq__2bPGbTyFqxQVKvKCQZTgXWbAAHjx",
           collectionId: "QRYFLrg9axGLHgjBRf2g9q"

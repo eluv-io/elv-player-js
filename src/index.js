@@ -320,7 +320,9 @@ export class EluvioPlayer {
   }
 
   async RedeemCode(code) {
-    if(!this.clientOptions.tenantId || !this.clientOptions.ntpId) { throw Error("ELUVIO PLAYER: Tenant ID and NTP ID must be provided if ticket code is specified."); }
+    if(!this.clientOptions.tenantId || !this.clientOptions.ntpId) {
+      throw { displayMessage: "Tenant ID and NTP ID must be provided if ticket code is specified." };
+    }
 
     code = code || this.clientOptions.ticketCode;
     let subject = this.clientOptions.ticketSubject;
@@ -520,7 +522,7 @@ export class EluvioPlayer {
         }
       }
 
-      this.SetErrorMessage("Something went wrong, reloading player...");
+      this.SetErrorMessage(error.displayMessage || "Something went wrong, reloading player...");
       await new Promise(resolve => setTimeout(resolve, delay));
 
       if(this.__destroyed) { return; }
@@ -598,7 +600,7 @@ export class EluvioPlayer {
     if(!collectionId) { return; }
 
     if(!mediaCatalogObjectId && !mediaCatalogVersionHash) {
-      throw "Invalid collection options: Media catalog not specified";
+      throw { displayMessage: "Invalid collection options: Media catalog not specified" };
     }
 
     const client = await this.Client();
@@ -616,7 +618,7 @@ export class EluvioPlayer {
       const collectionInfo = collections.find(collection => collection.id === collectionId);
 
       if(!collectionInfo) {
-        throw `No collection with id ${collectionId} found for collection ${mediaCatalogObjectId || mediaCatalogVersionHash}`;
+        throw { displayMessage: `No collection with ID ${collectionId} found for collection ${mediaCatalogObjectId || mediaCatalogVersionHash}` };
       }
 
       collectionInfo.content = collectionInfo.content
@@ -682,7 +684,7 @@ export class EluvioPlayer {
     // Handle ticket authorization
     if(this.clientOptions.promptTicket && !this.ticketInitialized) {
       if(!this.clientOptions.tenantId || !this.clientOptions.ntpId) {
-        throw Error("ELUVIO PLAYER: Tenant ID and NTP ID must be provided if ticket code is needed.");
+        throw { displayMessage: "Tenant ID and NTP ID must be provided if ticket code is needed." };
       }
 
       InitializeTicketPrompt(
@@ -914,16 +916,16 @@ export class EluvioPlayer {
               this.Log(permissionErrorMessage, true);
             }
           } else {
-            this.SetErrorMessage("Insufficient permissions");
+            this.SetErrorMessage(error.displayMessage || "Insufficient permissions");
           }
         // eslint-disable-next-line no-empty
         } catch (error) {
-          this.SetErrorMessage("Insufficient permissions");
+          this.SetErrorMessage(error.displayMessage || "Insufficient permissions");
         }
       } else if(error.status === 500) {
         this.HardReload(error, 10000);
       } else {
-        this.SetErrorMessage("Something went wrong");
+        this.SetErrorMessage(error.displayMessage || "Something went wrong");
       }
 
       if(this.playerOptions.errorCallback) {
