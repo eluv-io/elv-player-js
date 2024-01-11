@@ -19,9 +19,9 @@ const Initialize = async () => {
         network: EluvioPlayerParameters.networks.DEMO
       },
       sourceOptions: {
-        playlistOptions: {
+        mediaCollectionOptions: {
           mediaCatalogObjectId: "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2",
-          playlistId: "JN8ecVA5Jt5cK2PjHXz12A"
+          collectionId: "JN8ecVA5Jt5cK2PjHXz12A"
         },
         playoutParameters: {
           versionHash

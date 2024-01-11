@@ -9,7 +9,9 @@ $controls-color: rgba(0, 0, 0, 0.8);
 $modal-background-color: rgba(0, 0, 0, 0.5);
 $menu-color: rgba(0, 0, 0, 0.8);
 $menu-active-color: rgba(255, 255, 255, 0.1);
+$button-color: #fff;
 $button-inactive-color: rgba($white, 0.7);
+$button-active-color: #3784eb;
 $button-color: rgba($white, 1);
 $form-button-color: #ddd;
 $form-submit-color: #3784eb;
@@ -117,7 +119,6 @@ $button-height: 35px;
     border: 0;
     cursor: pointer;
     justify-content: center;
-    transition: opacity 0.1s linear;
 
     &:hover {
       opacity: 1;
@@ -292,6 +293,7 @@ $button-height: 35px;
 
     &__button {
       -webkit-tap-highlight-color: transparent;
+      color: $button-color;
       height: $button-height;
       max-height: $button-height;
       max-width: $button-height;
@@ -299,7 +301,7 @@ $button-height: 35px;
       min-width: $button-height;
       overflow: visible;
       padding: 6px;
-      transition: opacity 0.25s linear;
+      transition: opacity 0.25s linear, color 0.1s ease;
       width: $button-height;
 
       &:not(:last-child) {
@@ -313,6 +315,10 @@ $button-height: 35px;
       &-volume {
         // Move volume button closer to volume slider
         padding-right: 0;
+      }
+
+      &--active {
+        color: $button-active-color;
       }
 
       svg {
@@ -504,8 +510,12 @@ $button-height: 35px;
         font-size: 14px;
         height: max-content;
         line-height: 1.4;
+        max-width: 100%;
+        overflow-x: hidden;
         padding: 9px 20px;
         text-align: left;
+        text-overflow: ellipsis;
+        transition: background-color 0.05s linear;
         width: 100%;
 
         &-back {

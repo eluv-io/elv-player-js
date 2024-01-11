@@ -108,10 +108,10 @@ const DefaultParameters = {
       title: undefined,
       description: undefined
     },
-    playlistOptions: {
+    mediaCollectionOptions: {
       mediaCatalogObjectId: undefined,
       mediaCatalogVersionHash: undefined,
-      playlistId: undefined
+      collectionId: undefined
     },
     playoutOptions: undefined,
     playoutParameters: {
@@ -359,8 +359,8 @@ export class EluvioPlayer {
   async PlayoutOptions() {
     const client = await this.Client();
 
-    if(this.playlistInfo) {
-      const activeMedia = this.ActivePlaylistMedia();
+    if(this.collectionInfo) {
+      const activeMedia = this.ActiveCollectionMedia();
       this.sourceOptions.playoutParameters.versionHash = activeMedia.mediaHash;
     }
 
@@ -527,18 +527,18 @@ export class EluvioPlayer {
     }
   }
 
-  ActivePlaylistMedia() {
-    if(!this.playlistInfo || !this.playlistInfo.content) { return; }
+  ActiveCollectionMedia() {
+    if(!this.collectionInfo || !this.collectionInfo.content) { return; }
 
-    return this.playlistInfo.content[this.playlistInfo.mediaIndex];
+    return this.collectionInfo.content[this.collectionInfo.mediaIndex];
   }
 
-  PlaylistPlay({mediaIndex, mediaId}) {
+  CollectionPlay({mediaIndex, mediaId}) {
     if(mediaId) {
-      mediaIndex = this.playlistInfo.content.find(media => media.id === mediaId);
+      mediaIndex = this.collectionInfo.content.find(media => media.id === mediaId);
     }
 
-    this.playlistInfo.mediaIndex = mediaIndex;
+    this.collectionInfo.mediaIndex = mediaIndex;
     this.Initialize(
       this.target,
       this.originalParameters,
@@ -551,31 +551,31 @@ export class EluvioPlayer {
     );
   }
 
-  PlaylistPlayNext() {
-    const nextIndex = Math.min(this.playlistInfo.mediaIndex + 1, this.playlistInfo.mediaLength - 1);
+  CollectionPlayNext() {
+    const nextIndex = Math.min(this.collectionInfo.mediaIndex + 1, this.collectionInfo.mediaLength - 1);
 
-    if(nextIndex === this.playlistInfo.mediaIndex) { return; }
+    if(nextIndex === this.collectionInfo.mediaIndex) { return; }
 
-    this.PlaylistPlay({mediaIndex: nextIndex});
+    this.CollectionPlay({mediaIndex: nextIndex});
   }
 
-  PlaylistPlayPrevious() {
-    const previousIndex = Math.max(0, this.playlistInfo.mediaIndex - 1);
+  CollectionPlayPrevious() {
+    const previousIndex = Math.max(0, this.collectionInfo.mediaIndex - 1);
 
-    if(previousIndex === this.playlistInfo.mediaIndex) { return; }
+    if(previousIndex === this.collectionInfo.mediaIndex) { return; }
 
-    this.PlaylistPlay({mediaIndex: previousIndex});
+    this.CollectionPlay({mediaIndex: previousIndex});
   }
 
-  async LoadPlaylist() {
-    if(this.playlistInfo) { return; }
+  async LoadCollection() {
+    if(this.collectionInfo) { return; }
 
-    let {mediaCatalogObjectId, mediaCatalogVersionHash, playlistId} = (this.sourceOptions?.playlistOptions || {});
+    let {mediaCatalogObjectId, mediaCatalogVersionHash, collectionId} = (this.sourceOptions?.mediaCollectionOptions || {});
 
-    if(!playlistId) { return; }
+    if(!collectionId) { return; }
 
     if(!mediaCatalogObjectId && !mediaCatalogVersionHash) {
-      throw "Invalid playlist options: Media catalog not specified";
+      throw "Invalid collection options: Media catalog not specified";
     }
 
     const client = await this.Client();
@@ -584,32 +584,33 @@ export class EluvioPlayer {
       const authorizationToken = this.sourceOptions.playoutParameters.authorizationToken;
 
       mediaCatalogVersionHash = mediaCatalogVersionHash || await client.LatestVersionHash({objectId: mediaCatalogObjectId});
-      const playlists = (await client.ContentObjectMetadata({
+      const collections = (await client.ContentObjectMetadata({
         versionHash: mediaCatalogVersionHash,
-        metadataSubtree: "public/asset_metadata/info/playlists",
+        metadataSubtree: "public/asset_metadata/info/collections",
         authorizationToken
       })) || [];
 
-      const playlistInfo = playlists.find(playlist => playlist.id === playlistId);
+      const collectionInfo = collections.find(collection => collection.id === collectionId);
 
-      if(!playlistInfo) {
-        throw `No playlist with id ${playlistId} found for playlist ${mediaCatalogObjectId || mediaCatalogVersionHash}`;
+      if(!collectionInfo) {
+        throw `No collection with id ${collectionId} found for collection ${mediaCatalogObjectId || mediaCatalogVersionHash}`;
       }
 
-      playlistInfo.content = playlistInfo.content
+      collectionInfo.content = collectionInfo.content
         .filter(content => content.media)
         .map(content => ({
           ...content,
           mediaHash: content.media?.["/"]?.split("/").find(segment => segment.startsWith("hq__"))
         }));
 
-      this.playlistInfo = {
-        ...playlistInfo,
+      this.collectionInfo = {
+        ...collectionInfo,
+        isPlaylist: collectionInfo.type === "playlist",
         mediaIndex: 0,
-        mediaLength: playlistInfo.content.length
+        mediaLength: collectionInfo.content.length
       };
     } catch (error) {
-      this.Log("Failed to load playlist:");
+      this.Log("Failed to load collection:");
       throw error;
     }
   }
@@ -673,8 +674,8 @@ export class EluvioPlayer {
       }
     }
 
-    // Load playlist info, if present
-    await this.LoadPlaylist();
+    // Load collection info, if present
+    await this.LoadCollection();
 
 
     try {
@@ -715,10 +716,10 @@ export class EluvioPlayer {
       });
 
       if(this.playerOptions.title !== false && this.playerOptions.controls !== EluvioPlayerParameters.controls.DEFAULT) {
-        if(this.ActivePlaylistMedia()) {
-          const {name, description} = this.ActivePlaylistMedia();
+        if(this.ActiveCollectionMedia()) {
+          const {title, description} = this.ActiveCollectionMedia();
 
-          this.controls.InitializeContentTitle({title: name, description});
+          this.controls.InitializeContentTitle({title, description});
         } else if(this.sourceOptions.contentOptions.title) {
           this.controls.InitializeContentTitle({
             title: this.sourceOptions.contentOptions.title,
@@ -795,8 +796,8 @@ export class EluvioPlayer {
 
       this.resizeObserver.observe(this.target);
 
-      if(this.playlistInfo && this.playlistInfo.mediaIndex < this.playlistInfo.mediaLength - 1) {
-        this.video.addEventListener("ended", () => this.PlaylistPlayNext());
+      if(this.collectionInfo && this.collectionInfo.isPlaylist && this.collectionInfo.mediaIndex < this.collectionInfo.mediaLength - 1) {
+        this.video.addEventListener("ended", () => this.CollectionPlayNext());
       }
 
       let { protocol, drm, playoutUrl, drms, multiviewOptions } = await this.PlayoutOptions();

@@ -13,7 +13,7 @@ import {
   LeftArrowIcon,
   PreviousTrackIcon,
   NextTrackIcon,
-  PlaylistIcon
+  CollectionIcon
 } from "./static/icons/Icons";
 // Icons are generated from .svg files to an importable JS file. To add a new icon, modify and run src/BuildIcons.js
 
@@ -204,6 +204,8 @@ class PlayerControls {
       this.SetPosterUrl(posterUrl);
     }
 
+    this.HandleClickOutsideMenu = this.HandleClickOutsideMenu.bind(this);
+
     this.InitializeControls(className);
   }
 
@@ -386,7 +388,7 @@ class PlayerControls {
   }
 
   InitializeControls(className="") {
-    const playlistInfo = this.player.playlistInfo;
+    const collectionInfo = this.player.collectionInfo;
 
     this.target.setAttribute("tabindex", "0");
 
@@ -596,19 +598,19 @@ class PlayerControls {
       volumeBar.value = volumeSlider.value;
     });
 
-    // Playlist previous track
-    if(playlistInfo) {
-      const playlistPreviousButton = CreateImageButton({
+    // Collection previous track
+    if(collectionInfo && collectionInfo.isPlaylist) {
+      const collectionPreviousButton = CreateImageButton({
         parent: controls,
         svg: PreviousTrackIcon,
         classes: ["eluvio-player__controls__previous-track"],
         label: "Previous Track",
         options: {
-          disabled: playlistInfo.mediaIndex === 0
+          disabled: collectionInfo.mediaIndex === 0
         }
       });
 
-      playlistPreviousButton.addEventListener("click", () => this.player.PlaylistPlayPrevious());
+      collectionPreviousButton.addEventListener("click", () => this.player.CollectionPlayPrevious());
     }
 
     const progressTime = CreateElement({
@@ -696,31 +698,33 @@ class PlayerControls {
 
     totalTime.innerHTML = "00:00";
 
-    // Playlist previous track
-    if(playlistInfo) {
-      const playlistNextButton = CreateImageButton({
+    // Collection previous track
+    if(collectionInfo && collectionInfo.isPlaylist) {
+      const collectionNextButton = CreateImageButton({
         parent: controls,
         svg: NextTrackIcon,
         classes: ["eluvio-player__controls__next-track"],
         label: "Next Track",
         options: {
-          disabled: playlistInfo.mediaIndex >= playlistInfo.mediaLength - 1
+          disabled: collectionInfo.mediaIndex >= collectionInfo.mediaLength - 1
         }
       });
 
-      playlistNextButton.addEventListener("click", () => this.player.PlaylistPlayNext());
+      collectionNextButton.addEventListener("click", () => this.player.CollectionPlayNext());
+    }
 
-      this.playlistButton = CreateImageButton({
+    if(collectionInfo) {
+      this.collectionButton = CreateImageButton({
         parent: controls,
-        svg: PlaylistIcon,
-        classes: ["eluvio-player__controls__playlist"],
-        label: "Playlist Info"
+        svg: CollectionIcon,
+        classes: ["eluvio-player__controls__collection"],
+        label: "Collection Info"
       });
 
-      this.playlistButton.addEventListener("click", () => {
-        this.settingsMenu.dataset.mode === "playlist" ?
+      this.collectionButton.addEventListener("click", () => {
+        this.settingsMenu.dataset.mode === "collection" ?
           this.HideSettingsMenu() :
-          this.ShowPlaylistMenu();
+          this.ShowCollectionMenu();
       });
     }
 
@@ -729,6 +733,20 @@ class PlayerControls {
       parent: controls,
       type: "div",
       classes: ["eluvio-player__controls__right-buttons"]
+    });
+
+    this.settingsButton = CreateImageButton({
+      parent: this.rightButtonsContainer,
+      svg: SettingsIcon,
+      classes: ["eluvio-player__controls__button-settings"],
+      prepend: true,
+      label: "Settings"
+    });
+
+    this.settingsButton.addEventListener("click", () => {
+      this.settingsMenu.dataset.mode.startsWith("settings") ?
+        this.HideSettingsMenu() :
+        this.ShowSettingsMenu();
     });
 
     // Fullscreen
@@ -1013,7 +1031,14 @@ class PlayerControls {
     this.hlsOptionsFormContainer && this.hlsOptionsFormContainer.remove();
   }
 
+  HandleClickOutsideMenu(event) {
+    if(!this.settingsMenu.contains(event.target)) {
+      this.HideSettingsMenu();
+    }
+  }
+
   InitializeMenu(mode) {
+    this.HideSettingsMenu();
     this.settingsMenu.innerHTML = "";
     this.settingsMenu.classList.remove("eluvio-player__controls__settings-menu-hidden");
     this.settingsMenu.setAttribute("data-mode", mode);
@@ -1027,6 +1052,16 @@ class PlayerControls {
     });
 
     closeButton.addEventListener("click", () => this.HideSettingsMenu());
+
+    setTimeout(() => {
+      document.addEventListener("click", this.HandleClickOutsideMenu);
+    }, 100);
+
+    if(mode === "collection") {
+      this.collectionButton.classList.add("eluvio-player__controls__button--active");
+    } else if(mode.includes("setting")) {
+      this.settingsButton.classList.add("eluvio-player__controls__button--active");
+    }
   }
 
   AddSetting({Retrieve, Set}) {
@@ -1122,75 +1157,65 @@ class PlayerControls {
   }
 
   HideSettingsMenu() {
+    document.removeEventListener("click", this.HandleClickOutsideMenu);
+
     const mode = this.settingsMenu.dataset.mode;
     if(mode === "settings") {
       this.settingsButton.focus();
     } else if(mode === "multiview") {
       this.multiviewButton.focus();
-    } else if(mode === "playlist") {
-      this.playlistButton.focus();
+    } else if(mode === "collection") {
+      this.collectionButton.focus();
     }
 
     this.settingsMenu.innerHTML = "";
     this.settingsMenu.classList.add("eluvio-player__controls__settings-menu-hidden");
     this.settingsMenu.setAttribute("data-mode", "hidden");
+
+    this.settingsButton.classList.remove("eluvio-player__controls__button--active");
+    this.collectionButton && this.collectionButton.classList.remove("eluvio-player__controls__button--active");
+    this.multiviewButton && this.multiviewButton.classList.remove("eluvio-player__controls__button--active");
   }
 
+  // Settings were updated - if the menu is already open, force it to refresh
   UpdateSettings() {
-    if(!this.settingsButton) {
-      this.settingsButton = CreateImageButton({
-        parent: this.rightButtonsContainer,
-        svg: SettingsIcon,
-        classes: ["eluvio-player__controls__button-settings"],
-        prepend: true,
-        label: "Settings"
-      });
-
-      this.settingsButton.addEventListener("click", () => {
-        this.settingsMenu.dataset.mode.startsWith("settings") ?
-          this.HideSettingsMenu() :
-          this.ShowSettingsMenu();
-      });
-    }
-
     if(this.settingsMenu.dataset.mode === "settings") {
       this.ShowSettingsMenu();
     }
   }
 
-  ShowPlaylistMenu() {
+  ShowCollectionMenu() {
     if(
-      !this.player.playlistInfo ||
-      !this.player.playlistInfo.content ||
-      this.player.playlistInfo.content.length <= 1
+      !this.player.collectionInfo ||
+      !this.player.collectionInfo.content ||
+      this.player.collectionInfo.content.length <= 1
     ) {
       return;
     }
 
-    this.InitializeMenu("playlist");
+    this.InitializeMenu("collection");
 
-    const playlistTitle = CreateElement({
+    const collectionTitle = CreateElement({
       parent: this.settingsMenu,
       type: "div",
       classes: ["eluvio-player__controls__settings-menu__title"]
     });
 
-    playlistTitle.innerHTML = this.player.playlistInfo.name;
+    collectionTitle.innerHTML = this.player.collectionInfo.title;
 
-
-    this.player.playlistInfo.content
+    this.player.collectionInfo.content
       .forEach((option, index) => {
-        const active = this.player.playlistInfo.mediaIndex === index;
+        const active = this.player.collectionInfo.mediaIndex === index;
         const optionButton = CreateElement({
           parent: this.settingsMenu,
           type: "button",
           classes: ["eluvio-player__controls__settings-menu__option", active ? "eluvio-player__controls__settings-menu__option-selected" : ""]
         });
 
-        optionButton.innerHTML = option.name;
+        optionButton.innerHTML = option.title || option.mediaHash;
 
         optionButton.addEventListener("click", () => {
-          this.player.PlaylistPlay({mediaIndex: index});
+          this.player.CollectionPlay({mediaIndex: index});
           this.HideSettingsMenu();
         });
       });
@@ -1297,6 +1322,8 @@ class PlayerControls {
       this.HideSettingsMenu();
       return;
     }
+
+    this.multiviewButton.classList.add("eluvio-player__controls__button--active");
 
     this.settingsMenu.setAttribute("data-mode", "multiview");
     this.settingsMenu.classList.remove("eluvio-player__controls__settings-menu-hidden");
