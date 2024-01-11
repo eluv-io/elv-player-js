@@ -48,7 +48,8 @@ $button-height: 35px;
   width: 100%;
 
   &--error {
-    .eluvio-player__controls,
+    background-color: $black;
+
     .eluvio-player__big-play-button {
       display: none;
     }
@@ -59,15 +60,18 @@ $button-height: 35px;
     display: flex;
     height: 100%;
     justify-content: center;
+    letter-spacing: 0.05em;
     padding: 20px;
     position: absolute;
+    user-select: none;
     width: 100%;
-    z-index: 1000;
+    z-index: 1;
   }
 
   &__error-message__text {
     color: $error-color;
-    font-size: 24px;
+    font-size: 20px;
+    font-weight: 300;
     max-width: 600px;
     text-align: center;
   }

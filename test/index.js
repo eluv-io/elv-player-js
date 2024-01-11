@@ -16,12 +16,13 @@ const Initialize = async () => {
     document.getElementById("player-target"),
     {
       clientOptions: {
-        network: EluvioPlayerParameters.networks.DEMO
+        network: EluvioPlayerParameters.networks.DEMO,
       },
       sourceOptions: {
+        protocols: ["dash"],
         mediaCollectionOptions: {
-          mediaCatalogObjectId: "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2",
-          collectionId: "JN8ecVA5Jt5cK2PjHXz12A"
+          mediaCatalogObjectId: "iq__2bPGbTyFqxQVKvKCQZTgXWbAAHjx",
+          collectionId: "QRYFLrg9axGLHgjBRf2g9q"
         },
         playoutParameters: {
           versionHash

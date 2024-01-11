@@ -126,7 +126,23 @@ const Time = (time, total) => {
   return string;
 };
 
-export const InitializeTicketPrompt = (target, callback) => {
+export const InitializeTicketPrompt = async (target, initialCode, callback) => {
+  // If initial code is provided, attempt to automatically redeem it before rendering the form
+  let initialError = "";
+  if(initialCode) {
+    try {
+      await callback(initialCode);
+      return;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("ELUVIO PLAYER: Invalid Code");
+      // eslint-disable-next-line no-console
+      console.error(error);
+
+      initialError = "Invalid Code";
+    }
+  }
+
   const ticketModal = CreateElement({
     parent: target,
     type: "div",
@@ -147,6 +163,8 @@ export const InitializeTicketPrompt = (target, callback) => {
     classes: ["eluvio-player__ticket-modal__form__error-text", "eluvio-player__ticket-modal__form__text"]
   });
 
+  errorMessage.innerHTML = initialError;
+
   const text = CreateElement({
     parent: form,
     type: "div",
@@ -160,6 +178,8 @@ export const InitializeTicketPrompt = (target, callback) => {
     type: "input",
     classes: ["eluvio-player__ticket-modal__form__input"]
   });
+
+  input.value = initialCode;
 
   const submit = CreateElement({
     parent: form,

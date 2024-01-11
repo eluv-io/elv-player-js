@@ -234,6 +234,26 @@ export class EluvioPlayer {
     this.target.innerHTML = "";
   }
 
+  SetErrorMessage(message) {
+    let errorMessage = this.target.querySelector(".eluvio-player__error-message");
+
+    if(!errorMessage) {
+      errorMessage = CreateElement({
+        parent: this.target,
+        classes: ["eluvio-player__error-message"]
+      });
+    }
+
+    errorMessage.innerHTML = "";
+
+    CreateElement({
+      parent: errorMessage,
+      classes: ["eluvio-player__error-message__text"]
+    }).innerHTML = message;
+
+    this.target.classList.add("eluvio-player--error");
+  }
+
   RegisterVisibilityCallback() {
     if(
       this.playerOptions.autoplay !== EluvioPlayerParameters.autoplay.WHEN_VISIBLE &&
@@ -300,7 +320,7 @@ export class EluvioPlayer {
   }
 
   async RedeemCode(code) {
-    if(!this.clientOptions.tenantId) { throw Error("ELUVIO PLAYER: Tenant ID must be provided if ticket code is specified."); }
+    if(!this.clientOptions.tenantId || !this.clientOptions.ntpId) { throw Error("ELUVIO PLAYER: Tenant ID and NTP ID must be provided if ticket code is specified."); }
 
     code = code || this.clientOptions.ticketCode;
     let subject = this.clientOptions.ticketSubject;
@@ -452,12 +472,14 @@ export class EluvioPlayer {
       PlayPause(this.video, false);
     }
 
-    if(this.player.destroy) {
-      this.player.destroy();
-    } else if(this.player.reset) {
-      this.player.reset();
+    if(this.hlsPlayer) {
+      this.hlsPlayer.destroy();
+    } else if(this.dashPlayer) {
+      this.dashPlayer.destroy();
     }
 
+    this.hlsPlayer = undefined;
+    this.dashPlayer = undefined;
     this.player = undefined;
   }
 
@@ -498,6 +520,7 @@ export class EluvioPlayer {
         }
       }
 
+      this.SetErrorMessage("Something went wrong, reloading player...");
       await new Promise(resolve => setTimeout(resolve, delay));
 
       if(this.__destroyed) { return; }
@@ -656,30 +679,30 @@ export class EluvioPlayer {
     // Start client loading
     this.Client();
 
+    // Handle ticket authorization
     if(this.clientOptions.promptTicket && !this.ticketInitialized) {
-      if(!this.clientOptions.tenantId) {
-        throw Error("ELUVIO PLAYER: Tenant ID must be provided if ticket code is needed.");
+      if(!this.clientOptions.tenantId || !this.clientOptions.ntpId) {
+        throw Error("ELUVIO PLAYER: Tenant ID and NTP ID must be provided if ticket code is needed.");
       }
 
-      if(this.clientOptions.ticketCode) {
-        await this.RedeemCode(this.clientOptions.ticketCode);
-      } else {
-        InitializeTicketPrompt(this.target, async code => {
+      InitializeTicketPrompt(
+        this.target,
+        this.clientOptions.ticketCode,
+        async code => {
           await this.RedeemCode(code);
 
           this.Initialize(target, parameters);
-        });
+        }
+      );
 
-        return;
-      }
+      return;
     }
-
-    // Load collection info, if present
-    await this.LoadCollection();
-
 
     try {
       this.target.classList.add("eluvio-player");
+
+      // Load collection info, if present
+      await this.LoadCollection();
 
       if(this.restarted) {
         // Prevent big play button from flashing on restart
@@ -883,36 +906,28 @@ export class EluvioPlayer {
 
           if(permissionErrorMessage) {
             error.permission_message = permissionErrorMessage;
-            const errorMessage = CreateElement({
-              parent: this.target,
-              classes: ["eluvio-player__error-message"]
-            });
+            this.SetErrorMessage(permissionErrorMessage);
 
-            CreateElement({
-              parent: errorMessage,
-              classes: ["eluvio-player__error-message__text"]
-            }).innerHTML = permissionErrorMessage;
-
-            this.target.classList.add("eluvio-player--error");
+            if(typeof error === "object") {
+              error.permission_message = permissionErrorMessage;
+            } else {
+              this.Log(permissionErrorMessage, true);
+            }
+          } else {
+            this.SetErrorMessage("Insufficient permissions");
           }
         // eslint-disable-next-line no-empty
-        } catch (error) {}
-      }
-
-      if(permissionErrorMessage) {
-        if(typeof error === "object") {
-          error.permission_message = permissionErrorMessage;
-        } else {
-          this.Log(permissionErrorMessage, true);
+        } catch (error) {
+          this.SetErrorMessage("Insufficient permissions");
         }
+      } else if(error.status === 500) {
+        this.HardReload(error, 10000);
+      } else {
+        this.SetErrorMessage("Something went wrong");
       }
 
       if(this.playerOptions.errorCallback) {
         this.playerOptions.errorCallback(error, this);
-      }
-
-      if(error.status === 500) {
-        this.HardReload(error, 10000);
       }
     }
   }
@@ -1164,7 +1179,7 @@ export class EluvioPlayer {
 
         if(error.response && error.response.code === 403) {
           // Not allowed to access
-          this.Destroy();
+          this.SetErrorMessage("Insufficient permissions");
         } else if(this.errors < 5) {
           if(error.fatal) {
             if(data.type === this.HLS.ErrorTypes.MEDIA_ERROR) {
