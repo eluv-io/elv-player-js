@@ -48,6 +48,10 @@ export const EluvioPlayerParameters = {
     ON: true,
     DEFAULT: "default"
   },
+  title: {
+    ON: true,
+    OFF: false
+  },
   loop: {
     OFF: false,
     ON: true
@@ -134,6 +138,7 @@ const DefaultParameters = {
     loop: EluvioPlayerParameters.loop.OFF,
     watermark: EluvioPlayerParameters.watermark.ON,
     capLevelToPlayerSize: EluvioPlayerParameters.capLevelToPlayerSize.OFF,
+    title: EluvioPlayerParameters.title.ON,
     posterUrl: undefined,
     className: undefined,
     controlsClassName: undefined,
@@ -709,7 +714,7 @@ export class EluvioPlayer {
         className: this.playerOptions.controlsClassName
       });
 
-      if(this.playerOptions.controls !== EluvioPlayerParameters.controls.DEFAULT) {
+      if(this.playerOptions.title !== false && this.playerOptions.controls !== EluvioPlayerParameters.controls.DEFAULT) {
         if(this.ActivePlaylistMedia()) {
           const {name, description} = this.ActivePlaylistMedia();
 
