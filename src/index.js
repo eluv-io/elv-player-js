@@ -618,7 +618,7 @@ export class EluvioPlayer {
       const collectionInfo = collections.find(collection => collection.id === collectionId);
 
       if(!collectionInfo) {
-        throw { displayMessage: `No collection with ID ${collectionId} found for collection ${mediaCatalogObjectId || mediaCatalogVersionHash}` };
+        throw { displayMessage: `No collection with ID ${collectionId} found for media catalog ${mediaCatalogObjectId || mediaCatalogVersionHash}` };
       }
 
       collectionInfo.content = collectionInfo.content
