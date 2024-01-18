@@ -1,14 +1,12 @@
 import "./test.scss";
 
 import {ElvClient} from "@eluvio/elv-client-js";
-import {EluvioPlayer, EluvioPlayerParameters} from "../src";
+import {EluvioPlayer, EluvioPlayerParameters} from "../lib";
 
 const Initialize = async () => {
   const client = await ElvClient.FromConfigurationUrl({
     configUrl: "https://main.net955305.contentfabric.io/config"
   });
-
-  await client.SetStaticToken();
 
   const versionHash = await client.LatestVersionHash({versionHash: "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo"});
 
@@ -16,13 +14,9 @@ const Initialize = async () => {
     document.getElementById("player-target"),
     {
       clientOptions: {
-        network: EluvioPlayerParameters.networks.DEMO,
+        network: EluvioPlayerParameters.networks.MAIN,
       },
       sourceOptions: {
-        mediaCollectionOptions: {
-          mediaCatalogObjectId: "iq__2bPGbTyFqxQVKvKCQZTgXWbAAHjx",
-          collectionId: "QRYFLrg9axGLHgjBRf2g9q"
-        },
         playoutParameters: {
           versionHash
         }
@@ -31,9 +25,13 @@ const Initialize = async () => {
         muted: true,
         controls: EluvioPlayerParameters.controls.ON,
         watermark: EluvioPlayerParameters.watermark.OFF,
-        autoplay: EluvioPlayerParameters.autoplay.ON,
-        maxBitrate: 5000000,
-        debugLogging: true
+        autoplay: EluvioPlayerParameters.autoplay.OFF,
+        maxBitrate: 50000,
+        debugLogging: true,
+        hlsjsOptions: {
+          maxBufferLength: 1,
+          maxBufferSize: 0.5 * 1000 * 1000
+        }
       }
     }
   );
