@@ -3,6 +3,7 @@
   "version": "1.0.137",
   "description": "![Eluvio Logo](lib/static/images/Logo.png \"Eluvio Logo\")",
   "main": "lib/index.js",
+  "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/eluv-io/elv-player-js",
   "scripts": {
@@ -35,14 +36,16 @@
   "dependencies": {
     "@eluvio/elv-client-js": "^4.0.76",
     "dashjs": "~4.7.0",
-    "focus-visible": "^5.2.0",
     "hls.js": "~1.4.12",
     "lodash": "^4.17.21",
     "mux-embed": "^4.30.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "resize-observer-polyfill": "^1.5.1",
     "url-join": "^4.0.1"
   },
   "devDependencies": {
+    "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.16",
     "babel-eslint": "^10.1.0",
     "eslint": "^5.16.0",

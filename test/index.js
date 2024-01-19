@@ -1,5 +1,10 @@
 import "./test.scss";
 
+/* Build import
+import "../dist/elv-player-js.css";
+import EluvioPlayer, {EluvioPlayerParameters} from "../dist/elv-player-js.es.js";
+*/
+
 import {ElvClient} from "@eluvio/elv-client-js";
 import {EluvioPlayer, EluvioPlayerParameters} from "../lib";
 

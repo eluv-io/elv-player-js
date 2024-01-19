@@ -98,6 +98,7 @@ The library includes a helpful collection of configuration options in `EluvioPla
 ```javascript
   // All player options and their defaults
   playerOptions: {
+    ui: EluvioPlayerParameters.ui.WEB,
     controls: EluvioPlayerParameters.controls.AUTO_HIDE,
     autoplay: EluvioPlayerParameters.autoplay.OFF,
     muted: EluvioPlayerParameters.muted.OFF,
