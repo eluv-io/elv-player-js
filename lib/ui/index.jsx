@@ -1,20 +1,22 @@
-import React, {useEffect, useRef, useState} from "react";
-import ReactDOM from "react-dom/client";
-import EluvioPlayer from "../Player.js";
-import ResizeObserver from "resize-observer-polyfill";
-
 import ResetStyle from "../static/stylesheets/reset.module.scss";
 import PlayerStyles from "../static/stylesheets/player.module.scss";
 
-console.log(PlayerStyles);
-import EluvioPlayerParameters from "../PlayerParameters.js";
+import React, {useEffect, useRef, useState} from "react";
+import ReactDOM from "react-dom/client";
+import ResizeObserver from "resize-observer-polyfill";
+import MergeWith from "lodash/mergeWith.js";
+import Clone from "lodash/cloneDeep.js";
 
+import EluvioPlayer from "../player/Player.js";
+import EluvioPlayerParameters, {DefaultParameters} from "../player/PlayerParameters.js";
+
+// Observe player size for reactive UI
 const InitializeResizeObserver = ({target, setSize}) => {
   const observer = new ResizeObserver(entries => {
     const dimensions = entries[0].contentRect;
 
     /*
-    // TODO: ??
+    // TODO: Multiview controls
     if(this.controls) {
       this.controls.HandleResize(dimensions);
     }
@@ -44,27 +46,41 @@ const InitializeResizeObserver = ({target, setSize}) => {
   return observer;
 };
 
-// TODO: Move to boilerplate ui, not web specific
-const PlayerUI = ({target, parameters}) => {
+const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
   const [size, setSize] = useState({size: "lg", orientation: "landscape"});
   const videoRef = useRef();
+
+  const playerSet = !!player;
 
   useEffect(() => {
     if(!videoRef || !videoRef.current) {
       return;
     }
 
-    setPlayer(
-      new EluvioPlayer(videoRef.current, parameters)
-    );
+    player && player.__DestroyPlayer();
+
+    const newPlayer = new EluvioPlayer(target, videoRef.current, parameters);
+
+    // Destroy method for external use - destroys internal player and unmounts react
+    newPlayer.Destroy = () => {
+      newPlayer.__DestroyPlayer();
+      Unmount();
+    };
+
+    setPlayer(newPlayer);
 
     InitializeResizeObserver({target, setSize});
 
+    initCallback(newPlayer);
+  }, [videoRef, playerSet]);
+
+  useEffect(() => {
     return () => {
-      player && player.Destroy();
+      player && player.__DestroyPlayer();
+      setPlayer(undefined);
     };
-  }, [videoRef]);
+  }, [playerSet]);
 
   return (
     <div className={[PlayerStyles["player-container"], PlayerStyles[`size-${size.size}`], PlayerStyles[`orientation-${size.orientation}`]].join(" ")}>
@@ -85,11 +101,25 @@ const Initialize = (target, parameters) => {
   target.innerHTML = "";
   target.classList.add(ResetStyle.reset);
 
-  ReactDOM.createRoot(target).render(
-    <React.StrictMode>
-      <PlayerUI target={target} parameters={parameters}/>
-    </React.StrictMode>
+  parameters = MergeWith(
+    Clone(DefaultParameters),
+    Clone(parameters)
   );
+
+  return new Promise(resolve => {
+    const root = ReactDOM.createRoot(target);
+
+    root.render(
+      <React.StrictMode>
+        <PlayerUI
+          target={target}
+          parameters={parameters}
+          initCallback={resolve}
+          Unmount={() => root.unmount()}
+        />
+      </React.StrictMode>
+    );
+  });
 };
 
 

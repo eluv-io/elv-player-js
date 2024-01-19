@@ -15,7 +15,7 @@ const Initialize = async () => {
 
   const versionHash = await client.LatestVersionHash({versionHash: "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo"});
 
-  window.player = new EluvioPlayer(
+  window.player = await EluvioPlayer(
     document.getElementById("player-target"),
     {
       clientOptions: {

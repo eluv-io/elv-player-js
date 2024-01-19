@@ -1,7 +1,7 @@
 /*** The new CSS Reset - version 1.4.2 (last updated 30.11.2021) ***/
 .reset {
-  width: 100%;
   height: 100%;
+  width: 100%;
 
   /*
       Remove all the styles of the "User-Agent-Stylesheet", except for the 'display' property
@@ -57,10 +57,10 @@
   /* revert for bug in Chromium browsers
      - fix for the content editable attribute will work properly. */
   :where([contenteditable]) {
-    -webkit-line-break: after-white-space;
-    overflow-wrap: break-word;
     -moz-user-modify: read-write;
+    -webkit-line-break: after-white-space;
     -webkit-user-modify: read-write;
+    overflow-wrap: break-word;
   }
 
   // sass-lint:disable no-important
