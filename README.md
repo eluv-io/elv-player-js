@@ -107,8 +107,6 @@ The library includes a helpful collection of configuration options in `EluvioPla
     capLevelToPlayerSize: EluvioPlayerParameters.capLevelToPlayerSize.OFF,
     collectVideoAnalytics: EluvioPlayerParameters.collectVideoAnalytics.ON,
     posterUrl: undefined,
-    className: undefined,
-    controlsClassName: undefined,
     hlsjsOptions: undefined,
     dashjsOptions: undefined,
     maxBitrate: undefined,
@@ -149,8 +147,6 @@ The library includes a helpful collection of configuration options in `EluvioPla
   * `OFF` - Player performance analytics will not be collected
 * `maxBitrate` - Maximum bitrate that the player will automatically use, in bits/second.
 * `posterUrl` - Specify a URL for the poster image for the player
-* `className` - HTML class to be added to the player
-* `controlsClassName` - HTML class to be added to the player controls container
 * `hlsjsOptions` - Additional options to provide to hls.js on initialization
 * `dashjsOptions` - Additional options to provide to dashjs on initialization
 * `playerCallback` - Callback function invoked after initialization has completed. Returns references to the player, the html video element, the dashjs or hls.js player instance, and the URL of the poster image

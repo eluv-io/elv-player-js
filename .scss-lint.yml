@@ -1,7 +1,7 @@
 files:
   include: "lib/static/stylesheets/*.scss"
   ignore:
-    - "lib/static/stylesheets/fonts.scss"
+    - "lib/static/stylesheets/reset.module.scss"
 rules:
   no-color-literals:
     - 0

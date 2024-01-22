@@ -1,40 +1,81 @@
-
 .player-container {
+  --layer-video: 1;
+  --layer-poster: 2;
+  --layer-error: 3;
+  --layer-controls: 4;
+
+  --color-error: #ff0000;
+
+
   height: 100%;
   position: relative;
   width: 100%;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .video {
   height: 100%;
   object-fit: contain;
   width: 100%;
+  background: transparent;
+  z-index: var(--layer-video);
+}
+
+.poster {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--layer-poster);
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+}
+
+.error-message {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--layer-error);
+  color: var(--color-error);
+  top: 0;
+  left: 0;
+  font-size: 24px;
+  font-weight: 300;
+  text-align: center;
 }
 
 .size-xl {
-  background-color: #ff0000;
+
 }
 
 .size-lg {
-  background-color: #008000;
+
 }
 
 .size-md {
-  background-color: #0000ff;
+
 }
 
 .size-sm {
-  background-color: #ffff00;
+
+}
+
+.size-md,
+.size-sm {
+  .error-message {
+    font-size: 16px;
+  }
 }
 
 .orientation-landscape {
-  video {
-    border: 3px solid #ffa500;
-  }
+
 }
 
 .orientation-portrait {
-  video {
-    border: 3px solid #008080;
-  }
+
 }

@@ -3,64 +3,49 @@ import PlayerStyles from "../static/stylesheets/player.module.scss";
 
 import React, {useEffect, useRef, useState} from "react";
 import ReactDOM from "react-dom/client";
-import ResizeObserver from "resize-observer-polyfill";
 import MergeWith from "lodash/mergeWith.js";
 import Clone from "lodash/cloneDeep.js";
 
 import EluvioPlayer from "../player/Player.js";
 import EluvioPlayerParameters, {DefaultParameters} from "../player/PlayerParameters.js";
+import {InitializeResizeObserver, RegisterVisibilityCallback} from "./Observers.js";
 
-// Observe player size for reactive UI
-const InitializeResizeObserver = ({target, setSize}) => {
-  const observer = new ResizeObserver(entries => {
-    const dimensions = entries[0].contentRect;
-
-    /*
-    // TODO: Multiview controls
-    if(this.controls) {
-      this.controls.HandleResize(dimensions);
-    }
-
-     */
-
-    let size = "sm";
-    let orientation = "landscape";
-    // Use actual player size instead of media queries
-    if(dimensions.width > 1400) {
-      size = "xl";
-    } else if(dimensions.width > 750) {
-      size = "lg";
-    } else if(dimensions.width > 500) {
-      size = "md";
-    }
-
-    if(dimensions.width < dimensions.height) {
-      orientation = "portrait";
-    }
-
-    setSize({size, orientation});
-  });
-
-  observer.observe(target);
-
-  return observer;
-};
+console.log(PlayerStyles);
 
 const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
   const [size, setSize] = useState({size: "lg", orientation: "landscape"});
+  const [errorMessage, setErrorMessage] = useState(undefined);
+  const [playbackStarted, setPlaybackStarted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const videoRef = useRef();
 
   const playerSet = !!player;
 
   useEffect(() => {
-    if(!videoRef || !videoRef.current) {
+    setMounted(true);
+
+    return () => setMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if(!videoRef || !videoRef.current || !mounted) {
       return;
     }
 
+    // Destroy existing player, if present
     player && player.__DestroyPlayer();
 
-    const newPlayer = new EluvioPlayer(target, videoRef.current, parameters);
+    videoRef.current.addEventListener("play", () => {
+      setPlaybackStarted(true);
+    });
+
+    const newPlayer = new EluvioPlayer({
+      target,
+      video: videoRef.current,
+      parameters,
+      SetErrorMessage: setErrorMessage
+    });
 
     // Destroy method for external use - destroys internal player and unmounts react
     newPlayer.Destroy = () => {
@@ -70,12 +55,17 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
 
     setPlayer(newPlayer);
 
+    // Watch element to keep track of size
     InitializeResizeObserver({target, setSize});
+    RegisterVisibilityCallback({player: newPlayer});
 
     initCallback(newPlayer);
-  }, [videoRef, playerSet]);
+  }, [videoRef, mounted]);
 
   useEffect(() => {
+    if(!playerSet) { return; }
+
+    // Clean up player when unmounting
     return () => {
       player && player.__DestroyPlayer();
       setPlayer(undefined);
@@ -83,7 +73,10 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   }, [playerSet]);
 
   return (
-    <div className={[PlayerStyles["player-container"], PlayerStyles[`size-${size.size}`], PlayerStyles[`orientation-${size.orientation}`]].join(" ")}>
+    <div
+      style={{backgroundColor: parameters.playerOptions.backgroundColor || "transparent"}}
+      className={[PlayerStyles["player-container"], PlayerStyles[`size-${size.size}`], PlayerStyles[`orientation-${size.orientation}`]].join(" ")}
+    >
       <video
         playsInline
         ref={videoRef}
@@ -92,10 +85,17 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
         loop={parameters.playerOptions.loop === EluvioPlayerParameters.loop.ON}
         className={PlayerStyles.video}
       />
+      {
+        playbackStarted || !parameters.playerOptions.posterUrl ? null :
+          <img alt="Video Poster" src={parameters.playerOptions.posterUrl} className={PlayerStyles["poster"]} />
+      }
+      {
+        !errorMessage ? null :
+          <div className={PlayerStyles["error-message"]}>{ errorMessage }</div>
+      }
     </div>
   );
 };
-
 
 const Initialize = (target, parameters) => {
   target.innerHTML = "";
