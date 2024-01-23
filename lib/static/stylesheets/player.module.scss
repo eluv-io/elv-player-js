@@ -4,13 +4,17 @@
   --layer-error: 3;
   --layer-controls: 4;
 
-  --color-error: #ff0000;
+  --color-error: #f00;
 
 
   height: 100%;
   position: relative;
   width: 100%;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.controls {
+  z-index: var(--layer-controls);
 }
 
 .video {

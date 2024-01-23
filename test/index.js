@@ -35,12 +35,13 @@ const Initialize = async () => {
       },
       playerOptions: {
         //posterUrl: "https://miro.medium.com/v2/resize:fit:1099/1*5PeT0-Dch_KhFwjYwUWiDA.png",
+        ui: EluvioPlayerParameters.ui.WEB,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
         controls: EluvioPlayerParameters.controls.ON,
         watermark: EluvioPlayerParameters.watermark.OFF,
-        autoplay: EluvioPlayerParameters.autoplay.ON,
-        //maxBitrate: 50000,
+        autoplay: EluvioPlayerParameters.autoplay.OFF,
+        maxBitrate: 50000,
         debugLogging: true,
         hlsjsOptions: {
           maxBufferLength: 1,

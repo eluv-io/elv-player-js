@@ -12,7 +12,7 @@
     "build": "vite build",
     "build-analyze": "vite-bundle-visualizer",
     "preview": "vite preview",
-    "build-icons": "node lib/static/icons/BuildIcons.js",
+    "build-icons": "node lib/ui/BuildIcons.cjs",
     "lint": "npm run fix-scss ; npm run lint-scss ; npm run fix-js",
     "lint-show": "npm run lint-scss ; npm run lint-js",
     "lint-js": "eslint \"lib/**/*.js\"",
@@ -36,6 +36,7 @@
   "dependencies": {
     "@eluvio/elv-client-js": "^4.0.76",
     "dashjs": "~4.7.0",
+    "focus-visible": "^5.2.0",
     "hls.js": "~1.4.12",
     "lodash": "^4.17.21",
     "mux-embed": "^4.30.0",
@@ -55,7 +56,8 @@
     "sass-lint-auto-fix": "^0.21.0",
     "sass-loader": "^13.3.2",
     "vite": "^5.0.11",
-    "vite-bundle-visualizer": "^1.0.0"
+    "vite-bundle-visualizer": "^1.0.0",
+    "vite-plugin-svgr": "^4.2.0"
   },
   "directories": {
     "test": "test"

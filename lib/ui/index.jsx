@@ -9,12 +9,13 @@ import Clone from "lodash/cloneDeep.js";
 import EluvioPlayer from "../player/Player.js";
 import EluvioPlayerParameters, {DefaultParameters} from "../player/PlayerParameters.js";
 import {InitializeResizeObserver, RegisterVisibilityCallback} from "./Observers.js";
+import WebControls from "./WebControls.jsx";
 
 console.log(PlayerStyles);
 
 const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
-  const [size, setSize] = useState({size: "lg", orientation: "landscape"});
+  const [dimensions, setDimensions] = useState({size: "lg", orientation: "landscape"});
   const [errorMessage, setErrorMessage] = useState(undefined);
   const [playbackStarted, setPlaybackStarted] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -56,7 +57,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
     setPlayer(newPlayer);
 
     // Watch element to keep track of size
-    InitializeResizeObserver({target, setSize});
+    InitializeResizeObserver({target, setDimensions});
     RegisterVisibilityCallback({player: newPlayer});
 
     initCallback(newPlayer);
@@ -75,7 +76,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   return (
     <div
       style={{backgroundColor: parameters.playerOptions.backgroundColor || "transparent"}}
-      className={[PlayerStyles["player-container"], PlayerStyles[`size-${size.size}`], PlayerStyles[`orientation-${size.orientation}`]].join(" ")}
+      className={[PlayerStyles["player-container"], PlayerStyles[`size-${dimensions.size}`], PlayerStyles[`orientation-${dimensions.orientation}`]].join(" ")}
     >
       <video
         playsInline
@@ -93,6 +94,11 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
         !errorMessage ? null :
           <div className={PlayerStyles["error-message"]}>{ errorMessage }</div>
       }
+      {
+        player && parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB ?
+          <WebControls player={player} dimensions={dimensions} className={PlayerStyles.controls} /> :
+          null
+      }
     </div>
   );
 };
@@ -105,6 +111,10 @@ const Initialize = (target, parameters) => {
     Clone(DefaultParameters),
     Clone(parameters)
   );
+
+  if(parameters.playerOptions && parameters.playerOptions.backgroundColor) {
+    target.style.backgroundColor = parameters.playerOptions.backgroundColor;
+  }
 
   return new Promise(resolve => {
     const root = ReactDOM.createRoot(target);
