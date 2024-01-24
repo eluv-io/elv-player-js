@@ -1,3 +1,13 @@
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@mixin fade-in($duration: 0.25s, $animation: ease) {
+  animation: $duration fadein $animation;
+}
+
+
 .container {
   width: 100%;
   max-width: 100%;
@@ -16,14 +26,19 @@
   --color-progress-indicator: #97b7e3;
   --color-progress-volume: #fff;
 
+  --color-menu-background: rgba(255, 255, 255, 0.05);
+  --color-menu-button-active: rgba(255, 255, 255, 0.1);
+
   :global(.focus-visible) {
     outline: 1px solid var(--color-highlight) !important;
   }
 }
 
+// Seek Bar
+
 .progress-container {
   width: 100%;
-  height: var(--progress-height-expanded);
+  height: calc(var(--progress-height-expanded) + 10px);
   position: relative;
   transition: height 0.25s ease;
 
@@ -34,8 +49,6 @@
   &:hover,
   &:focus-visible,
   &:has(:focus-visible) {
-    height: var(--progress-height-expanded);
-
     .progress-playhead,
     .progress-buffer,
     .progress-input {
@@ -61,10 +74,9 @@
   width: 100%;
   position: absolute;
   left: 0;
-  top: 0;
+  bottom: 5px;
   height: var(--progress-height);
   overflow: hidden;
-
 }
 
 .progress-playhead {
@@ -137,32 +149,35 @@
   }
 }
 
+// Controls
+
 .controls {
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 10px 15px 15px;
-  color: #ffffff;
+  padding: 8px 15px 12px;
+  color: #fff;
   height: 50px;
-
-  button {
-    height: 100%;
-    width: auto;
-    padding: 3px;
-
-    svg {
-      height: 100%;
-      width: 100%;
-    }
-  }
 
   .play-pause-button {
     padding: 0;
   }
 }
 
+.icon-button {
+  height: 100%;
+  width: auto;
+  padding: 5px;
+
+  svg {
+    height: 100%;
+    width: 100%;
+  }
+}
+
 .time {
   font-size: 14px;
+  user-select: none;
 }
 
 .volume-controls {
@@ -256,6 +271,40 @@
 
 .spacer {
   flex-grow: 1;
+}
+
+// Menus
+
+.menu-control-container {
+  position: relative;
+}
+
+.menu {
+  @include fade-in;
+  position: absolute;
+  bottom: calc(100% + var(--progress-height-expanded) + 7px);
+  background: var(--color-menu-background);
+  padding: 10px 0;
+  border-radius: 5px;
+  right: 10px;
+  width: max-content;
+  min-width: 175px;
+
+  .menu-option {
+    // Needs more specificity to override reset
+    text-align: left;
+  }
+}
+
+.menu-option {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--color-menu-button-active);
+  }
 }
 
 // Player size modifications
