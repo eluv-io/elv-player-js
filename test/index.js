@@ -16,8 +16,9 @@ const Initialize = async () => {
   });
 
   const versionHash = await client.LatestVersionHash({versionHash: "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo"});
+  const authorizationToken = "";
   //const versionHash = "hq__2YAGWTsaw6FDv9S6QPwQ1VHTDVgctwDKXkC5qD4pCgJjJAidifpZ3ccxcGp7XLeyzmHxEakfXq";
-  //const authorizationToken = "acspjcEFQEjRDhi91C3cduPUpZp7mgL1DhDo2eXPu8WCrya8jQ2TcXHtc36idmi8rW8u1GG2KXKRo7QEmmRorzUmPud79RobBqJPbjJefu2CvY4bKWvn6E3GF7uz1dJZV6eqnyeQa8WpT1r3pffoKcBtBzWkyCs5kJYuPjyWh7ULLFrdvAfaJbSHyGbbbYegET9GnG33upnJGjNKExF2yddJpEHa4jorQ9EcsHfRtJasz66XxhBS2stLAUju3sFAUkf6f1cLAnK8qn95vQdCSyxeL1ogmzjHzu8ZpnxiLGcLzZnP";
+  //const authorizationToken = "acspjcNbtdyye6xKaWZNQ8cjwiUtSUw41PiVe13vtRJpXDMH1VC4df6stQAntXJpiWERGExKtRdrBwiBzULxTtPDEsFyUFP7iWCEkXyE5e8jFhsfdhKtAzB4eJmHPVWFgDCMYqPYHkiNB9jSVo6r8cwcAegb46yNPzozR3rPpXXbMY9LG2txJY7iAu8doNCsekSxjMoBjwZfQ2RjcPYm9tqPWCZ9P8ueFQMkx7dCJMcP9cqXJYZSdta76oQk9RaeyGpphGuzEHUbL139xeiPx33A8bmX84vpqpjDX9JKoqF34i";
 
   window.player = await InitializeEluvioPlayer(
     document.getElementById("player-target"),
@@ -30,7 +31,7 @@ const Initialize = async () => {
         //drms: ["clear"],
         playoutParameters: {
           versionHash,
-          //authorizationToken
+          authorizationToken
         }
       },
       playerOptions: {

@@ -17,6 +17,7 @@
   bottom: 0;
 
   --color-highlight: #3784eb;
+  --color-highlight-text: #5a95e5;
 
   --progress-height: 3px;
   --progress-height-expanded: 10px;
@@ -26,8 +27,10 @@
   --color-progress-indicator: #97b7e3;
   --color-progress-volume: #fff;
 
-  --color-menu-background: rgba(255, 255, 255, 0.05);
-  --color-menu-button-active: rgba(255, 255, 255, 0.1);
+  --color-menu-background: rgba(0, 0, 0, 0.75);
+  --color-menu-button-active: rgba(255, 255, 255, 0.05);
+  --color-menu-button-focused: rgba(255, 255, 255, 0.1);
+  --color-menu-border: rgba(255, 255, 255, 0.1);
 
   :global(.focus-visible) {
     outline: 1px solid var(--color-highlight) !important;
@@ -57,12 +60,10 @@
 
     ::-webkit-slider-thumb {
       height: var(--progress-height-expanded);
-      width: var(--progress-height-expanded);
     }
 
     ::-moz-range-thumb {
       height: var(--progress-height-expanded);
-      width: var(--progress-height-expanded);
     }
   }
 }
@@ -116,10 +117,6 @@
   appearance: none;
   cursor: pointer;
 
-  &:focus {
-    //outline: none;
-  }
-
   &::-webkit-slider-runnable-track {
     background: transparent;
   }
@@ -127,7 +124,7 @@
   &::-webkit-slider-thumb {
     height: var(--progress-height);
     width: var(--progress-height);
-    border-radius: 100%;
+    border-radius: 5px;
     background-color: var(--color-progress-indicator);
     -webkit-appearance: none;
     border: 0;
@@ -141,7 +138,7 @@
   &::-moz-range-thumb {
     height: var(--progress-height);
     width: var(--progress-height);
-    border-radius: 100%;
+    border-radius: 5px;
     background-color: var(--color-progress-indicator);
     appearance: none;
     border: 0;
@@ -168,6 +165,8 @@
   height: 100%;
   width: auto;
   padding: 5px;
+  display: flex;
+  align-items: center;
 
   svg {
     height: 100%;
@@ -204,10 +203,6 @@
   width: 0;
   display: flex;
   align-items: center;
-
-  &:focus-within {
-    outline: 1px solid var(--color-highlight);
-  }
 }
 
 .volume-input,
@@ -239,11 +234,10 @@
   width: 100%;
   appearance: none;
   cursor: pointer;
-  //height: var(--progress-height-expanded);
   height: 100%;
 
-  &:focus {
-    outline: none;
+  &:focus-visible {
+    border: 1px solid var(--color-highlight);
   }
 
   &::-webkit-slider-runnable-track {
@@ -255,6 +249,7 @@
     width: 0;
     border: 0;
     background: transparent;
+    appearance: none;
   }
 
   &::-moz-range-track {
@@ -280,15 +275,16 @@
 }
 
 .menu {
-  @include fade-in;
+  @include fade-in(0.25s, ease-out);
   position: absolute;
-  bottom: calc(100% + var(--progress-height-expanded) + 7px);
+  bottom: calc(100% + var(--progress-height-expanded) + 10px);
   background: var(--color-menu-background);
-  padding: 10px 0;
+  //padding: 10px 0;
   border-radius: 5px;
-  right: 10px;
+  right: -10px;
   width: max-content;
-  min-width: 175px;
+  min-width: 250px;
+  overflow: hidden;
 
   .menu-option {
     // Needs more specificity to override reset
@@ -301,9 +297,32 @@
   width: 100%;
   padding: 10px 20px;
 
+  &.menu-option-active {
+    background: var(--color-menu-button-active);
+    color: var(--color-highlight-text);
+  }
+
+  &.menu-option-back {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--color-menu-border);
+    padding-bottom: 10px;
+  }
+
+  .menu-option-back-icon {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      height: 10px;
+    }
+  }
+
   &:hover,
   &:focus-visible {
-    background: var(--color-menu-button-active);
+    background: var(--color-menu-button-focused);
   }
 }
 

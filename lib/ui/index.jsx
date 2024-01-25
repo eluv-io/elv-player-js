@@ -56,6 +56,9 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
 
     setPlayer(newPlayer);
 
+    // TODO: Remove
+    window.player = newPlayer;
+
     // Watch element to keep track of size
     InitializeResizeObserver({target, setDimensions});
     RegisterVisibilityCallback({player: newPlayer});

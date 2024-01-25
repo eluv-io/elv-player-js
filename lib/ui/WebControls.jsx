@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {createRef, useEffect, useRef, useState} from "react";
 import ControlStyles from "../static/stylesheets/controls-web.module.scss";
 import * as Icons from "../static/icons/Icons.js";
-import {ObserveVideo} from "./Observers.js";
+import {ObserveVideo, ObserveVideoBuffer, ObserveVideoTime} from "./Observers.js";
+import "focus-visible";
 
 // TODO: Move stuff to general components class
 const IconButton = ({icon, ...props}) => {
@@ -28,87 +29,202 @@ const Time = (time, total) => {
   return string;
 };
 
-const SettingsMenu = ({player}) => {
-  const [setting, setSetting] = useState(undefined);
-  const [options, setOptions] = useState(undefined);
+const SeekBar = ({player, videoState}) => {
+  const [currentTime, setCurrentTime] = useState(player.video.currentTime);
+  const [bufferFraction, setBufferFraction] = useState(0);
 
   useEffect(() => {
-    console.log("Updating options")
-    setOptions({
-      qualityLevels: player.controls.GetQualityLevels(),
-      audioTracks: player.controls.GetAudioTracks(),
-      textTracks: player.controls.GetTextTracks(),
-      playerProfiles: player.controls.GetPlayerProfiles()
+    const RemoveTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 60});
+    const RemoveBufferObserver = ObserveVideoBuffer({video: player.video, setBufferFraction});
+
+    return () => {
+      RemoveTimeObserver();
+      RemoveBufferObserver();
+    };
+  }, []);
+
+  return (
+    <div className={ControlStyles["progress-container"]}>
+      <progress
+        max={1}
+        value={bufferFraction}
+        className={ControlStyles["progress-buffer"]}
+      />
+      <progress
+        max={1}
+        value={currentTime / videoState.duration || 0}
+        className={ControlStyles["progress-playhead"]}
+      />
+      <input
+        aria-label="Seek slider"
+        type="range"
+        min={0}
+        max={1}
+        step={0.00001}
+        value={currentTime / videoState.duration || 0}
+        onChange={event => player.controls.Seek({fraction: event.currentTarget.value})}
+        className={ControlStyles["progress-input"]}
+      />
+    </div>
+  );
+};
+
+const TimeIndicator = ({player, videoState}) => {
+  const [currentTime, setCurrentTime] = useState(player.video.currentTime);
+
+  useEffect(() => {
+    const RemoveObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 10});
+
+    return () => RemoveObserver();
+  }, []);
+
+  return (
+    <div className={ControlStyles["time"]}>
+      { Time(currentTime, videoState.duration) } / { Time(videoState.duration, videoState.duration) }
+    </div>
+  );
+};
+
+const SettingsMenu = ({player, Hide}) => {
+  const [activeMenu, setActiveMenu] = useState(undefined);
+  const [options, setOptions] = useState(undefined);
+  const menuRef = createRef();
+
+  useEffect(() => {
+    const UpdateSettings = () => setOptions({
+      quality: player.controls.GetQualityLevels(),
+      audio: player.controls.GetAudioTracks(),
+      text: player.controls.GetTextTracks(),
+      profile: player.controls.GetPlayerProfiles(),
+      rate: player.controls.GetPlaybackRates()
     });
-  }, [player.__updateIndex]);
+
+    UpdateSettings();
+
+    player.__AddSettingsListener(UpdateSettings);
+
+    return () => player.__RemoveSettingsListener(UpdateSettings);
+  }, []);
+
+  useEffect(() => {
+    if(!menuRef || !menuRef.current) { return; }
+
+    const menu = menuRef.current;
+    const onClickOutside = event => {
+      if(!menu.contains(event.target)) {
+        Hide();
+      }
+    };
+
+    document.body.addEventListener("click", onClickOutside);
+
+    return () => {
+      document.body.removeEventListener("click", onClickOutside);
+    };
+  }, [menuRef, menuRef?.current]);
 
   if(!options) { return null; }
 
-  console.log(options);
+  // Delay firing of submenu change until after click outside handler has been called
+  const SetSubmenu = setting => setTimeout(() => setActiveMenu(setting));
+
+  const settings = {
+    quality: {
+      label: "Quality",
+      Update: index => player.controls.SetQualityLevel(index)
+    },
+    audio: {
+      label: "Audio",
+      Update: index => player.controls.SetAudioTrack(index)
+    },
+    text: {
+      label: "Subtitles",
+      Update: index => player.controls.SetTextTrack(index)
+    },
+    profile: {
+      label: "Player Profile",
+      Update: index => player.controls.SetPlayerProfile(index)
+    },
+    rate: {
+      label: "Playback Rate",
+      Update: index => player.controls.SetPlaybackRate(index)
+    }
+  };
+
+  if(activeMenu) {
+    return (
+      <div className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
+        <button
+          onClick={() => SetSubmenu(undefined)}
+          className={`${ControlStyles["menu-option"]} ${ControlStyles["menu-option-back"]}`}
+        >
+          <div dangerouslySetInnerHTML={{__html: Icons.LeftArrowIcon}} className={ControlStyles["menu-option-back-icon"]} />
+          <div>{ settings[activeMenu].label }</div>
+        </button>
+        {
+          options[activeMenu].options.map(option =>
+            <button
+              key={`option-${option.index}`}
+              onClick={() => {
+                settings[activeMenu].Update(option.index);
+                SetSubmenu(undefined);
+              }}
+              className={`${ControlStyles["menu-option"]} ${option.active ? ControlStyles["menu-option-active"] : ""}`}
+            >
+              { option.label || "" }
+            </button>
+          )
+        }
+      </div>
+    );
+  }
+
   return (
-    <div className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`}>
-      <button onClick={() => setSetting("quality")} className={ControlStyles["menu-option"]}>
-        { options.qualityLevels.active.activeLabel }
+    <div className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
+      <button onClick={() => SetSubmenu("quality")} className={ControlStyles["menu-option"]}>
+        { `${settings.quality.label}: ${options.quality.active?.activeLabel || ""}` }
       </button>
       {
-        options.audioTracks.options.length <= 1 ? null :
-          <button onClick={() => setSetting("audio")} className={ControlStyles["menu-option"]}>
-            { options.audioTracks.active.activeLabel }
+        options.audio.options.length <= 1 ? null :
+          <button onClick={() => SetSubmenu("audio")} className={ControlStyles["menu-option"]}>
+            { `${settings.audio.label}: ${options.audio.active?.label || ""}` }
           </button>
       }
       {
-        options.textTracks.options.length <= 1 ? null :
-          <button onClick={() => setSetting("text")} className={ControlStyles["menu-option"]}>
-            { options.textTracks.active.activeLabel }
+        options.text.options.length <= 1 ? null :
+          <button onClick={() => SetSubmenu("text")} className={ControlStyles["menu-option"]}>
+            { `${settings.text.label}: ${options.text.active?.label || ""}` }
           </button>
       }
       {
-        options.playerProfiles.options.length === 0 ? null :
-          <button onClick={() => setSetting("profile")} className={ControlStyles["menu-option"]}>
-            {options.playerProfiles.active.activeLabel}
+        options.profile.options.length === 0 ? null :
+          <button onClick={() => SetSubmenu("profile")} className={ControlStyles["menu-option"]}>
+            { `${settings.profile.label}: ${options.profile.active?.label || ""}` }
           </button>
       }
+      <button onClick={() => SetSubmenu("rate")} className={ControlStyles["menu-option"]}>
+        { `${settings.rate.label}: ${options.rate.active?.label || "" }` }
+      </button>
     </div>
   );
 };
 
 const WebControls = ({player, dimensions, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
-  const [currentTime, setCurrentTime] = useState(player.video.currentTime);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
 
   useEffect(() => {
-    const RemoveObserver = ObserveVideo({target: player.target, video: player.video, setVideoState, setCurrentTime});
+    const RemoveObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
 
     return () => RemoveObserver();
   }, []);
 
   if(!videoState) { return null; }
 
+  console.log("render")
   return (
     <div className={`${className} ${ControlStyles["container"]} ${ControlStyles[`size-${dimensions.size}`] || ""} ${ControlStyles[`orientation-${dimensions.orientation}`] || ""}`}>
-      <div className={ControlStyles["progress-container"]}>
-        <progress
-          max={1}
-          value={videoState.bufferFraction}
-          className={ControlStyles["progress-buffer"]}
-        />
-        <progress
-          max={1}
-          value={currentTime / videoState.duration || 0}
-          className={ControlStyles["progress-playhead"]}
-        />
-        <input
-          aria-label="Seek slider"
-          type="range"
-          min={0}
-          max={1}
-          step={0.00001}
-          value={currentTime / videoState.duration || 0}
-          onChange={event => player.controls.Seek({fraction: event.currentTarget.value})}
-          className={ControlStyles["progress-input"]}
-        />
-      </div>
+      <SeekBar player={player} videoState={videoState} />
       <div className={ControlStyles["controls"]}>
         <IconButton
           aria-label={videoState.playing ? "Pause" : "Play"}
@@ -141,9 +257,7 @@ const WebControls = ({player, dimensions, className=""}) => {
             />
           </div>
         </div>
-        <div className={ControlStyles["time"]}>
-          { Time(currentTime, videoState.duration) } / { Time(videoState.duration, videoState.duration) }
-        </div>
+        <TimeIndicator player={player} videoState={videoState} />
         <div className={ControlStyles["spacer"]} />
         <div className={ControlStyles["menu-control-container"]}>
           <IconButton
@@ -153,7 +267,7 @@ const WebControls = ({player, dimensions, className=""}) => {
           />
           {
             !showSettingsMenu ? null :
-              <SettingsMenu player={player} />
+              <SettingsMenu player={player} Hide={() => setShowSettingsMenu(false)} />
           }
         </div>
         <IconButton
