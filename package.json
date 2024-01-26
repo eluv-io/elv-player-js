@@ -16,9 +16,9 @@
     "lint": "npm run fix-scss ; npm run lint-scss ; npm run fix-js",
     "lint-show": "npm run lint-scss ; npm run lint-js",
     "lint-js": "eslint \"lib/**/*.js\"",
-    "lint-scss": "./node_modules/sass-lint/bin/sass-lint.js -c .scss-lint.yml -v -q",
+    "lint-scss": "npx stylelint \"lib/**/*.css\" \"lib/**/*.module.scss\"",
     "fix-js": "npm run lint-js -- --fix",
-    "fix-scss": "./node_modules/sass-lint-auto-fix/dist/index.js"
+    "fix-scss": "npx stylelint \"lib/**/*.css\" \"lib/**/*.module.scss\" --fix"
   },
   "pre-commit": {
     "run": [
@@ -51,10 +51,9 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^5.16.0",
     "eslint-plugin-react": "^7.12.4",
-    "sass": "^1.69.2",
-    "sass-lint": "^1.13.1",
-    "sass-lint-auto-fix": "^0.21.0",
-    "sass-loader": "^13.3.2",
+    "stylelint": "^16.2.0",
+    "stylelint-config-standard": "^36.0.0",
+    "stylelint-scss": "^6.1.0",
     "vite": "^5.0.11",
     "vite-bundle-visualizer": "^1.0.0",
     "vite-plugin-svgr": "^4.2.0"

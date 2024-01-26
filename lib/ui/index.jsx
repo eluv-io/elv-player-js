@@ -1,14 +1,14 @@
 import ResetStyle from "../static/stylesheets/reset.module.scss";
 import PlayerStyles from "../static/stylesheets/player.module.scss";
 
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import ReactDOM from "react-dom/client";
 import MergeWith from "lodash/mergeWith.js";
 import Clone from "lodash/cloneDeep.js";
 
 import EluvioPlayer from "../player/Player.js";
 import EluvioPlayerParameters, {DefaultParameters} from "../player/PlayerParameters.js";
-import {InitializeResizeObserver, RegisterVisibilityCallback} from "./Observers.js";
+import {ObserveResize, ObserveVisibility} from "./Observers.js";
 import WebControls from "./WebControls.jsx";
 
 console.log(PlayerStyles);
@@ -35,13 +35,10 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
       return;
     }
 
-    console.log("INITIALIZE PLAYER")
-    // Destroy existing player, if present
-    player && player.__DestroyPlayer();
+    setPlaybackStarted(false);
 
-    videoRef.current.addEventListener("play", () => {
-      setPlaybackStarted(true);
-    });
+    console.log("INITIALIZE PLAYER")
+    videoRef.current.addEventListener("play", setPlaybackStarted);
 
     const newPlayer = new EluvioPlayer({
       target,
@@ -62,10 +59,19 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
     window.player = newPlayer;
 
     // Watch element to keep track of size
-    InitializeResizeObserver({target, setSize, setOrientation});
-    RegisterVisibilityCallback({player: newPlayer});
+    const resizeObserver = ObserveResize({target, setSize, setOrientation});
+
+    //
+    const intersectionObserver = ObserveVisibility({player: newPlayer});
 
     initCallback(newPlayer);
+
+    return () => {
+      videoRef && videoRef.current && videoRef.current.removeEventListener("play", setPlaybackStarted);
+      resizeObserver && resizeObserver.disconnect();
+      intersectionObserver && intersectionObserver.disconnect();
+      newPlayer && newPlayer.__DestroyPlayer();
+    };
   }, [videoRef, mounted]);
 
   useEffect(() => {
@@ -103,7 +109,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
       }
       {
         player && parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB ?
-          <WebControls player={player} dimensions={{size, orientation}} className={PlayerStyles.controls} /> :
+          <WebControls player={player} dimensions={{size, orientation}} playbackStarted={!!playbackStarted} className={PlayerStyles.controls} /> :
           null
       }
     </div>

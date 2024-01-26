@@ -1,5 +1,6 @@
 @keyframes fadein {
   from { opacity: 0; }
+
   to { opacity: 1; }
 }
 
@@ -7,11 +8,20 @@
   animation: $duration fadein $animation;
 }
 
-
 .container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.controls-container {
   width: 100%;
   max-width: 100%;
-  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  background: linear-gradient(transparent, rgba(0,0,0,80%));
   position: absolute;
   padding: 0 5px;
   bottom: 0;
@@ -21,25 +31,50 @@
 
   --progress-height: 3px;
   --progress-height-expanded: 10px;
-  --color-progress-background: rgba(255, 255, 255, 0.1);
-  --color-progress-buffer: rgba(255, 255, 255, 0.1);
+  --color-progress-background: rgba(255, 255, 255, 10%);
+  --color-progress-buffer: rgba(255, 255, 255, 10%);
   --color-progress-active: var(--color-highlight);
   --color-progress-indicator: #97b7e3;
   --color-progress-volume: #fff;
 
-  --color-menu-background: rgba(0, 0, 0, 0.75);
-  --color-menu-button-active: rgba(255, 255, 255, 0.05);
-  --color-menu-button-focused: rgba(255, 255, 255, 0.1);
-  --color-menu-border: rgba(255, 255, 255, 0.1);
+  --color-menu-background: rgba(0, 0, 0, 75%);
+  --color-menu-button-active: rgba(255, 255, 255, 5%);
+  --color-menu-button-focused: rgba(255, 255, 255, 10%);
+  --color-menu-border: rgba(255, 255, 255, 10%);
 
   :global(.focus-visible) {
     outline: 1px solid var(--color-highlight) !important;
   }
 }
 
-// Seek Bar
+/* Title */
 
-.progress-container {
+.title-container {
+  background: linear-gradient(rgba(0, 0, 0, 50%) 75%, transparent);
+  color: #fff;
+  display: grid;
+  gap: 5px;
+  padding: 15px 15px 20px;
+  position: absolute;
+  top: 0;
+  user-select: none;
+  width: 100%;
+  z-index: 2;
+}
+
+.title {
+  font-size: 20px;
+  padding-right: 100px;
+}
+
+.description {
+  font-size: 12px;
+  padding-right: 100px;
+}
+
+/* Seek Bar */
+
+.seek-container {
   width: 100%;
   height: calc(var(--progress-height-expanded) + 10px);
   position: relative;
@@ -53,9 +88,9 @@
   &:active,
   &:focus-visible,
   &:has(:focus-visible) {
-    .progress-playhead,
-    .progress-buffer,
-    .progress-input {
+    .seek-playhead,
+    .seek-buffer,
+    .seek-input {
       height: var(--progress-height-expanded);
     }
 
@@ -69,9 +104,9 @@
   }
 }
 
-.progress-playhead,
-.progress-buffer,
-.progress-input {
+.seek-playhead,
+.seek-buffer,
+.seek-input {
   border-radius: 10px;
   width: 100%;
   position: absolute;
@@ -81,7 +116,7 @@
   overflow: hidden;
 }
 
-.progress-playhead {
+.seek-playhead {
   background: transparent;
 
   &::-webkit-progress-bar {
@@ -97,7 +132,7 @@
   }
 }
 
-.progress-buffer {
+.seek-buffer {
   background: var(--color-progress-background);
 
   &::-webkit-progress-bar {
@@ -113,7 +148,7 @@
   }
 }
 
-.progress-input {
+.seek-input {
   width: 100%;
   appearance: none;
   cursor: pointer;
@@ -127,7 +162,7 @@
     width: var(--progress-height);
     border-radius: 5px;
     background-color: var(--color-progress-indicator);
-    -webkit-appearance: none;
+    appearance: none;
     border: 0;
     transition: height 0.25s ease, width 0.25s ease;
   }
@@ -147,7 +182,7 @@
   }
 }
 
-// Controls
+/* Controls */
 
 .controls {
   display: flex;
@@ -178,6 +213,10 @@
   &-active {
     color: var(--color-highlight-text);
   }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 
 .time {
@@ -192,15 +231,18 @@
 
   &:hover,
   &:focus-visible,
-  &:focus,
-  &:active,
-  &:has(:focus-visible),
-  &:has(:focus),
-  &:has(:active) {
+  &:has(:focus-visible) {
     .collection-button-text {
       width: 200px;
       max-width: 200px;
       margin-left: 5px !important;
+      transition: width 0.25s 0.5s ease, margin 0.25s 0.5s ease;
+    }
+  }
+  
+  &--loading {
+    .collection-button-text {
+      display: none;
     }
   }
 }
@@ -307,7 +349,7 @@
   flex-grow: 1;
 }
 
-// Menus
+/* Menus */
 
 .menu-control-container {
   position: relative;
@@ -315,21 +357,23 @@
 
 .menu {
   @include fade-in(0.25s, ease-out);
+
   position: absolute;
   bottom: calc(100% + var(--progress-height-expanded) + 10px);
   background: var(--color-menu-background);
-  //padding: 10px 0;
   border-radius: 5px;
   right: -10px;
   width: max-content;
   min-width: 250px;
   overflow-y: auto;
-  // TODO: Need to look at actual player height - set in css variable?
+
+  /* TODO: Need to look at actual player height - set in css variable? */
+  /* stylelint-disable-next-line function-name-case */
   max-height: MIN(700px, 80vh);
   max-width: 100vh;
 
   .menu-option {
-    // Needs more specificity to override reset
+    /* Needs more specificity to override reset */
     text-align: left;
   }
 }
@@ -368,7 +412,7 @@
   }
 }
 
-// Player size modifications
+/* Player size modifications */
 
 .size-md {
   .time {
@@ -383,10 +427,18 @@
 }
 
 .size-sm {
+  .controls {
+    gap: 10px;
+  }
+
   .time {
     font-size: 10px;
   }
 
+  .collection-button-text {
+    display: none;
+  }
+  
   .volume-slider {
     display: none;
   }

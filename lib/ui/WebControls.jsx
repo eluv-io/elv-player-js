@@ -1,41 +1,24 @@
-import React, {createRef, useEffect, useRef, useState} from "react";
+import React, {createRef, useEffect, useState} from "react";
 import ControlStyles from "../static/stylesheets/controls-web.module.scss";
 import * as Icons from "../static/icons/Icons.js";
-import {ObserveVideo, ObserveVideoBuffer, ObserveVideoTime} from "./Observers.js";
+import {ObserveVideo, ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import "focus-visible";
+import {SeekSliderKeyDown, Time, VolumeSliderKeydown} from "./Common.jsx";
 
-// TODO: Move stuff to general components class
-const IconButton = ({icon, ...props}) => {
+export const IconButton = ({icon, ...props}) => {
   return (
     <button {...props} className={`${ControlStyles["icon-button"]} ${props.className || ""}`} dangerouslySetInnerHTML={{__html: icon}} />
   );
 };
 
-const Time = (time, total) => {
-  if (isNaN(total) || !isFinite(total) || total === 0) {
-    return "00:00";
-  }
-
-  const useHours = total > 60 * 60;
-
-  const hours = Math.floor(time / 60 / 60);
-  const minutes = Math.floor(time / 60 % 60);
-  const seconds = Math.floor(time % 60);
-
-  let string = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-
-  if(useHours) {
-    string = `${hours.toString()}:${string}`;
-  }
-
-  return string;
-};
-
 const SeekBar = ({player, videoState}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
   const [bufferFraction, setBufferFraction] = useState(0);
+  const [seekKeydownHandler, setSeekKeydownHandler] = useState(undefined);
 
   useEffect(() => {
+    setSeekKeydownHandler(SeekSliderKeyDown(player));
+
     const RemoveTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 60});
     const RemoveBufferObserver = ObserveVideoBuffer({video: player.video, setBufferFraction});
 
@@ -46,16 +29,16 @@ const SeekBar = ({player, videoState}) => {
   }, []);
 
   return (
-    <div className={ControlStyles["progress-container"]}>
+    <div className={ControlStyles["seek-container"]}>
       <progress
         max={1}
         value={bufferFraction}
-        className={ControlStyles["progress-buffer"]}
+        className={ControlStyles["seek-buffer"]}
       />
       <progress
         max={1}
         value={currentTime / videoState.duration || 0}
-        className={ControlStyles["progress-playhead"]}
+        className={ControlStyles["seek-playhead"]}
       />
       <input
         aria-label="Seek slider"
@@ -65,7 +48,8 @@ const SeekBar = ({player, videoState}) => {
         step={0.00001}
         value={currentTime / videoState.duration || 0}
         onInput={event => player.controls.Seek({fraction: event.currentTarget.value})}
-        className={ControlStyles["progress-input"]}
+        onKeyDown={seekKeydownHandler}
+        className={ControlStyles["seek-input"]}
       />
     </div>
   );
@@ -111,18 +95,9 @@ const SettingsMenu = ({player, Hide}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const menu = menuRef.current;
-    const onClickOutside = event => {
-      if(!menu.contains(event.target)) {
-        Hide();
-      }
-    };
+    const RemoveMenuListener = RegisterModal({element: menuRef.current, Hide});
 
-    document.body.addEventListener("click", onClickOutside);
-
-    return () => {
-      document.body.removeEventListener("click", onClickOutside);
-    };
+    return () => RemoveMenuListener();
   }, [menuRef, menuRef?.current]);
 
   if(!options) { return null; }
@@ -155,7 +130,7 @@ const SettingsMenu = ({player, Hide}) => {
 
   if(activeMenu) {
     return (
-      <div className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
+      <div key="submenu" className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
         <button
           onClick={() => SetSubmenu(undefined)}
           className={`${ControlStyles["menu-option"]} ${ControlStyles["menu-option-back"]}`}
@@ -164,9 +139,10 @@ const SettingsMenu = ({player, Hide}) => {
           <div>{ settings[activeMenu].label }</div>
         </button>
         {
-          options[activeMenu].options.map(option =>
+          options[activeMenu].options.map((option, index) =>
             <button
               key={`option-${option.index}`}
+              autoFocus={index === 0}
               onClick={() => {
                 settings[activeMenu].Update(option.index);
                 SetSubmenu(undefined);
@@ -182,8 +158,8 @@ const SettingsMenu = ({player, Hide}) => {
   }
 
   return (
-    <div className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
-      <button onClick={() => SetSubmenu("quality")} className={ControlStyles["menu-option"]}>
+    <div key="menu" className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
+      <button autoFocus onClick={() => SetSubmenu("quality")} className={ControlStyles["menu-option"]}>
         { `${settings.quality.label}: ${options.quality.active?.activeLabel || ""}` }
       </button>
       {
@@ -212,36 +188,35 @@ const SettingsMenu = ({player, Hide}) => {
 };
 
 const CollectionControls = ({player}) => {
-  const [collectionInfo, setCollectionInfo] = useState(undefined);
-
-  useEffect(() => {
-    const UpdateCollectionInfo = () => setCollectionInfo(player.collectionInfo);
-
-    UpdateCollectionInfo();
-
-    player.__AddSettingsListener(UpdateCollectionInfo);
-
-    return () => player.__RemoveSettingsListener(UpdateCollectionInfo);
-  }, []);
+  const collectionInfo = player.controls.GetCollectionInfo();
 
   if(!collectionInfo || collectionInfo.mediaLength === 0) { return null; }
 
   const previousMedia = collectionInfo.content[collectionInfo.mediaIndex - 1];
   const nextMedia = collectionInfo.content[collectionInfo.mediaIndex + 1];
 
+  const playerReady = player.controls.IsReady();
   return (
       <>
         {
           !previousMedia ? null :
-            <div key={`media-previous-${collectionInfo.mediaIndex}`} className={ControlStyles["collection-button-container"]}>
-              <IconButton icon={Icons.PreviousTrackIcon} onClick={() => player.controls.CollectionPlayPrevious()} />
+            <div
+              key={`media-previous-${collectionInfo.mediaIndex}`}
+              aria-label={`Play Previous: ${previousMedia.title}`}
+              className={`${ControlStyles["collection-button-container"]} ${!playerReady ? ControlStyles["collection-button-container--loading"] : ""}`}
+            >
+              <IconButton disabled={!playerReady} icon={Icons.PreviousTrackIcon} onClick={() => player.controls.CollectionPlayPrevious()} />
               <div className={ControlStyles["collection-button-text"]}>{ previousMedia.title }</div>
             </div>
         }
         {
           !nextMedia ? null :
-            <div key={`media-next-${collectionInfo.mediaIndex}`} className={ControlStyles["collection-button-container"]}>
-              <IconButton icon={Icons.NextTrackIcon} onClick={() => player.controls.CollectionPlayNext()} />
+            <div
+              key={`media-next-${collectionInfo.mediaIndex}`}
+              aria-label={`Play Next: ${nextMedia.title}`}
+              className={`${ControlStyles["collection-button-container"]} ${!playerReady ? ControlStyles["collection-button-container--loading"] : ""}`}
+            >
+              <IconButton disabled={!playerReady} icon={Icons.NextTrackIcon} onClick={() => player.controls.CollectionPlayNext()} />
               <div className={ControlStyles["collection-button-text"]}>{ nextMedia.title }</div>
             </div>
         }
@@ -249,75 +224,94 @@ const CollectionControls = ({player}) => {
   );
 };
 
-const WebControls = ({player, dimensions, className=""}) => {
+const WebControls = ({player, dimensions, playbackStarted, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
+  const [settingsKey, setSettingsKey] = useState(Math.random());
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
 
   useEffect(() => {
     const RemoveObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
 
-    return () => RemoveObserver();
+    const onSettingsUpdate = () => setSettingsKey(Math.random());
+    player.__AddSettingsListener(onSettingsUpdate);
+
+    return () => {
+      RemoveObserver();
+      player.__RemoveSettingsListener(onSettingsUpdate);
+    };
   }, []);
 
   if(!videoState) { return null; }
 
+  const { title, description } = (player.controls.GetContentTitle() || {});
+
   console.log("render")
   return (
     <div className={`${className} ${ControlStyles["container"]} ${ControlStyles[`size-${dimensions.size}`] || ""} ${ControlStyles[`orientation-${dimensions.orientation}`] || ""}`}>
-      <SeekBar player={player} videoState={videoState} />
-      <div className={ControlStyles["controls"]}>
-        <IconButton
-          aria-label={videoState.playing ? "Pause" : "Play"}
-          icon={videoState.playing ? Icons.PauseIcon : Icons.PlayIcon}
-          onClick={() => videoState.playing ? player.controls.Pause() : player.controls.Play()}
-          className={ControlStyles["play-pause-button"]}
-        />
-        <CollectionControls player={player} />
-        <div className={ControlStyles["volume-controls"]}>
-          <IconButton
-            key="mute-button"
-            aria-label={videoState.muted ? "Unmute" : "Mute"}
-            icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : videoState.volume < 0.5 ? Icons.VolumeLowIcon : Icons.VolumeHighIcon}
-            onClick={() => player.controls.ToggleMuted(!player.video.muted)}
-            className={ControlStyles["volume-button"]}
-          />
-          <div className={ControlStyles["volume-slider"]}>
-            <progress
-              max={1}
-              value={videoState.muted ? 0 : videoState.volume}
-              className={ControlStyles["volume-progress"]}
-            />
-            <input
-              aria-label="Volume slider"
-              type="range"
-              min={0}
-              max={1}
-              step={0.001}
-              value={videoState.muted ? 0 : videoState.volume}
-              onInput={event => player.controls.SetVolume(event.currentTarget.value)}
-              className={ControlStyles["volume-input"]}
-            />
+      {
+        !title ? null :
+          <div key={`title-${settingsKey}`} className={ControlStyles["title-container"]}>
+            <div className={ControlStyles["title"]}>{title}</div>
+            <div className={ControlStyles["description"]}>{description}</div>
           </div>
-        </div>
-        <TimeIndicator player={player} videoState={videoState} />
-        <div className={ControlStyles["spacer"]} />
-        <div className={ControlStyles["menu-control-container"]}>
+      }
+      <div className={ControlStyles["controls-container"]}>
+        <SeekBar player={player} videoState={videoState}/>
+        <div className={ControlStyles["controls"]}>
           <IconButton
-            aria-label={showSettingsMenu ? "Hide Settings Menu" : "Settings"}
-            icon={Icons.SettingsIcon}
-            onClick={() => setShowSettingsMenu(!showSettingsMenu)}
-            className={showSettingsMenu ? ControlStyles["icon-button-active"] : ""}
+            aria-label={videoState.playing ? "Pause" : "Play"}
+            icon={videoState.playing ? Icons.PauseIcon : Icons.PlayIcon}
+            onClick={() => videoState.playing ? player.controls.Pause() : player.controls.Play()}
+            className={ControlStyles["play-pause-button"]}
           />
-          {
-            !showSettingsMenu ? null :
-              <SettingsMenu player={player} Hide={() => setShowSettingsMenu(false)} />
-          }
+          <CollectionControls player={player} key={`collection-controls-${settingsKey}`} />
+          <div className={ControlStyles["volume-controls"]}>
+            <IconButton
+              key="mute-button"
+              aria-label={videoState.muted ? "Unmute" : "Mute"}
+              icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : videoState.volume < 0.5 ? Icons.VolumeLowIcon : Icons.VolumeHighIcon}
+              onClick={() => player.controls.ToggleMuted(!player.video.muted)}
+              className={ControlStyles["volume-button"]}
+            />
+            <div className={ControlStyles["volume-slider"]}>
+              <progress
+                max={1}
+                value={videoState.muted ? 0 : videoState.volume}
+                className={ControlStyles["volume-progress"]}
+              />
+              <input
+                aria-label="Volume slider"
+                type="range"
+                min={0}
+                max={1}
+                step={0.001}
+                value={videoState.muted ? 0 : videoState.volume}
+                onInput={event => player.controls.SetVolume(event.currentTarget.value)}
+                onKeyDown={VolumeSliderKeydown(player)}
+                className={ControlStyles["volume-input"]}
+              />
+            </div>
+          </div>
+          <TimeIndicator player={player} videoState={videoState}/>
+          <div className={ControlStyles["spacer"]}/>
+          <div className={ControlStyles["menu-control-container"]}>
+            <IconButton
+              aria-label={showSettingsMenu ? "Hide Settings Menu" : "Settings"}
+              icon={Icons.SettingsIcon}
+              onClick={() => setShowSettingsMenu(!showSettingsMenu)}
+              className={showSettingsMenu ? ControlStyles["icon-button-active"] : ""}
+            />
+            {
+              !showSettingsMenu ? null :
+                <SettingsMenu player={player} Hide={() => setShowSettingsMenu(false)}/>
+            }
+          </div>
+          <IconButton
+            aria-label={videoState.fullscreen ? "Exit Fullscreen" : "Fullscreen"}
+            icon={videoState.fullscreen ? Icons.ExitFullscreenIcon : Icons.FullscreenIcon}
+            onClick={() => videoState.fullscreen ? player.controls.ExitFullscreen() : player.controls.Fullscreen()}
+          />
         </div>
-        <IconButton
-          aria-label={videoState.fullscreen ? "Exit Fullscreen" : "Fullscreen"}
-          icon={videoState.fullscreen ? Icons.ExitFullscreenIcon : Icons.FullscreenIcon}
-          onClick={() => videoState.fullscreen ? player.controls.ExitFullscreen() : player.controls.Fullscreen()}
-        />
       </div>
     </div>
   );
