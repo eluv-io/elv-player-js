@@ -185,6 +185,35 @@
   user-select: none;
 }
 
+.collection-button-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  &:hover,
+  &:focus-visible,
+  &:focus,
+  &:active,
+  &:has(:focus-visible),
+  &:has(:focus),
+  &:has(:active) {
+    .collection-button-text {
+      width: 200px;
+      max-width: 200px;
+      margin-left: 5px !important;
+    }
+  }
+}
+
+.collection-button-text {
+  transition: width 0.25s ease, margin 0.25s ease;
+  overflow: hidden;
+  width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
 .volume-controls {
   display: flex;
   align-items: center;

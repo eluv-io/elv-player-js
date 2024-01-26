@@ -1,7 +1,7 @@
 import ResetStyle from "../static/stylesheets/reset.module.scss";
 import PlayerStyles from "../static/stylesheets/player.module.scss";
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import ReactDOM from "react-dom/client";
 import MergeWith from "lodash/mergeWith.js";
 import Clone from "lodash/cloneDeep.js";
@@ -15,7 +15,8 @@ console.log(PlayerStyles);
 
 const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
-  const [dimensions, setDimensions] = useState({size: "lg", orientation: "landscape"});
+  const [size, setSize] = useState("lg");
+  const [orientation, setOrientation] = useState("landscape");
   const [errorMessage, setErrorMessage] = useState(undefined);
   const [playbackStarted, setPlaybackStarted] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -34,6 +35,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
       return;
     }
 
+    console.log("INITIALIZE PLAYER")
     // Destroy existing player, if present
     player && player.__DestroyPlayer();
 
@@ -60,7 +62,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
     window.player = newPlayer;
 
     // Watch element to keep track of size
-    InitializeResizeObserver({target, setDimensions});
+    InitializeResizeObserver({target, setSize, setOrientation});
     RegisterVisibilityCallback({player: newPlayer});
 
     initCallback(newPlayer);
@@ -71,6 +73,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
 
     // Clean up player when unmounting
     return () => {
+      console.log("UNMOUNT")
       player && player.__DestroyPlayer();
       setPlayer(undefined);
     };
@@ -80,7 +83,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   return (
     <div
       style={{backgroundColor: parameters.playerOptions.backgroundColor || "transparent"}}
-      className={[PlayerStyles["player-container"], PlayerStyles[`size-${dimensions.size}`], PlayerStyles[`orientation-${dimensions.orientation}`]].join(" ")}
+      className={[PlayerStyles["player-container"], PlayerStyles[`size-${size}`], PlayerStyles[`orientation-${orientation}`]].join(" ")}
     >
       <video
         playsInline
@@ -100,7 +103,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
       }
       {
         player && parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB ?
-          <WebControls player={player} dimensions={dimensions} className={PlayerStyles.controls} /> :
+          <WebControls player={player} dimensions={{size, orientation}} className={PlayerStyles.controls} /> :
           null
       }
     </div>

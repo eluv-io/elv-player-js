@@ -211,6 +211,44 @@ const SettingsMenu = ({player, Hide}) => {
   );
 };
 
+const CollectionControls = ({player}) => {
+  const [collectionInfo, setCollectionInfo] = useState(undefined);
+
+  useEffect(() => {
+    const UpdateCollectionInfo = () => setCollectionInfo(player.collectionInfo);
+
+    UpdateCollectionInfo();
+
+    player.__AddSettingsListener(UpdateCollectionInfo);
+
+    return () => player.__RemoveSettingsListener(UpdateCollectionInfo);
+  }, []);
+
+  if(!collectionInfo || collectionInfo.mediaLength === 0) { return null; }
+
+  const previousMedia = collectionInfo.content[collectionInfo.mediaIndex - 1];
+  const nextMedia = collectionInfo.content[collectionInfo.mediaIndex + 1];
+
+  return (
+      <>
+        {
+          !previousMedia ? null :
+            <div key={`media-previous-${collectionInfo.mediaIndex}`} className={ControlStyles["collection-button-container"]}>
+              <IconButton icon={Icons.PreviousTrackIcon} onClick={() => player.controls.CollectionPlayPrevious()} />
+              <div className={ControlStyles["collection-button-text"]}>{ previousMedia.title }</div>
+            </div>
+        }
+        {
+          !nextMedia ? null :
+            <div key={`media-next-${collectionInfo.mediaIndex}`} className={ControlStyles["collection-button-container"]}>
+              <IconButton icon={Icons.NextTrackIcon} onClick={() => player.controls.CollectionPlayNext()} />
+              <div className={ControlStyles["collection-button-text"]}>{ nextMedia.title }</div>
+            </div>
+        }
+      </>
+  );
+};
+
 const WebControls = ({player, dimensions, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
@@ -234,6 +272,7 @@ const WebControls = ({player, dimensions, className=""}) => {
           onClick={() => videoState.playing ? player.controls.Pause() : player.controls.Play()}
           className={ControlStyles["play-pause-button"]}
         />
+        <CollectionControls player={player} />
         <div className={ControlStyles["volume-controls"]}>
           <IconButton
             key="mute-button"
