@@ -17,7 +17,7 @@
   bottom: 0;
 
   --color-highlight: #3784eb;
-  --color-highlight-text: #5a95e5;
+  --color-highlight-text: #5e9ff3;
 
   --progress-height: 3px;
   --progress-height-expanded: 10px;
@@ -50,6 +50,7 @@
   }
 
   &:hover,
+  &:active,
   &:focus-visible,
   &:has(:focus-visible) {
     .progress-playhead,
@@ -167,10 +168,15 @@
   padding: 5px;
   display: flex;
   align-items: center;
+  transition: color 0.15s ease;
 
   svg {
     height: 100%;
     width: 100%;
+  }
+
+  &-active {
+    color: var(--color-highlight-text);
   }
 }
 
@@ -186,7 +192,11 @@
 
   &:hover,
   &:focus-visible,
-  &:has(:focus-visible) {
+  &:focus,
+  &:active,
+  &:has(:focus-visible),
+  &:has(:focus),
+  &:has(:active) {
     .volume-slider {
       width: 100px;
       margin-left: 5px !important;
@@ -284,7 +294,10 @@
   right: -10px;
   width: max-content;
   min-width: 250px;
-  overflow: hidden;
+  overflow-y: auto;
+  // TODO: Need to look at actual player height - set in css variable?
+  max-height: MIN(700px, 80vh);
+  max-width: 100vh;
 
   .menu-option {
     // Needs more specificity to override reset
@@ -331,6 +344,12 @@
 .size-md {
   .time {
     font-size: 12px;
+  }
+
+  .menu {
+    max-height: calc(100vh - 100px);
+    width: 90vw;
+    right: -50px;
   }
 }
 

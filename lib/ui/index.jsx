@@ -76,6 +76,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
     };
   }, [playerSet]);
 
+  console.log("player render")
   return (
     <div
       style={{backgroundColor: parameters.playerOptions.backgroundColor || "transparent"}}

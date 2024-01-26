@@ -16,9 +16,9 @@ const Initialize = async () => {
   });
 
   const versionHash = await client.LatestVersionHash({versionHash: "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo"});
-  const authorizationToken = "";
-  //const versionHash = "hq__2YAGWTsaw6FDv9S6QPwQ1VHTDVgctwDKXkC5qD4pCgJjJAidifpZ3ccxcGp7XLeyzmHxEakfXq";
-  //const authorizationToken = "acspjcNbtdyye6xKaWZNQ8cjwiUtSUw41PiVe13vtRJpXDMH1VC4df6stQAntXJpiWERGExKtRdrBwiBzULxTtPDEsFyUFP7iWCEkXyE5e8jFhsfdhKtAzB4eJmHPVWFgDCMYqPYHkiNB9jSVo6r8cwcAegb46yNPzozR3rPpXXbMY9LG2txJY7iAu8doNCsekSxjMoBjwZfQ2RjcPYm9tqPWCZ9P8ueFQMkx7dCJMcP9cqXJYZSdta76oQk9RaeyGpphGuzEHUbL139xeiPx33A8bmX84vpqpjDX9JKoqF34i";
+  //const authorizationToken = "";
+  //const versionHash = "hq__2C97Ma85zRS1pwD1dLk5PEzvuujK7y65hzZbjA2wiVQSL5EjfmGePCRAGv2dPr9rNbokvQit9d";
+  //const authorizationToken = "acspjc3iD2i4Cs6We2wJVfTq88tjHvbovyinfGy1ntKCKA4pTBnJuMdj9ciWxqR53e9HGhmFXo1mNBaKkrnoG1fU21T5Gnct8BAQR2fTvhGb7KcuBTbzADx96A6dTwBG81Sak8ycGZ91A4cRp4fnW82KnTd3cLY9mAXmnEMucxyM8Jng7mj4RCC3bsxWZaH6yJrrot3E61RZUFuauuKLHHGr6tM3ZEZWdpRF3FVqRpLL8WYdkfzCFJkXVtRne5PqyFLvwRDKzJRzjLVUTC56dirA2peH9mnrtoyCn2s54Kc7K34";
 
   window.player = await InitializeEluvioPlayer(
     document.getElementById("player-target"),

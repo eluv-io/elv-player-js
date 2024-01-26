@@ -7,12 +7,14 @@ import "focus-visible";
 // TODO: Move stuff to general components class
 const IconButton = ({icon, ...props}) => {
   return (
-    <button dangerouslySetInnerHTML={{__html: icon}} {...props} className={`${ControlStyles["icon-button"]} ${props.className || ""}`} />
+    <button {...props} className={`${ControlStyles["icon-button"]} ${props.className || ""}`} dangerouslySetInnerHTML={{__html: icon}} />
   );
 };
 
 const Time = (time, total) => {
-  if(isNaN(total) || !isFinite(total) || total === 0) { return "00:00"; }
+  if (isNaN(total) || !isFinite(total) || total === 0) {
+    return "00:00";
+  }
 
   const useHours = total > 60 * 60;
 
@@ -62,7 +64,7 @@ const SeekBar = ({player, videoState}) => {
         max={1}
         step={0.00001}
         value={currentTime / videoState.duration || 0}
-        onChange={event => player.controls.Seek({fraction: event.currentTarget.value})}
+        onInput={event => player.controls.Seek({fraction: event.currentTarget.value})}
         className={ControlStyles["progress-input"]}
       />
     </div>
@@ -234,15 +236,16 @@ const WebControls = ({player, dimensions, className=""}) => {
         />
         <div className={ControlStyles["volume-controls"]}>
           <IconButton
+            key="mute-button"
             aria-label={videoState.muted ? "Unmute" : "Mute"}
-            icon={videoState.muted ? Icons.MutedIcon : videoState.volume < 0.5 ? Icons.VolumeLowIcon : Icons.VolumeHighIcon}
+            icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : videoState.volume < 0.5 ? Icons.VolumeLowIcon : Icons.VolumeHighIcon}
             onClick={() => player.controls.ToggleMuted(!player.video.muted)}
             className={ControlStyles["volume-button"]}
           />
           <div className={ControlStyles["volume-slider"]}>
             <progress
               max={1}
-              value={videoState.volume}
+              value={videoState.muted ? 0 : videoState.volume}
               className={ControlStyles["volume-progress"]}
             />
             <input
@@ -251,8 +254,8 @@ const WebControls = ({player, dimensions, className=""}) => {
               min={0}
               max={1}
               step={0.001}
-              value={videoState.volume}
-              onChange={event => player.controls.SetVolume(event.currentTarget.value)}
+              value={videoState.muted ? 0 : videoState.volume}
+              onInput={event => player.controls.SetVolume(event.currentTarget.value)}
               className={ControlStyles["volume-input"]}
             />
           </div>
@@ -264,6 +267,7 @@ const WebControls = ({player, dimensions, className=""}) => {
             aria-label={showSettingsMenu ? "Hide Settings Menu" : "Settings"}
             icon={Icons.SettingsIcon}
             onClick={() => setShowSettingsMenu(!showSettingsMenu)}
+            className={showSettingsMenu ? ControlStyles["icon-button-active"] : ""}
           />
           {
             !showSettingsMenu ? null :
