@@ -187,6 +187,56 @@ const SettingsMenu = ({player, Hide}) => {
   );
 };
 
+const CollectionMenu = ({player, Hide}) => {
+  const menuRef = createRef();
+  const [collectionInfo, setCollectionInfo] = useState(undefined);
+
+  useEffect(() => {
+    const UpdateCollectionInfo = () => setCollectionInfo(player.controls.GetCollectionInfo());
+
+    UpdateCollectionInfo();
+
+    player.__AddSettingsListener(UpdateCollectionInfo);
+
+    return () => player.__RemoveSettingsListener(UpdateCollectionInfo);
+  }, []);
+
+  useEffect(() => {
+    if(!menuRef || !menuRef.current) { return; }
+
+    const RemoveMenuListener = RegisterModal({element: menuRef.current, Hide});
+
+    return () => RemoveMenuListener();
+  }, [menuRef, menuRef?.current]);
+
+  if(!collectionInfo) { return null; }
+
+  const Select = mediaIndex => {
+    player.controls.CollectionPlay({mediaIndex});
+    Hide();
+  };
+
+  return (
+    <div key="menu" className={`${ControlStyles["menu"]} ${ControlStyles["collection-menu"]}`} ref={menuRef}>
+      <div className={ControlStyles["menu-header"]}>
+        { collectionInfo.title }
+      </div>
+      {
+        collectionInfo.content.map(((item, index) =>
+          <button
+            key={`collection-item-${item.mediaId}`}
+            autoFocus={index === 0}
+            onClick={() => Select(item.mediaIndex)}
+            className={`${ControlStyles["menu-option"]} ${item.active ? ControlStyles["menu-option-active"] : ""}`}
+          >
+            { item.title || item.mediaId }
+          </button>
+        ))
+      }
+    </div>
+  );
+};
+
 const CollectionControls = ({player}) => {
   const collectionInfo = player.controls.GetCollectionInfo();
 
@@ -228,6 +278,7 @@ const WebControls = ({player, dimensions, playbackStarted, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [settingsKey, setSettingsKey] = useState(Math.random());
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+  const [showCollectionMenu, setShowCollectionMenu] = useState(false);
 
   useEffect(() => {
     const RemoveObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
@@ -244,6 +295,7 @@ const WebControls = ({player, dimensions, playbackStarted, className=""}) => {
   if(!videoState) { return null; }
 
   const { title, description } = (player.controls.GetContentTitle() || {});
+  const collectionInfo = player.controls.GetCollectionInfo();
 
   console.log("render")
   return (
@@ -255,6 +307,12 @@ const WebControls = ({player, dimensions, playbackStarted, className=""}) => {
             <div className={ControlStyles["description"]}>{description}</div>
           </div>
       }
+      <IconButton
+        aria-label="Play"
+        icon={Icons.PlayCircleIcon}
+        onClick={() => player.controls.Play()}
+        className={`${ControlStyles["center-play-button"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
+      />
       <div className={ControlStyles["controls-container"]}>
         <SeekBar player={player} videoState={videoState}/>
         <div className={ControlStyles["controls"]}>
@@ -294,6 +352,21 @@ const WebControls = ({player, dimensions, playbackStarted, className=""}) => {
           </div>
           <TimeIndicator player={player} videoState={videoState}/>
           <div className={ControlStyles["spacer"]}/>
+          {
+            !collectionInfo ? null :
+              <div className={ControlStyles["menu-control-container"]}>
+                <IconButton
+                  aria-label={showCollectionMenu ? "Hide Collection Menu" : "Collection Menu"}
+                  icon={Icons.CollectionIcon}
+                  onClick={() => setShowCollectionMenu(!showCollectionMenu)}
+                  className={showCollectionMenu ? ControlStyles["icon-button-active"] : ""}
+                />
+                {
+                  !showCollectionMenu ? null :
+                    <CollectionMenu player={player} Hide={() => setShowCollectionMenu(false)} />
+                }
+              </div>
+          }
           <div className={ControlStyles["menu-control-container"]}>
             <IconButton
               aria-label={showSettingsMenu ? "Hide Settings Menu" : "Settings"}
