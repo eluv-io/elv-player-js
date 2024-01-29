@@ -8,29 +8,6 @@
   to { opacity: 0; }
 }
 
-.icon-button {
-  height: 100%;
-  width: auto;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-  transition: color 0.15s ease;
-  color: var(--color-button);
-
-  svg {
-    height: 100%;
-    width: 100%;
-  }
-
-  &-active {
-    color: var(--color-text-highlight);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-  }
-}
-
 .container {
   position: absolute;
   top: 0;
@@ -73,6 +50,44 @@
   :global(.focus-visible) {
     outline: 1px solid var(--color-highlight) !important;
   }
+
+  &--default-controls {
+    user-select: none;
+    pointer-events: none;
+  }
+}
+
+.autohide {
+  &:not(:has(:focus-visible)) {
+    .title-container,
+    .controls-container--autohide {
+      opacity: 0;
+      user-select: none;
+    }
+  }
+}
+
+.icon-button {
+  height: 100%;
+  width: auto;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+  color: var(--color-button);
+
+  svg {
+    height: 100%;
+    width: 100%;
+  }
+
+  &-active {
+    color: var(--color-text-highlight);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 
 /* Title */
@@ -88,6 +103,10 @@
   user-select: none;
   width: 100%;
   z-index: var(--layer-title);
+  transition: opacity 0.5s ease;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .title {
@@ -105,9 +124,10 @@
   max-width: 100%;
   background: linear-gradient(transparent, rgba(0,0,0,80%));
   position: absolute;
-  padding: 0 5px;
+  padding: 0 10px;
   bottom: 0;
   z-index: var(--layer-controls);
+  transition: opacity 0.5s ease;
 }
 
 .center-play-button {
@@ -128,10 +148,10 @@
   width: 100%;
   height: calc(var(--progress-height-expanded) + 10px);
   position: relative;
-  transition: height 0.25s ease;
+  transition: height 0.25s ease, opacity 0.25s ease;
 
   * {
-    transition: height 0.25s ease, width 0.25s ease;
+    transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease;
   }
 
   &:hover,
@@ -157,7 +177,7 @@
 .seek-playhead,
 .seek-buffer,
 .seek-input {
-  border-radius: 10px;
+  border-radius: 4px;
   width: 100%;
   position: absolute;
   left: 0;
@@ -214,7 +234,7 @@
     background-color: var(--color-seek-indicator);
     appearance: none;
     border: 0;
-    transition: height 0.25s ease, width 0.25s ease;
+    transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease;
   }
 
   &::-moz-range-track {
@@ -228,7 +248,7 @@
     background-color: var(--color-seek-indicator);
     appearance: none;
     border: 0;
-    transition: height 0.25s ease, width 0.25s ease;
+    transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease;
   }
 }
 
@@ -238,7 +258,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 6px 15px 12px;
+  padding: 6px 10px 12px;
   color: #fff;
   height: 50px;
 
@@ -273,7 +293,7 @@
       transition-delay: 0.5s;
     }
   }
-  
+
   &--loading {
     .collection-button-text {
       display: none;
@@ -303,7 +323,7 @@
   &:has(:focus),
   &:has(:active) {
     .volume-slider {
-      width: 100px;
+      width: 80px;
       margin-left: 5px !important;
     }
   }
@@ -337,11 +357,11 @@
   }
 
   &::-webkit-progress-value {
-    background-color: var(--color-volume);
+    background-color: var(--color-volume-active);
   }
 
   &::-moz-progress-bar {
-    background-color: var(--color-volume);
+    background-color: var(--color-volume-active);
   }
 }
 
@@ -381,6 +401,25 @@
 
 .spacer {
   flex-grow: 1;
+}
+
+.floating-volume-toggle {
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+  height: 30px;
+  width: 30px;
+}
+
+.watermark {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 70px;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+  z-index: var(--layer-title);
 }
 
 /* Menus */
@@ -428,6 +467,7 @@
   width: 100%;
   padding: 10px 20px;
   font-size: 14px;
+  border: 1px solid transparent;
 
   &.menu-option-active {
     background: var(--color-menu-button-active);
@@ -453,8 +493,14 @@
   }
 
   &:hover,
-  &:focus-visible {
+  &:focus-visible,
+  .focus-visible {
     background: var(--color-menu-button-focused);
+    outline: 0!important;
+  }
+
+  &:focus-visible {
+    border: 1px solid var(--color-highlight);
   }
 }
 
@@ -479,7 +525,7 @@
   }
 
   .title-container {
-    padding-right: 75px;
+    padding-right: 80px;
   }
 
   .time {
@@ -489,12 +535,16 @@
   .collection-button-text {
     display: none;
   }
-  
+
   .volume-slider {
     display: none;
   }
 
   .menu-header {
     font-size: 16px;
+  }
+
+  .watermark {
+    width: 50px;
   }
 }

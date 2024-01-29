@@ -66,9 +66,10 @@ const Initialize = async () => {
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
         controls: EluvioPlayerParameters.controls.ON,
-        watermark: EluvioPlayerParameters.watermark.OFF,
+        watermark: EluvioPlayerParameters.watermark.ON,
         autoplay: EluvioPlayerParameters.autoplay.OFF,
-        //maxBitrate: 50000,
+        title: EluvioPlayerParameters.title.ON,
+        maxBitrate: 50000,
         debugLogging: true,
         hlsjsOptions: {
           maxBufferLength: 1,

@@ -8,7 +8,7 @@ import Clone from "lodash/cloneDeep.js";
 
 import EluvioPlayer from "../player/Player.js";
 import EluvioPlayerParameters, {DefaultParameters} from "../player/PlayerParameters.js";
-import {ObserveResize, ObserveVisibility} from "./Observers.js";
+import {ObserveInteraction, ObserveResize, ObserveVisibility} from "./Observers.js";
 import WebControls from "./WebControls.jsx";
 
 console.log(PlayerStyles);
@@ -20,6 +20,7 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   const [errorMessage, setErrorMessage] = useState(undefined);
   const [playbackStarted, setPlaybackStarted] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [recentlyInteracted, setRecentlyInteracted] = useState(true);
   const videoRef = useRef();
 
   const playerSet = !!player;
@@ -59,17 +60,31 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
     window.player = newPlayer;
 
     // Watch element to keep track of size
-    const resizeObserver = ObserveResize({target, setSize, setOrientation});
+    const disposeResizeObserver = ObserveResize({target, setSize, setOrientation});
 
     //
-    const intersectionObserver = ObserveVisibility({player: newPlayer});
+    const disposeVisibilityObserver = ObserveVisibility({player: newPlayer});
+    const disposeInteractionObserver = ObserveInteraction({
+      player: newPlayer,
+      onWake: () => {
+        console.log("wake")
+        setRecentlyInteracted(true);
+      },
+      onSleep: () => {
+        console.warn("sleep")
+        setRecentlyInteracted(false);
+      }
+    });
 
     initCallback(newPlayer);
 
     return () => {
       videoRef && videoRef.current && videoRef.current.removeEventListener("play", setPlaybackStarted);
-      resizeObserver && resizeObserver.disconnect();
-      intersectionObserver && intersectionObserver.disconnect();
+
+      disposeResizeObserver && disposeResizeObserver();
+      disposeVisibilityObserver && disposeVisibilityObserver();
+      disposeInteractionObserver && disposeInteractionObserver();
+
       newPlayer && newPlayer.__DestroyPlayer();
     };
   }, [videoRef, mounted]);
@@ -109,7 +124,13 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
       }
       {
         player && parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB ?
-          <WebControls player={player} dimensions={{size, orientation}} playbackStarted={!!playbackStarted} className={PlayerStyles.controls} /> :
+          <WebControls
+            player={player}
+            dimensions={{size, orientation}}
+            playbackStarted={!!playbackStarted}
+            recentlyInteracted={recentlyInteracted}
+            className={PlayerStyles.controls}
+          /> :
           null
       }
     </div>

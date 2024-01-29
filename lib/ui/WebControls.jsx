@@ -4,6 +4,9 @@ import * as Icons from "../static/icons/Icons.js";
 import {ObserveVideo, ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import "focus-visible";
 import {SeekSliderKeyDown, Time, VolumeSliderKeydown} from "./Common.jsx";
+import EluvioPlayerParameters from "../player/PlayerParameters.js";
+
+import EluvioLogo from "../static/images/ELUV.IO white 20 px V2.png";
 
 export const IconButton = ({icon, ...props}) => {
   return (
@@ -97,7 +100,7 @@ const SettingsMenu = ({player, Hide}) => {
 
     const RemoveMenuListener = RegisterModal({element: menuRef.current, Hide});
 
-    return () => RemoveMenuListener();
+    return () => RemoveMenuListener && RemoveMenuListener();
   }, [menuRef, menuRef?.current]);
 
   if(!options) { return null; }
@@ -206,7 +209,7 @@ const CollectionMenu = ({player, Hide}) => {
 
     const RemoveMenuListener = RegisterModal({element: menuRef.current, Hide});
 
-    return () => RemoveMenuListener();
+    return () => RemoveMenuListener && RemoveMenuListener();
   }, [menuRef, menuRef?.current]);
 
   if(!collectionInfo) { return null; }
@@ -274,7 +277,7 @@ const CollectionControls = ({player}) => {
   );
 };
 
-const WebControls = ({player, dimensions, playbackStarted, className=""}) => {
+const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [settingsKey, setSettingsKey] = useState(Math.random());
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
@@ -298,94 +301,136 @@ const WebControls = ({player, dimensions, playbackStarted, className=""}) => {
   const collectionInfo = player.controls.GetCollectionInfo();
 
   console.log("render")
+  console.log(title);
+
   return (
-    <div className={`${className} ${ControlStyles["container"]} ${ControlStyles[`size-${dimensions.size}`] || ""} ${ControlStyles[`orientation-${dimensions.orientation}`] || ""}`}>
+    <div
+      className={[
+        className,
+        ControlStyles["container"],
+        ControlStyles[`size-${dimensions.size}`] || "",
+        ControlStyles[`orientation-${dimensions.orientation}`] || "",
+        recentlyInteracted || !playbackStarted || showSettingsMenu || showCollectionMenu ? "" : ControlStyles["autohide"],
+        player.playerOptions.controls !== EluvioPlayerParameters.controls.DEFAULT ? "" : ControlStyles["container--default-controls"]
+      ].join(" ")}
+    >
       {
-        !title ? null :
+        // Title and description
+        !title || player.playerOptions.title === EluvioPlayerParameters.title.OFF ? null :
           <div key={`title-${settingsKey}`} className={ControlStyles["title-container"]}>
             <div className={ControlStyles["title"]}>{title}</div>
             <div className={ControlStyles["description"]}>{description}</div>
           </div>
       }
-      <IconButton
-        aria-label="Play"
-        icon={Icons.PlayCircleIcon}
-        onClick={() => player.controls.Play()}
-        className={`${ControlStyles["center-play-button"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
-      />
-      <div className={ControlStyles["controls-container"]}>
-        <SeekBar player={player} videoState={videoState}/>
-        <div className={ControlStyles["controls"]}>
-          <IconButton
-            aria-label={videoState.playing ? "Pause" : "Play"}
-            icon={videoState.playing ? Icons.PauseIcon : Icons.PlayIcon}
-            onClick={() => videoState.playing ? player.controls.Pause() : player.controls.Play()}
-            className={ControlStyles["play-pause-button"]}
-          />
-          <CollectionControls player={player} key={`collection-controls-${settingsKey}`} />
-          <div className={ControlStyles["volume-controls"]}>
+      {
+        // Main bottom control bar
+        [
+          EluvioPlayerParameters.controls.DEFAULT,
+          EluvioPlayerParameters.controls.OFF,
+          EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE
+        ].includes(player.playerOptions.controls) ? null :
+          <>
+            <IconButton
+              aria-label="Play"
+              icon={Icons.PlayCircleIcon}
+              onClick={() => player.controls.Play()}
+              className={`${ControlStyles["center-play-button"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
+            />
+            <div className={`${ControlStyles["controls-container"]} ${player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE ? ControlStyles["controls-container--autohide"] : ""}`}>
+              <SeekBar player={player} videoState={videoState}/>
+              <div className={ControlStyles["controls"]}>
+                <IconButton
+                  aria-label={videoState.playing ? "Pause" : "Play"}
+                  icon={videoState.playing ? Icons.PauseIcon : Icons.PlayIcon}
+                  onClick={() => videoState.playing ? player.controls.Pause() : player.controls.Play()}
+                  className={ControlStyles["play-pause-button"]}
+                />
+                <CollectionControls player={player} key={`collection-controls-${settingsKey}`} />
+                <div className={ControlStyles["volume-controls"]}>
+                  <IconButton
+                    key="mute-button"
+                    aria-label={videoState.muted ? "Unmute" : "Mute"}
+                    icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : videoState.volume < 0.5 ? Icons.VolumeLowIcon : Icons.VolumeHighIcon}
+                    onClick={() => player.controls.ToggleMuted(!player.video.muted)}
+                    className={ControlStyles["volume-button"]}
+                  />
+                  <div className={ControlStyles["volume-slider"]}>
+                    <progress
+                      max={1}
+                      value={videoState.muted ? 0 : videoState.volume}
+                      className={ControlStyles["volume-progress"]}
+                    />
+                    <input
+                      aria-label="Volume slider"
+                      type="range"
+                      min={0}
+                      max={1}
+                      step={0.001}
+                      value={videoState.muted ? 0 : videoState.volume}
+                      onInput={event => player.controls.SetVolume(event.currentTarget.value)}
+                      onKeyDown={VolumeSliderKeydown(player)}
+                      className={ControlStyles["volume-input"]}
+                    />
+                  </div>
+                </div>
+                <TimeIndicator player={player} videoState={videoState}/>
+                <div className={ControlStyles["spacer"]}/>
+                {
+                  !collectionInfo ? null :
+                    <div className={ControlStyles["menu-control-container"]}>
+                      <IconButton
+                        aria-label={showCollectionMenu ? "Hide Collection Menu" : "Collection Menu"}
+                        icon={Icons.CollectionIcon}
+                        onClick={() => setShowCollectionMenu(!showCollectionMenu)}
+                        className={showCollectionMenu ? ControlStyles["icon-button-active"] : ""}
+                      />
+                      {
+                        !showCollectionMenu ? null :
+                          <CollectionMenu player={player} Hide={() => setShowCollectionMenu(false)} />
+                      }
+                    </div>
+                }
+                <div className={ControlStyles["menu-control-container"]}>
+                  <IconButton
+                    aria-label={showSettingsMenu ? "Hide Settings Menu" : "Settings"}
+                    icon={Icons.SettingsIcon}
+                    onClick={() => setShowSettingsMenu(!showSettingsMenu)}
+                    className={showSettingsMenu ? ControlStyles["icon-button-active"] : ""}
+                  />
+                  {
+                    !showSettingsMenu ? null :
+                      <SettingsMenu player={player} Hide={() => setShowSettingsMenu(false)}/>
+                  }
+                </div>
+                <IconButton
+                  aria-label={videoState.fullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                  icon={videoState.fullscreen ? Icons.ExitFullscreenIcon : Icons.FullscreenIcon}
+                  onClick={() => videoState.fullscreen ? player.controls.ExitFullscreen() : player.controls.Fullscreen()}
+                />
+              </div>
+            </div>
+          </>
+      }
+      {
+        // Floating volume control for 'off with volume toggle' setting
+        player.playerOptions.controls !== EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE ? null :
+          <div className={ControlStyles["floating-volume-toggle"]}>
             <IconButton
               key="mute-button"
               aria-label={videoState.muted ? "Unmute" : "Mute"}
-              icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : videoState.volume < 0.5 ? Icons.VolumeLowIcon : Icons.VolumeHighIcon}
+              icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : Icons.VolumeHighIcon}
               onClick={() => player.controls.ToggleMuted(!player.video.muted)}
               className={ControlStyles["volume-button"]}
             />
-            <div className={ControlStyles["volume-slider"]}>
-              <progress
-                max={1}
-                value={videoState.muted ? 0 : videoState.volume}
-                className={ControlStyles["volume-progress"]}
-              />
-              <input
-                aria-label="Volume slider"
-                type="range"
-                min={0}
-                max={1}
-                step={0.001}
-                value={videoState.muted ? 0 : videoState.volume}
-                onInput={event => player.controls.SetVolume(event.currentTarget.value)}
-                onKeyDown={VolumeSliderKeydown(player)}
-                className={ControlStyles["volume-input"]}
-              />
-            </div>
           </div>
-          <TimeIndicator player={player} videoState={videoState}/>
-          <div className={ControlStyles["spacer"]}/>
-          {
-            !collectionInfo ? null :
-              <div className={ControlStyles["menu-control-container"]}>
-                <IconButton
-                  aria-label={showCollectionMenu ? "Hide Collection Menu" : "Collection Menu"}
-                  icon={Icons.CollectionIcon}
-                  onClick={() => setShowCollectionMenu(!showCollectionMenu)}
-                  className={showCollectionMenu ? ControlStyles["icon-button-active"] : ""}
-                />
-                {
-                  !showCollectionMenu ? null :
-                    <CollectionMenu player={player} Hide={() => setShowCollectionMenu(false)} />
-                }
-              </div>
-          }
-          <div className={ControlStyles["menu-control-container"]}>
-            <IconButton
-              aria-label={showSettingsMenu ? "Hide Settings Menu" : "Settings"}
-              icon={Icons.SettingsIcon}
-              onClick={() => setShowSettingsMenu(!showSettingsMenu)}
-              className={showSettingsMenu ? ControlStyles["icon-button-active"] : ""}
-            />
-            {
-              !showSettingsMenu ? null :
-                <SettingsMenu player={player} Hide={() => setShowSettingsMenu(false)}/>
-            }
+      }
+      {
+        // Watermark
+        player.playerOptions.watermark === EluvioPlayerParameters.watermark.OFF ? null :
+          <div className={ControlStyles["watermark"]}>
+            <img src={EluvioLogo} alt="Eluvio" />
           </div>
-          <IconButton
-            aria-label={videoState.fullscreen ? "Exit Fullscreen" : "Fullscreen"}
-            icon={videoState.fullscreen ? Icons.ExitFullscreenIcon : Icons.FullscreenIcon}
-            onClick={() => videoState.fullscreen ? player.controls.ExitFullscreen() : player.controls.Fullscreen()}
-          />
-        </div>
-      </div>
+      }
     </div>
   );
 };
