@@ -34,10 +34,11 @@
 
   --progress-height: 3px;
   --progress-height-expanded: 10px;
+  --progress-height-expanded-mobile: 20px;
   --color-seek-background: rgba(255, 255, 255, 10%);
   --color-seek-buffer: rgba(255, 255, 255, 10%);
   --color-seek-active: var(--color-highlight);
-  --color-seek-indicator: #97b7e3;
+  --color-seek-indicator: white;
 
   --color-volume-background: rgba(255, 255, 255, 20%);
   --color-volume-active: #fff;
@@ -78,7 +79,8 @@
 
   svg {
     height: 100%;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
   }
 
   &-active {
@@ -139,6 +141,7 @@
     opacity: 0;
     user-select: none;
     transition: opacity 0.15s ease;
+    pointer-events: none;
   }
 }
 
@@ -148,27 +151,32 @@
   width: 100%;
   height: calc(var(--progress-height-expanded) + 10px);
   position: relative;
-  transition: height 0.25s ease, opacity 0.25s ease;
+  transition: height 0.25s ease, opacity 0.25s ease, border-radius 1.25s ease;
 
   * {
-    transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease;
+    transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease, border-radius 0.25s ease;
+    transition-delay: 0.25s;
   }
 
   &:hover,
   &:active,
+  &:focus,
   &:focus-visible,
   &:has(:focus-visible) {
     .seek-playhead,
     .seek-buffer,
     .seek-input {
+      transition-delay: unset;
       height: var(--progress-height-expanded);
     }
 
     ::-webkit-slider-thumb {
+      transition-delay: unset;
       height: var(--progress-height-expanded);
     }
 
     ::-moz-range-thumb {
+      transition-delay: unset;
       height: var(--progress-height-expanded);
     }
   }
@@ -222,6 +230,7 @@
   width: 100%;
   appearance: none;
   cursor: pointer;
+  z-index: 10000;
 
   &::-webkit-slider-runnable-track {
     background: transparent;
@@ -234,7 +243,8 @@
     background-color: var(--color-seek-indicator);
     appearance: none;
     border: 0;
-    transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease;
+    transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease, border-radius 0.25s ease;
+    transition-delay: 0.25s;
   }
 
   &::-moz-range-track {
@@ -248,7 +258,8 @@
     background-color: var(--color-seek-indicator);
     appearance: none;
     border: 0;
-    transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease;
+    transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease, border-radius 0.25s ease;
+    transition-delay: 0.25s;
   }
 }
 
@@ -269,7 +280,7 @@
 
 .time {
   font-size: 14px;
-  user-select: none;
+  white-space: nowrap;
 }
 
 .collection-button-container {
@@ -429,43 +440,31 @@
 }
 
 .menu {
-  animation: 0.25s fadein ease;
+  animation: 0.15s fadein ease;
   position: absolute;
-  bottom: calc(100% + var(--progress-height-expanded) + 10px);
+  bottom: calc(100% + var(--progress-height-expanded) + 15px);
   background: var(--color-menu-background);
-  border-radius: 5px;
-  right: -10px;
+  border-radius: 3px;
+  right: 0;
   width: max-content;
   min-width: 250px;
   overflow-y: auto;
-  padding-bottom: 10px;
+  border: 1px solid rgba(255,255,255,0.05);
 
-  /* TODO: Need to look at actual player height - set in css variable? */
   /* stylelint-disable-next-line function-name-case */
-  max-height: MIN(700px, 80vh);
-  max-width: MIN(400px, 85vw);
+  max-height: MIN(700px, CALC(var(--portal-height) * 0.7));
+  max-width: MIN(350px, CALC(var(--portal-width) * 0.8));
 
   .menu-option {
     /* Needs more specificity to override reset */
     text-align: left;
   }
-
-  &.collection-menu {
-    right: -70px;
-  }
-}
-
-.menu-header {
-  display: block;
-  width: 100%;
-  padding: 10px 20px;
-  font-size: 18px;
 }
 
 .menu-option {
   display: block;
   width: 100%;
-  padding: 10px 20px;
+  padding: 12px 20px;
   font-size: 14px;
   border: 1px solid transparent;
 
@@ -478,7 +477,6 @@
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--color-menu-border);
-    padding-bottom: 10px;
   }
 
   .menu-option-back-icon {
@@ -504,28 +502,49 @@
   }
 }
 
+.menu-header {
+  user-select: none;
+  pointer-events: none;
+  border-bottom: 1px solid var(--color-menu-border);
+}
+
+
 /* Player size modifications */
 
 .size-md {
   .time {
     font-size: 12px;
   }
-
-  .menu {
-    max-height: calc(100vh - 100px);
-    width: 90vw;
-    right: -50px;
-  }
 }
 
 .size-sm {
   .controls {
-    padding-top: 10px;
-    gap: 10px;
+    height: 45px;
+    gap: 8px;
+  }
+
+  // Position menus relative to whole player
+  .menu-control-container {
+    position: unset;
+  }
+
+  .menu {
+    bottom: 65px;
+    right: 15px;
+    max-width: calc(100% - 30px);
   }
 
   .title-container {
-    padding-right: 80px;
+    padding-right: 90px;
+    padding-top: 15px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .description {
+    font-size: 11px;
   }
 
   .time {
@@ -546,5 +565,32 @@
 
   .watermark {
     width: 50px;
+  }
+
+  .seek-container {
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-visible,
+    &:has(:focus-visible) {
+      .seek-playhead,
+      .seek-buffer,
+      .seek-input {
+        height: var(--progress-height-expanded-mobile);
+        border-radius: 10px;
+      }
+
+      ::-webkit-slider-thumb {
+        height: var(--progress-height-expanded-mobile);
+        width: var(--progress-height-expanded-mobile);
+        border-radius: 100%;
+      }
+
+      ::-moz-range-thumb {
+        height: var(--progress-height-expanded-mobile);
+        width: var(--progress-height-expanded-mobile);
+        border-radius: 100%;
+      }
+    }
   }
 }

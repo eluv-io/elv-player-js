@@ -10,6 +10,7 @@
     "prepublishOnly": "npm run build",
     "bump-version": "npm --git-tag-version --no-commit-hooks version patch",
     "serve": "vite --host 0.0.0.0 --port 8089",
+    "serve-https": "SERVE_HTTPS=true vite --host 0.0.0.0 --port 8089",
     "build": "npm run build-icons ; vite build",
     "build-analyze": "vite-bundle-visualizer",
     "preview": "vite preview",
@@ -47,6 +48,7 @@
     "url-join": "^4.0.1"
   },
   "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.16",
     "babel-eslint": "^10.1.0",

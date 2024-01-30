@@ -38,14 +38,14 @@ export const VolumeSliderKeydown = player =>
     switch(event.key) {
       case "ArrowLeft":
         event.preventDefault();
-        player.controls.SetVolume(Math.max(0, player.controls.GetVolume() - 0.05));
+        player.controls.SetVolume({relativeFraction: -0.05});
         break;
       case "ArrowRight":
         event.preventDefault();
         if(player.controls.IsMuted()) {
-          player.controls.SetVolume(0.05);
+          player.controls.SetVolume({fraction: 0.05});
         } else {
-          player.controls.SetVolume(Math.min(1, player.controls.GetVolume() + 0.05));
+          player.controls.SetVolume({relativeFraction: 0.05});
         }
         break;
     }

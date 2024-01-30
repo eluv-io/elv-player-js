@@ -6,7 +6,7 @@ import "focus-visible";
 import {SeekSliderKeyDown, Time, VolumeSliderKeydown} from "./Common.jsx";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
-import EluvioLogo from "../static/images/ELUV.IO white 20 px V2.png";
+import EluvioLogo from "../static/images/Logo.png";
 
 export const IconButton = ({icon, ...props}) => {
   return (
@@ -127,15 +127,16 @@ const SettingsMenu = ({player, Hide}) => {
     },
     rate: {
       label: "Playback Rate",
-      Update: index => player.controls.SetPlaybackRate(index)
+      Update: index => player.controls.SetPlaybackRate({index})
     }
   };
 
   if(activeMenu) {
     return (
-      <div key="submenu" className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
+      <div key="submenu" role="menu" className={`${ControlStyles["menu"]} ${ControlStyles["submenu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
         <button
           onClick={() => SetSubmenu(undefined)}
+          aria-label="Back to settings menu"
           className={`${ControlStyles["menu-option"]} ${ControlStyles["menu-option-back"]}`}
         >
           <div dangerouslySetInnerHTML={{__html: Icons.LeftArrowIcon}} className={ControlStyles["menu-option-back-icon"]} />
@@ -145,7 +146,10 @@ const SettingsMenu = ({player, Hide}) => {
           options[activeMenu].options.map((option, index) =>
             <button
               key={`option-${option.index}`}
+              role="menuitemradio"
+              aria-checked={option.active}
               autoFocus={index === 0}
+              aria-label={`${settings[activeMenu].label}: ${option.label || ""}`}
               onClick={() => {
                 settings[activeMenu].Update(option.index);
                 SetSubmenu(undefined);
@@ -161,29 +165,29 @@ const SettingsMenu = ({player, Hide}) => {
   }
 
   return (
-    <div key="menu" className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
-      <button autoFocus onClick={() => SetSubmenu("quality")} className={ControlStyles["menu-option"]}>
+    <div key="menu" role="menu" className={`${ControlStyles["menu"]} ${ControlStyles["settings-menu"]}`} ref={menuRef}>
+      <button autoFocus role="menuitem" onClick={() => SetSubmenu("quality")} className={ControlStyles["menu-option"]}>
         { `${settings.quality.label}: ${options.quality.active?.activeLabel || ""}` }
       </button>
       {
         options.audio.options.length <= 1 ? null :
-          <button onClick={() => SetSubmenu("audio")} className={ControlStyles["menu-option"]}>
+          <button role="menuitem" onClick={() => SetSubmenu("audio")} className={ControlStyles["menu-option"]}>
             { `${settings.audio.label}: ${options.audio.active?.label || ""}` }
           </button>
       }
       {
         options.text.options.length <= 1 ? null :
-          <button onClick={() => SetSubmenu("text")} className={ControlStyles["menu-option"]}>
+          <button role="menuitem" onClick={() => SetSubmenu("text")} className={ControlStyles["menu-option"]}>
             { `${settings.text.label}: ${options.text.active?.label || ""}` }
           </button>
       }
       {
         options.profile.options.length === 0 ? null :
-          <button onClick={() => SetSubmenu("profile")} className={ControlStyles["menu-option"]}>
+          <button role="menuitem" onClick={() => SetSubmenu("profile")} className={ControlStyles["menu-option"]}>
             { `${settings.profile.label}: ${options.profile.active?.label || ""}` }
           </button>
       }
-      <button onClick={() => SetSubmenu("rate")} className={ControlStyles["menu-option"]}>
+      <button role="menuitem" onClick={() => SetSubmenu("rate")} className={ControlStyles["menu-option"]}>
         { `${settings.rate.label}: ${options.rate.active?.label || "" }` }
       </button>
     </div>
@@ -220,14 +224,17 @@ const CollectionMenu = ({player, Hide}) => {
   };
 
   return (
-    <div key="menu" className={`${ControlStyles["menu"]} ${ControlStyles["collection-menu"]}`} ref={menuRef}>
-      <div className={ControlStyles["menu-header"]}>
+    <div key="menu" role="menu" className={`${ControlStyles["menu"]} ${ControlStyles["collection-menu"]}`} ref={menuRef}>
+      <div className={`${ControlStyles["menu-option"]} ${ControlStyles["menu-header"]}`}>
         { collectionInfo.title }
       </div>
       {
         collectionInfo.content.map(((item, index) =>
           <button
             key={`collection-item-${item.mediaId}`}
+            aria-label={`${item.title || item.mediaId} ${item.active ? "(active)" : ""}`}
+            role="menuitemradio"
+            aria-checked={item.active}
             autoFocus={index === 0}
             onClick={() => Select(item.mediaIndex)}
             className={`${ControlStyles["menu-option"]} ${item.active ? ControlStyles["menu-option-active"] : ""}`}
@@ -300,8 +307,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
   const { title, description } = (player.controls.GetContentTitle() || {});
   const collectionInfo = player.controls.GetCollectionInfo();
 
-  console.log("render")
-  console.log(title);
+  console.log("controls render")
 
   return (
     <div
@@ -332,6 +338,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
           <>
             <IconButton
               aria-label="Play"
+              tabIndex={playbackStarted ? -1 : 0}
               icon={Icons.PlayCircleIcon}
               onClick={() => player.controls.Play()}
               className={`${ControlStyles["center-play-button"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
@@ -342,7 +349,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
                 <IconButton
                   aria-label={videoState.playing ? "Pause" : "Play"}
                   icon={videoState.playing ? Icons.PauseIcon : Icons.PlayIcon}
-                  onClick={() => videoState.playing ? player.controls.Pause() : player.controls.Play()}
+                  onClick={() => player.controls.TogglePlay()}
                   className={ControlStyles["play-pause-button"]}
                 />
                 <CollectionControls player={player} key={`collection-controls-${settingsKey}`} />
@@ -351,7 +358,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
                     key="mute-button"
                     aria-label={videoState.muted ? "Unmute" : "Mute"}
                     icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : videoState.volume < 0.5 ? Icons.VolumeLowIcon : Icons.VolumeHighIcon}
-                    onClick={() => player.controls.ToggleMuted(!player.video.muted)}
+                    onClick={() => player.controls.ToggleMuted()}
                     className={ControlStyles["volume-button"]}
                   />
                   <div className={ControlStyles["volume-slider"]}>
@@ -367,7 +374,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
                       max={1}
                       step={0.001}
                       value={videoState.muted ? 0 : videoState.volume}
-                      onInput={event => player.controls.SetVolume(event.currentTarget.value)}
+                      onInput={event => player.controls.SetVolume({fraction: event.currentTarget.value})}
                       onKeyDown={VolumeSliderKeydown(player)}
                       className={ControlStyles["volume-input"]}
                     />
@@ -380,6 +387,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
                     <div className={ControlStyles["menu-control-container"]}>
                       <IconButton
                         aria-label={showCollectionMenu ? "Hide Collection Menu" : "Collection Menu"}
+                        aria-haspopup
                         icon={Icons.CollectionIcon}
                         onClick={() => setShowCollectionMenu(!showCollectionMenu)}
                         className={showCollectionMenu ? ControlStyles["icon-button-active"] : ""}
@@ -393,6 +401,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
                 <div className={ControlStyles["menu-control-container"]}>
                   <IconButton
                     aria-label={showSettingsMenu ? "Hide Settings Menu" : "Settings"}
+                    aria-haspopup
                     icon={Icons.SettingsIcon}
                     onClick={() => setShowSettingsMenu(!showSettingsMenu)}
                     className={showSettingsMenu ? ControlStyles["icon-button-active"] : ""}
@@ -405,7 +414,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
                 <IconButton
                   aria-label={videoState.fullscreen ? "Exit Fullscreen" : "Fullscreen"}
                   icon={videoState.fullscreen ? Icons.ExitFullscreenIcon : Icons.FullscreenIcon}
-                  onClick={() => videoState.fullscreen ? player.controls.ExitFullscreen() : player.controls.Fullscreen()}
+                  onClick={() => player.controls.ToggleFullscreen()}
                 />
               </div>
             </div>
@@ -419,7 +428,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
               key="mute-button"
               aria-label={videoState.muted ? "Unmute" : "Mute"}
               icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : Icons.VolumeHighIcon}
-              onClick={() => player.controls.ToggleMuted(!player.video.muted)}
+              onClick={() => player.controls.ToggleMuted()}
               className={ControlStyles["volume-button"]}
             />
           </div>

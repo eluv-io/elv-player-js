@@ -2,13 +2,20 @@ import { defineConfig, splitVendorChunkPlugin } from "vite";
 import path from "path";
 import autoprefixer from "autoprefixer";
 import react from "@vitejs/plugin-react-swc";
+import basicSsl from "@vitejs/plugin-basic-ssl";
+
+let plugins = [
+  react(),
+  splitVendorChunkPlugin()
+];
+
+if(process.env.SERVE_HTTPS) {
+  plugins.push(basicSsl());
+}
 
 export default defineConfig(() => {
   return {
-    plugins: [
-      react(),
-      splitVendorChunkPlugin()
-    ],
+    plugins,
     server: {
       port: 8089,
       host: true

@@ -8,7 +8,13 @@ import Clone from "lodash/cloneDeep.js";
 
 import EluvioPlayer from "../player/Player.js";
 import EluvioPlayerParameters, {DefaultParameters} from "../player/PlayerParameters.js";
-import {ObserveInteraction, ObserveResize, ObserveVisibility} from "./Observers.js";
+import {
+  ObserveInteraction,
+  ObserveKeydown,
+  ObserveMediaSession,
+  ObserveResize,
+  ObserveVisibility
+} from "./Observers.js";
 import WebControls from "./WebControls.jsx";
 
 console.log(PlayerStyles);
@@ -17,6 +23,10 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
   const [size, setSize] = useState("lg");
   const [orientation, setOrientation] = useState("landscape");
+  const [dimensions, setDimensions] = useState({
+    width: target.getBoundingClientRect().width,
+    height: target.getBoundingClientRect().height
+  });
   const [errorMessage, setErrorMessage] = useState(undefined);
   const [playbackStarted, setPlaybackStarted] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -39,14 +49,15 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
     setPlaybackStarted(false);
 
     console.log("INITIALIZE PLAYER")
-    videoRef.current.addEventListener("play", setPlaybackStarted);
-
     const newPlayer = new EluvioPlayer({
       target,
       video: videoRef.current,
       parameters,
       SetErrorMessage: setErrorMessage
     });
+
+    // Observe play event to keep track of whether playback has started
+    newPlayer.__RegisterVideoEventListener("play", () => setPlaybackStarted(true));
 
     // Destroy method for external use - destroys internal player and unmounts react
     newPlayer.Destroy = () => {
@@ -59,22 +70,25 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
     // TODO: Remove
     window.player = newPlayer;
 
-    // Watch element to keep track of size
-    const disposeResizeObserver = ObserveResize({target, setSize, setOrientation});
+    // Observe target portal size
+    const disposeResizeObserver = ObserveResize({target, setSize, setOrientation, setDimensions});
 
-    //
+    // Observe whether player is visible for autoplay/mute on visibility functionality
     const disposeVisibilityObserver = ObserveVisibility({player: newPlayer});
+
+    // Observe interaction for autohiding control elements
     const disposeInteractionObserver = ObserveInteraction({
       player: newPlayer,
-      onWake: () => {
-        console.log("wake")
-        setRecentlyInteracted(true);
-      },
-      onSleep: () => {
-        console.warn("sleep")
-        setRecentlyInteracted(false);
-      }
+      inactivityPeriod: 3000,
+      onWake: () => setRecentlyInteracted(true),
+      onSleep: () => setRecentlyInteracted(false)
     });
+
+    // Keyboard controls
+    const disposeKeyboardControls = ObserveKeydown({player: newPlayer});
+
+    // Media session
+    const disposeMediaSessionObserver = ObserveMediaSession({player: newPlayer});
 
     initCallback(newPlayer);
 
@@ -84,6 +98,8 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
       disposeResizeObserver && disposeResizeObserver();
       disposeVisibilityObserver && disposeVisibilityObserver();
       disposeInteractionObserver && disposeInteractionObserver();
+      disposeKeyboardControls && disposeKeyboardControls();
+      disposeMediaSessionObserver && disposeMediaSessionObserver();
 
       newPlayer && newPlayer.__DestroyPlayer();
     };
@@ -94,7 +110,6 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
 
     // Clean up player when unmounting
     return () => {
-      console.log("UNMOUNT")
       player && player.__DestroyPlayer();
       setPlayer(undefined);
     };
@@ -103,7 +118,13 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
   console.log("player render")
   return (
     <div
-      style={{backgroundColor: parameters.playerOptions.backgroundColor || "transparent"}}
+      role="complementary"
+      tabIndex={-1}
+      style={{
+        backgroundColor: parameters.playerOptions.backgroundColor || "transparent",
+        "--portal-width": `${dimensions.width}px`,
+        "--portal-height": `${dimensions.height}px`
+      }}
       className={[PlayerStyles["player-container"], PlayerStyles[`size-${size}`], PlayerStyles[`orientation-${orientation}`]].join(" ")}
     >
       <video

@@ -65,10 +65,11 @@ const Initialize = async () => {
         ui: EluvioPlayerParameters.ui.WEB,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
-        controls: EluvioPlayerParameters.controls.ON,
+        controls: EluvioPlayerParameters.controls.AUTO_HIDE,
         watermark: EluvioPlayerParameters.watermark.ON,
         autoplay: EluvioPlayerParameters.autoplay.OFF,
         title: EluvioPlayerParameters.title.ON,
+        keyboardControls: EluvioPlayerParameters.keyboardControls.OFF,
         maxBitrate: 50000,
         debugLogging: true,
         hlsjsOptions: {
