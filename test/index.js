@@ -11,9 +11,12 @@ import {InitializeEluvioPlayer, EluvioPlayerParameters} from "../lib";
 
 
 const Initialize = async () => {
+  /*
   const client = await ElvClient.FromConfigurationUrl({
     configUrl: "https://main.net955305.contentfabric.io/config"
   });
+
+   */
 
   let network = "MAIN";
 
@@ -28,25 +31,25 @@ const Initialize = async () => {
    */
 
   // Flash
-  /*
   versionHash = "hq__2C97Ma85zRS1pwD1dLk5PEzvuujK7y65hzZbjA2wiVQSL5EjfmGePCRAGv2dPr9rNbokvQit9d";
-  authorizationToken = "acspjc3iD2i4Cs6We2wJVfTq88tjHvbovyinfGy1ntKCKA4pTBnJuMdj9ciWxqR53e9HGhmFXo1mNBaKkrnoG1fU21T5Gnct8BAQR2fTvhGb7KcuBTbzADx96A6dTwBG81Sak8ycGZ91A4cRp4fnW82KnTd3cLY9mAXmnEMucxyM8Jng7mj4RCC3bsxWZaH6yJrrot3E61RZUFuauuKLHHGr6tM3ZEZWdpRF3FVqRpLL8WYdkfzCFJkXVtRne5PqyFLvwRDKzJRzjLVUTC56dirA2peH9mnrtoyCn2s54Kc7K34";
+  authorizationToken = "acspjc4ofKZS2durUJnNFbmv7CprKH6txiTJsSgCymLUaGvqFfUjHmjDaiewEhf4RLvCdvhW9AB18EPasGkbtdvfaB55SNwSLETU8Ubb8VYFAh9VWXV5FDWJmBPKXnFRxuTxWKqqcdqZXKUYJfDe7x3uUWUzY7iYiceRbYxLtwRSTg9sULebRBMBpr2zoM7V6AgnzhJhhH11pyftZBq5Rjdq6dGAzMM5aZ5CrT6ea2mxXEAsefUDWvAWchgnhVkVpi7GaJ5p8H9mVKJGvo6q8BZBzYSZgkQgB1XwKeNsCJPHeSa";
 
-   */
+
+  /*
 
   // Collection
   network = "DEMO";
   mediaCatalogId = "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2";
   mediaCollectionId = "JN8ecVA5Jt5cK2PjHXz12A";
 
-
+   */
 
 
   window.player = await InitializeEluvioPlayer(
     document.getElementById("player-target"),
     {
       clientOptions: {
-        network: EluvioPlayerParameters.networks[network],
+        network: EluvioPlayerParameters.networks[network]
       },
       sourceOptions: {
         //protocols: ["dash"],
@@ -59,9 +62,13 @@ const Initialize = async () => {
           mediaCatalogObjectId: mediaCatalogId,
           collectionId: mediaCollectionId
         },
+        contentOptions: {
+          title: "My Big Title",
+          description: "My big description"
+        }
       },
       playerOptions: {
-        //posterUrl: "https://miro.medium.com/v2/resize:fit:1099/1*5PeT0-Dch_KhFwjYwUWiDA.png",
+        posterUrl: "https://miro.medium.com/v2/resize:fit:1099/1*5PeT0-Dch_KhFwjYwUWiDA.png",
         ui: EluvioPlayerParameters.ui.WEB,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
@@ -69,7 +76,7 @@ const Initialize = async () => {
         watermark: EluvioPlayerParameters.watermark.ON,
         autoplay: EluvioPlayerParameters.autoplay.OFF,
         title: EluvioPlayerParameters.title.ON,
-        keyboardControls: EluvioPlayerParameters.keyboardControls.OFF,
+        keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
         maxBitrate: 50000,
         debugLogging: true,
         hlsjsOptions: {

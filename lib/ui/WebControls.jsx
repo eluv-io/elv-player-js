@@ -3,7 +3,7 @@ import ControlStyles from "../static/stylesheets/controls-web.module.scss";
 import * as Icons from "../static/icons/Icons.js";
 import {ObserveVideo, ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import "focus-visible";
-import {SeekSliderKeyDown, Time, VolumeSliderKeydown} from "./Common.jsx";
+import {PlayerClick, SeekSliderKeyDown, Time, VolumeSliderKeydown} from "./Common.jsx";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
@@ -287,10 +287,13 @@ const CollectionControls = ({player}) => {
 const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [settingsKey, setSettingsKey] = useState(Math.random());
+  const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [showCollectionMenu, setShowCollectionMenu] = useState(false);
 
   useEffect(() => {
+    setPlayerClickHandler(PlayerClick({player}));
+
     const RemoveObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
 
     const onSettingsUpdate = () => setSettingsKey(Math.random());
@@ -307,10 +310,9 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
   const { title, description } = (player.controls.GetContentTitle() || {});
   const collectionInfo = player.controls.GetCollectionInfo();
 
-  console.log("controls render")
-
   return (
     <div
+      onClick={playerClickHandler}
       className={[
         className,
         ControlStyles["container"],
@@ -343,7 +345,7 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
               onClick={() => player.controls.Play()}
               className={`${ControlStyles["center-play-button"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
             />
-            <div className={`${ControlStyles["controls-container"]} ${player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE ? ControlStyles["controls-container--autohide"] : ""}`}>
+            <div className={`${ControlStyles["bottom-controls-container"]} ${player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
               <SeekBar player={player} videoState={videoState}/>
               <div className={ControlStyles["controls"]}>
                 <IconButton

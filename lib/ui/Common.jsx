@@ -2,10 +2,29 @@
 
 // Handlers
 
+// Player click handler is a closure so it can keep track of click timing to differentiate between single and double click
+export const PlayerClick = ({player, doubleClickDelay=300}) => {
+  let lastClicked, singleClickTimeout;
+  // Extra wrapper function so it can be stored as react state
+  return () =>
+    () => {
+      clearTimeout(singleClickTimeout);
+      if(Date.now() - lastClicked < doubleClickDelay) {
+        // Double click
+        player.controls.ToggleFullscreen();
+      } else {
+        // Single click
+        singleClickTimeout = setTimeout(() => player.controls.TogglePlay(), doubleClickDelay);
+      }
+
+      lastClicked = Date.now();
+    };
+};
+
 // Seek slider handler is a closure so it can keep track of the number of repeat events to seek faster
 export const SeekSliderKeyDown = player => {
   let updates = 0;
-  // Extra wrapper function is so it can be stored as react state
+  // Extra wrapper function so it can be stored as react state
   return () =>
     event => {
       if(!event.repeat) {
@@ -16,7 +35,7 @@ export const SeekSliderKeyDown = player => {
         updates < 10 ? 10 :
           updates < 20 ? 30 :
             60;
-      switch(event.key) {
+      switch (event.key) {
         case "ArrowLeft":
           event.preventDefault();
           player.controls.Seek({relativeSeconds: -seekAmount});

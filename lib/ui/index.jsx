@@ -17,9 +17,7 @@ import {
 } from "./Observers.js";
 import WebControls from "./WebControls.jsx";
 
-console.log(PlayerStyles);
-
-const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
+const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
   const [size, setSize] = useState("lg");
   const [orientation, setOrientation] = useState("landscape");
@@ -46,63 +44,65 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
       return;
     }
 
-    setPlaybackStarted(false);
+    try {
+      setPlaybackStarted(false);
 
-    console.log("INITIALIZE PLAYER")
-    const newPlayer = new EluvioPlayer({
-      target,
-      video: videoRef.current,
-      parameters,
-      SetErrorMessage: setErrorMessage
-    });
+      const newPlayer = new EluvioPlayer({
+        target,
+        video: videoRef.current,
+        parameters,
+        SetErrorMessage: setErrorMessage
+      });
 
-    // Observe play event to keep track of whether playback has started
-    newPlayer.__RegisterVideoEventListener("play", () => setPlaybackStarted(true));
+      window.__elvPlayer = newPlayer;
 
-    // Destroy method for external use - destroys internal player and unmounts react
-    newPlayer.Destroy = () => {
-      newPlayer.__DestroyPlayer();
+      // Observe play event to keep track of whether playback has started
+      newPlayer.__RegisterVideoEventListener("play", () => setPlaybackStarted(true));
+
+      // Destroy method for external use - destroys internal player and unmounts react
+      newPlayer.Destroy = () => {
+        newPlayer.__DestroyPlayer();
+        Unmount();
+      };
+
+      // Observe target portal size
+      const disposeResizeObserver = ObserveResize({target, setSize, setOrientation, setDimensions});
+
+      // Observe whether player is visible for autoplay/mute on visibility functionality
+      const disposeVisibilityObserver = ObserveVisibility({player: newPlayer});
+
+      // Observe interaction for autohiding control elements
+      const disposeInteractionObserver = ObserveInteraction({
+        player: newPlayer,
+        inactivityPeriod: 3000,
+        onWake: () => setRecentlyInteracted(true),
+        onSleep: () => setRecentlyInteracted(false)
+      });
+
+      // Keyboard controls
+      const disposeKeyboardControls = ObserveKeydown({player: newPlayer});
+
+      // Media session
+      const disposeMediaSessionObserver = ObserveMediaSession({player: newPlayer});
+
+      InitCallback(newPlayer);
+      setPlayer(newPlayer);
+
+      return () => {
+        videoRef && videoRef.current && videoRef.current.removeEventListener("play", setPlaybackStarted);
+
+        disposeResizeObserver && disposeResizeObserver();
+        disposeVisibilityObserver && disposeVisibilityObserver();
+        disposeInteractionObserver && disposeInteractionObserver();
+        disposeKeyboardControls && disposeKeyboardControls();
+        disposeMediaSessionObserver && disposeMediaSessionObserver();
+
+        newPlayer && newPlayer.__DestroyPlayer();
+      };
+    } catch(error) {
+      ErrorCallback(error);
       Unmount();
-    };
-
-    setPlayer(newPlayer);
-
-    // TODO: Remove
-    window.player = newPlayer;
-
-    // Observe target portal size
-    const disposeResizeObserver = ObserveResize({target, setSize, setOrientation, setDimensions});
-
-    // Observe whether player is visible for autoplay/mute on visibility functionality
-    const disposeVisibilityObserver = ObserveVisibility({player: newPlayer});
-
-    // Observe interaction for autohiding control elements
-    const disposeInteractionObserver = ObserveInteraction({
-      player: newPlayer,
-      inactivityPeriod: 3000,
-      onWake: () => setRecentlyInteracted(true),
-      onSleep: () => setRecentlyInteracted(false)
-    });
-
-    // Keyboard controls
-    const disposeKeyboardControls = ObserveKeydown({player: newPlayer});
-
-    // Media session
-    const disposeMediaSessionObserver = ObserveMediaSession({player: newPlayer});
-
-    initCallback(newPlayer);
-
-    return () => {
-      videoRef && videoRef.current && videoRef.current.removeEventListener("play", setPlaybackStarted);
-
-      disposeResizeObserver && disposeResizeObserver();
-      disposeVisibilityObserver && disposeVisibilityObserver();
-      disposeInteractionObserver && disposeInteractionObserver();
-      disposeKeyboardControls && disposeKeyboardControls();
-      disposeMediaSessionObserver && disposeMediaSessionObserver();
-
-      newPlayer && newPlayer.__DestroyPlayer();
-    };
+    }
   }, [videoRef, mounted]);
 
   useEffect(() => {
@@ -115,7 +115,6 @@ const PlayerUI = ({target, parameters, initCallback, Unmount}) => {
     };
   }, [playerSet]);
 
-  console.log("player render")
   return (
     <div
       role="complementary"
@@ -162,16 +161,21 @@ const Initialize = (target, parameters) => {
   target.innerHTML = "";
   target.classList.add(ResetStyle.reset);
 
+  const clientOptions = parameters.clientOptions;
+
+  // Clone parameters and merge with defaults, but *ensure client is not cloned*
   parameters = MergeWith(
     Clone(DefaultParameters),
-    Clone(parameters)
+    Clone({...parameters, clientOptions: undefined})
   );
+
+  parameters.clientOptions = clientOptions;
 
   if(parameters.playerOptions && parameters.playerOptions.backgroundColor) {
     target.style.backgroundColor = parameters.playerOptions.backgroundColor;
   }
 
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const root = ReactDOM.createRoot(target);
 
     root.render(
@@ -179,7 +183,8 @@ const Initialize = (target, parameters) => {
         <PlayerUI
           target={target}
           parameters={parameters}
-          initCallback={resolve}
+          InitCallback={resolve}
+          ErrorCallback={reject}
           Unmount={() => root.unmount()}
         />
       </React.StrictMode>
