@@ -7,8 +7,12 @@ export const PlayerClick = ({player, doubleClickDelay=300}) => {
   let lastClicked, singleClickTimeout;
   // Extra wrapper function so it can be stored as react state
   return () =>
-    () => {
+    event => {
       clearTimeout(singleClickTimeout);
+
+      // Only react to clicks on this element specifically, not other control elements
+      if(event.target !== event.currentTarget) { return; }
+
       if(Date.now() - lastClicked < doubleClickDelay) {
         // Double click
         player.controls.ToggleFullscreen();
@@ -32,8 +36,8 @@ export const SeekSliderKeyDown = player => {
       }
 
       const seekAmount = updates < 5 ? 5 :
-        updates < 10 ? 10 :
-          updates < 20 ? 30 :
+        updates < 15 ? 10 :
+          updates < 40 ? 30 :
             60;
       switch (event.key) {
         case "ArrowLeft":
