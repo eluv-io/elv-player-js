@@ -514,6 +514,13 @@
 
 /* Player size modifications */
 
+.size-lg {
+  .center-play-button {
+    height: 100px;
+    width: 100px;
+  }
+}
+
 .size-md {
   .time {
     font-size: 12px;
