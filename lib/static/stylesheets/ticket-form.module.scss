@@ -1,0 +1,117 @@
+.ticket-form-container {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.ticket-form-overlay {
+  background: rgba(0, 0, 0, 50%);
+  backdrop-filter: blur(10px);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  height: 50px;
+  width: 50px;
+}
+
+.ticket-form {
+  color: #FFF;
+  background: rgba(255, 255, 255, 10%);
+  backdrop-filter: blur(10px);
+  border-radius: 5px;
+  padding: 40px 50px 50px;
+  display: grid;
+  position: relative;
+  max-width: MIN(600px, 100%);
+}
+
+.text {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.title {
+  font-size: 20px;
+}
+
+.description {
+  font-size: 14px;
+}
+
+.inputs {
+  margin-top: 20px;
+  display: grid;
+  justify-content: center;
+  gap: 10px;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  max-width: 250px;
+  background: #FFF;
+  border-radius: 5px;
+  padding: 0 20px;
+  text-align: center;
+  letter-spacing: 2px;
+  font-size: 20px;
+  color: #000;
+  height: 35px;
+  font-weight: 600;
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.submit {
+  background: rgba(255, 255, 255, 20%);
+  border-radius: 5px;
+  height: 40px;
+  user-select: none;
+  padding: 10px 0;
+
+  &:disabled {
+    opacity: 0.75;
+  }
+}
+
+.error-message {
+  display: block;
+  position: absolute;
+  margin: 0 auto;
+  bottom: 15px;
+  text-align: center;
+  padding: 0 20px;
+  left: 0;
+  right: 0;
+  font-size: 14px;
+  color: #F00;
+  font-weight: 600;
+}
+
+.size-md,
+.size-sm {
+  .ticket-form {
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    align-content: center;
+    background: transparent;
+    padding-inline: 20px;
+  }
+
+  .error-message {
+    position: unset;
+    margin-top: 20px;
+    height: 20px;
+  }
+}

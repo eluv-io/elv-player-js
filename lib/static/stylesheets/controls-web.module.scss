@@ -42,7 +42,7 @@
   --color-volume-background: rgba(255, 255, 255, 20%);
   --color-volume-active: #fff;
 
-  --color-menu-background: rgba(0, 0, 0, 75%);
+  --color-menu-background: rgba(0, 0, 0, 65%);
   --color-menu-button-active: rgba(255, 255, 255, 5%);
   --color-menu-button-focused: rgba(255, 255, 255, 10%);
   --color-menu-border: rgba(255, 255, 255, 10%);
@@ -447,12 +447,12 @@
   position: absolute;
   bottom: calc(100% + var(--progress-height-expanded) + 15px);
   background: var(--color-menu-background);
+  backdrop-filter: blur(10px);
   border-radius: 3px;
   right: 0;
   width: max-content;
   min-width: 250px;
   overflow-y: auto;
-  border: 1px solid rgba(255,255,255,5%);
 
   /* stylelint-disable-next-line function-name-case */
   max-height: MIN(700px, CALC(var(--portal-height) * 0.7));

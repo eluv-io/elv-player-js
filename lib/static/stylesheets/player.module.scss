@@ -1,3 +1,9 @@
+.player-target {
+  position: relative;
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  overscroll-behavior: none;
+}
+
 .player-container {
   --layer-video: 1;
   --layer-poster: 2;
@@ -6,11 +12,11 @@
 
   --color-error: #f00;
 
+  position: absolute;
+  inset: 0;
   height: 100%;
-  position: relative;
   width: 100%;
-  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  overscroll-behavior: none;
+
 }
 
 .controls {

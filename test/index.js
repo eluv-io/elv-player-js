@@ -21,35 +21,34 @@ const Initialize = async () => {
   let network = "MAIN";
 
   let versionHash, authorizationToken, mediaCatalogId, mediaCollectionId;
+  const ticketCode = "BkiWYk";
 
 
   // Clear
-  /*
-  versionHash = await client.LatestVersionHash({versionHash: "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo"});
-  authorizationToken = "";
 
-   */
+  //versionHash = "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo";
+  //authorizationToken = "";
 
   // Flash
-  versionHash = "hq__2C97Ma85zRS1pwD1dLk5PEzvuujK7y65hzZbjA2wiVQSL5EjfmGePCRAGv2dPr9rNbokvQit9d";
-  authorizationToken = "acspjc4ofKZS2durUJnNFbmv7CprKH6txiTJsSgCymLUaGvqFfUjHmjDaiewEhf4RLvCdvhW9AB18EPasGkbtdvfaB55SNwSLETU8Ubb8VYFAh9VWXV5FDWJmBPKXnFRxuTxWKqqcdqZXKUYJfDe7x3uUWUzY7iYiceRbYxLtwRSTg9sULebRBMBpr2zoM7V6AgnzhJhhH11pyftZBq5Rjdq6dGAzMM5aZ5CrT6ea2mxXEAsefUDWvAWchgnhVkVpi7GaJ5p8H9mVKJGvo6q8BZBzYSZgkQgB1XwKeNsCJPHeSa";
+  //versionHash = "hq__2C97Ma85zRS1pwD1dLk5PEzvuujK7y65hzZbjA2wiVQSL5EjfmGePCRAGv2dPr9rNbokvQit9d";
+  //authorizationToken = "acspjc4ofKZS2durUJnNFbmv7CprKH6txiTJsSgCymLUaGvqFfUjHmjDaiewEhf4RLvCdvhW9AB18EPasGkbtdvfaB55SNwSLETU8Ubb8VYFAh9VWXV5FDWJmBPKXnFRxuTxWKqqcdqZXKUYJfDe7x3uUWUzY7iYiceRbYxLtwRSTg9sULebRBMBpr2zoM7V6AgnzhJhhH11pyftZBq5Rjdq6dGAzMM5aZ5CrT6ea2mxXEAsefUDWvAWchgnhVkVpi7GaJ5p8H9mVKJGvo6q8BZBzYSZgkQgB1XwKeNsCJPHeSa";
 
-
-  /*
 
   // Collection
   network = "DEMO";
   mediaCatalogId = "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2";
   mediaCollectionId = "JN8ecVA5Jt5cK2PjHXz12A";
 
-   */
-
 
   window.player = await InitializeEluvioPlayer(
     document.getElementById("player-target"),
     {
       clientOptions: {
-        network: EluvioPlayerParameters.networks[network]
+        network: EluvioPlayerParameters.networks[network],
+        promptTicket: true,
+        tenantId: "iten4TXq2en3qtu3JREnE5tSLRf9zLod",
+        ntpId: "QOTPLznozufnUVC",
+        //ticketCode: "BkiWYk"
       },
       sourceOptions: {
         //protocols: ["dash"],
@@ -68,7 +67,7 @@ const Initialize = async () => {
         }
       },
       playerOptions: {
-        posterUrl: "https://miro.medium.com/v2/resize:fit:1099/1*5PeT0-Dch_KhFwjYwUWiDA.png",
+        //posterUrl: "https://miro.medium.com/v2/resize:fit:1099/1*5PeT0-Dch_KhFwjYwUWiDA.png",
         ui: EluvioPlayerParameters.ui.WEB,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",

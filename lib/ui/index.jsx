@@ -16,9 +16,11 @@ import {
   ObserveVisibility
 } from "./Observers.js";
 import WebControls from "./WebControls.jsx";
+import TicketForm from "./TicketForm.jsx";
 
 const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
+  const [client, setClient] = useState(undefined);
   const [size, setSize] = useState("lg");
   const [orientation, setOrientation] = useState("landscape");
   const [dimensions, setDimensions] = useState({
@@ -36,7 +38,13 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
   useEffect(() => {
     setMounted(true);
 
-    return () => setMounted(false);
+    // Observe target portal size
+    const disposeResizeObserver = ObserveResize({target, setSize, setOrientation, setDimensions});
+
+    return () => {
+      setMounted(false);
+      disposeResizeObserver && disposeResizeObserver();
+    };
   }, []);
 
   useEffect(() => {
@@ -46,6 +54,9 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
 
     try {
       setPlaybackStarted(false);
+
+      // Use ticket client if present
+      parameters.clientOptions.client = client || parameters.clientOptions.client;
 
       const newPlayer = new EluvioPlayer({
         target,
@@ -64,9 +75,6 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
         newPlayer.__DestroyPlayer();
         Unmount();
       };
-
-      // Observe target portal size
-      const disposeResizeObserver = ObserveResize({target, setSize, setOrientation, setDimensions});
 
       // Observe whether player is visible for autoplay/mute on visibility functionality
       const disposeVisibilityObserver = ObserveVisibility({player: newPlayer});
@@ -91,7 +99,6 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
       return () => {
         videoRef && videoRef.current && videoRef.current.removeEventListener("play", setPlaybackStarted);
 
-        disposeResizeObserver && disposeResizeObserver();
         disposeVisibilityObserver && disposeVisibilityObserver();
         disposeInteractionObserver && disposeInteractionObserver();
         disposeKeyboardControls && disposeKeyboardControls();
@@ -103,7 +110,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
       ErrorCallback(error);
       Unmount();
     }
-  }, [videoRef, mounted]);
+  }, [videoRef, mounted, client]);
 
   useEffect(() => {
     if(!playerSet) { return; }
@@ -115,15 +122,20 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
     };
   }, [playerSet]);
 
+  if(parameters.clientOptions.promptTicket && !client) {
+    return (
+      <TicketForm
+        parameters={parameters}
+        dimensions={{size, orientation, ...dimensions}}
+        onComplete={ticketClient => setClient(ticketClient)}
+      />
+    );
+  }
+
   return (
     <div
       role="complementary"
       tabIndex={-1}
-      style={{
-        backgroundColor: parameters.playerOptions.backgroundColor || "transparent",
-        "--portal-width": `${dimensions.width}px`,
-        "--portal-height": `${dimensions.height}px`
-      }}
       className={[PlayerStyles["player-container"], PlayerStyles[`size-${size}`], PlayerStyles[`orientation-${orientation}`]].join(" ")}
     >
       <video
@@ -160,6 +172,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
 const Initialize = (target, parameters) => {
   target.innerHTML = "";
   target.classList.add(ResetStyle.reset);
+  target.classList.add(PlayerStyles["player-target"]);
 
   const clientOptions = parameters.clientOptions;
 
