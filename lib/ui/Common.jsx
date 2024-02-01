@@ -10,23 +10,36 @@ export const Spinner = ({light, className=""}) => <div className={`${className} 
 
 // Player click handler is a closure so it can keep track of click timing to differentiate between single and double click
 export const PlayerClick = ({player, doubleClickDelay=300}) => {
-  let lastClicked, singleClickTimeout;
+  let lastClicked, singleClickTimeout, lastFocused, currentFocused;
+
+  // Keep track of which element has focus - we don't want to play/pause on click if the click was to focus on the player
+  // Note that double click to fullscreen *will* still work regardless of focus
+  window.addEventListener("focus", () => {
+    lastFocused = currentFocused || document.activeElement;
+    currentFocused = document.activeElement;
+  }, true);
+
   // Extra wrapper function so it can be stored as react state
   return () =>
     event => {
       clearTimeout(singleClickTimeout);
 
-      // Only react to clicks on this element specifically, not other control elements
-      if(event.target !== event.currentTarget) { return; }
-
-      if(Date.now() - lastClicked < doubleClickDelay) {
-        // Double click
-        player.controls.ToggleFullscreen();
-      } else {
-        // Single click
-        singleClickTimeout = setTimeout(() => player.controls.TogglePlay(), doubleClickDelay);
+      if(
+        // Only react to clicks on this element specifically, not other control elements
+        event.target === event.currentTarget &&
+        // Player was not previously focused - ignore click
+        event.currentTarget.contains(lastFocused)
+      ) {
+        if(Date.now() - lastClicked < doubleClickDelay) {
+          // Double click
+          player.controls.ToggleFullscreen();
+        } else {
+          // Single click
+          singleClickTimeout = setTimeout(() => player.controls.TogglePlay(), doubleClickDelay);
+        }
       }
 
+      lastFocused = event.target;
       lastClicked = Date.now();
     };
 };
