@@ -17,6 +17,7 @@ import {
 } from "./Observers.js";
 import WebControls from "./WebControls.jsx";
 import TicketForm from "./TicketForm.jsx";
+import {Spinner} from "./Common";
 
 const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
@@ -28,6 +29,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
     height: target.getBoundingClientRect().height
   });
   const [errorMessage, setErrorMessage] = useState(undefined);
+  const [playerInitialized, setPlayerInitialized] = useState(false);
   const [playbackStarted, setPlaybackStarted] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [recentlyInteracted, setRecentlyInteracted] = useState(true);
@@ -52,6 +54,8 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
       return;
     }
 
+    //return;
+
     try {
       setPlaybackStarted(false);
 
@@ -67,8 +71,13 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
 
       window.__elvPlayer = newPlayer;
 
-      // Observe play event to keep track of whether playback has started
-      newPlayer.__RegisterVideoEventListener("play", () => setPlaybackStarted(true));
+      // Observe player settings to keep track of whether playback has started
+      const disposePlayerSettingsListener = newPlayer.RegisterSettingsListener(
+        () => {
+          setPlaybackStarted(newPlayer.playbackStarted);
+          setPlayerInitialized(!newPlayer.loading);
+        }
+      );
 
       // Destroy method for external use - destroys internal player and unmounts react
       newPlayer.Destroy = () => {
@@ -99,6 +108,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
       return () => {
         videoRef && videoRef.current && videoRef.current.removeEventListener("play", setPlaybackStarted);
 
+        disposePlayerSettingsListener && disposePlayerSettingsListener();
         disposeVisibilityObserver && disposeVisibilityObserver();
         disposeInteractionObserver && disposeInteractionObserver();
         disposeKeyboardControls && disposeKeyboardControls();
@@ -136,6 +146,11 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
     <div
       role="complementary"
       tabIndex={-1}
+      style={{
+        backgroundColor: parameters.playerOptions.backgroundColor || "transparent",
+        "--portal-width": `${dimensions.width}px`,
+        "--portal-height": `${dimensions.height}px`
+      }}
       className={[PlayerStyles["player-container"], PlayerStyles[`size-${size}`], PlayerStyles[`orientation-${orientation}`]].join(" ")}
     >
       <video
@@ -149,6 +164,12 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
       {
         playbackStarted || !parameters.playerOptions.posterUrl ? null :
           <img alt="Video Poster" src={parameters.playerOptions.posterUrl} className={PlayerStyles["poster"]} />
+      }
+      {
+        playerInitialized || errorMessage ? null :
+          <div className={PlayerStyles["spinner-container"]}>
+            <Spinner className={PlayerStyles["spinner"]} />
+          </div>
       }
       {
         !errorMessage ? null :

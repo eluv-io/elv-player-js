@@ -16,7 +16,21 @@
   inset: 0;
   height: 100%;
   width: 100%;
+}
 
+.spinner-container {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .spinner {
+    height: 50px;
+    width: 50px;
+  }
 }
 
 .controls {

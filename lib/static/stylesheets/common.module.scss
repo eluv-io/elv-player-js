@@ -1,12 +1,18 @@
 .spinner {
+  --color-highlight: 55, 132, 235;
+
   display: inline-block;
   height: 100%;
   width: auto;
   aspect-ratio: 1;
-  border: 3px solid rgba(255,255,255,30%);
+  border: 6px solid rgba(#FFF, 30%);
   border-radius: 50%;
-  border-top-color: #fff;
-  animation: spin 1s linear infinite;
+  border-top-color: #FFF;
+  animation: spin 1.5s ease infinite;
+
+  &--light {
+    border-width: 3px;
+  }
 }
 
 @keyframes spin {

@@ -30,8 +30,9 @@ const Initialize = async () => {
   //authorizationToken = "";
 
   // Flash
-  //versionHash = "hq__2C97Ma85zRS1pwD1dLk5PEzvuujK7y65hzZbjA2wiVQSL5EjfmGePCRAGv2dPr9rNbokvQit9d";
-  //authorizationToken = "acspjc4ofKZS2durUJnNFbmv7CprKH6txiTJsSgCymLUaGvqFfUjHmjDaiewEhf4RLvCdvhW9AB18EPasGkbtdvfaB55SNwSLETU8Ubb8VYFAh9VWXV5FDWJmBPKXnFRxuTxWKqqcdqZXKUYJfDe7x3uUWUzY7iYiceRbYxLtwRSTg9sULebRBMBpr2zoM7V6AgnzhJhhH11pyftZBq5Rjdq6dGAzMM5aZ5CrT6ea2mxXEAsefUDWvAWchgnhVkVpi7GaJ5p8H9mVKJGvo6q8BZBzYSZgkQgB1XwKeNsCJPHeSa";
+  // versionHash = "hq__2C97Ma85zRS1pwD1dLk5PEzvuujK7y65hzZbjA2wiVQSL5EjfmGePCRAGv2dPr9rNbokvQit9d"; // clear
+  versionHash = "hq__2YAGWTsaw6FDv9S6QPwQ1VHTDVgctwDKXkC5qD4pCgJjJAidifpZ3ccxcGp7XLeyzmHxEakfXq"; // widevine
+  //authorizationToken = "acspjckaJceLc7Hr4vpS5eBkiW9uX9stHLDUdAYRepszwUxD2Jud7wM9Ay7g6jLnxSxNVvppV5s5MUtJoCaY4v3zE5xACfx9WAtrWe54aazs2abkQrMZyhNdLDgjRgrYARL6YgLjSGFrbH5nzxodb4eU9zky6SVBHF8n9Zq9ZWNoeT85gbD5mbveewgZL4QkVCUsARrbfHE7pJSUXiqq4Rzigwz2bakNijrhnpzhrW69cngT3485jJoz5UssNUNLzWwKwsCvZKrb39KuZU5nQgy9ofxroX5bkS8Qkm56QPjdZg";
 
 
   // Collection
@@ -39,16 +40,20 @@ const Initialize = async () => {
   mediaCatalogId = "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2";
   mediaCollectionId = "JN8ecVA5Jt5cK2PjHXz12A";
 
+  // Ticket content
+  //network = "DEMO";
+  //versionHash = "hq__i8Sf43pUfsmmgd7iu5m4Mp27ct3eqUJ5rYCenUh6HxBW6du1Ets3fBVg1spWCNkpaMa94LrP2"
 
-  window.player = await InitializeEluvioPlayer(
+
+  await InitializeEluvioPlayer(
     document.getElementById("player-target"),
     {
       clientOptions: {
         network: EluvioPlayerParameters.networks[network],
-        promptTicket: true,
+        //promptTicket: true,
         tenantId: "iten4TXq2en3qtu3JREnE5tSLRf9zLod",
         ntpId: "QOTPLznozufnUVC",
-        //ticketCode: "BkiWYk"
+        ticketCode: "BkiWYk"
       },
       sourceOptions: {
         //protocols: ["dash"],

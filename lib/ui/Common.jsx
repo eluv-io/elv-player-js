@@ -4,7 +4,7 @@ import React from "react";
 
 // Components
 
-export const Spinner = ({className=""}) => <div className={`${className} ${CommonStyles["spinner"]}`} />;
+export const Spinner = ({light, className=""}) => <div className={`${className} ${CommonStyles["spinner"]} ${light ? CommonStyles["spinner--light"] : ""}`} />;
 
 // Handlers
 

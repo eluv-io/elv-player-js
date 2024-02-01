@@ -84,7 +84,6 @@ const TicketForm = ({parameters, dimensions, onComplete}) => {
     );
   }
 
-  console.log(dimensions);
   return (
     <div
       role="complementary"
@@ -134,7 +133,7 @@ const TicketForm = ({parameters, dimensions, onComplete}) => {
               disabled={!code || !client || invalid}
               className={TicketFormStyles["submit"]}
             >
-              { submitting ? <Spinner /> : "Submit" }
+              { submitting ? <Spinner light /> : "Submit" }
             </button>
           </div>
           <div className={TicketFormStyles["error-message"]}>{ errorMessage } </div>

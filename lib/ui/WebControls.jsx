@@ -22,12 +22,12 @@ const SeekBar = ({player, videoState}) => {
   useEffect(() => {
     setSeekKeydownHandler(SeekSliderKeyDown(player));
 
-    const RemoveTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 60});
-    const RemoveBufferObserver = ObserveVideoBuffer({video: player.video, setBufferFraction});
+    const disposeVideoTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 60});
+    const disposeVideoBufferObserver = ObserveVideoBuffer({video: player.video, setBufferFraction});
 
     return () => {
-      RemoveTimeObserver();
-      RemoveBufferObserver();
+      disposeVideoTimeObserver && disposeVideoTimeObserver();
+      disposeVideoBufferObserver && disposeVideoBufferObserver();
     };
   }, []);
 
@@ -62,9 +62,9 @@ const TimeIndicator = ({player, videoState}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
 
   useEffect(() => {
-    const RemoveObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 10});
+    const disposeVideoTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 10});
 
-    return () => RemoveObserver();
+    return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
 
   return (
@@ -90,9 +90,9 @@ const SettingsMenu = ({player, Hide}) => {
 
     UpdateSettings();
 
-    player.__AddSettingsListener(UpdateSettings);
+    const disposePlayerSettingsListener = player.RegisterSettingsListener(UpdateSettings);
 
-    return () => player.__RemoveSettingsListener(UpdateSettings);
+    return () => disposePlayerSettingsListener && disposePlayerSettingsListener();
   }, []);
 
   useEffect(() => {
@@ -203,9 +203,9 @@ const CollectionMenu = ({player, Hide}) => {
 
     UpdateCollectionInfo();
 
-    player.__AddSettingsListener(UpdateCollectionInfo);
+    const disposePlayerSettingsListener = player.RegisterSettingsListener(UpdateCollectionInfo);
 
-    return () => player.__RemoveSettingsListener(UpdateCollectionInfo);
+    return () => disposePlayerSettingsListener && disposePlayerSettingsListener();
   }, []);
 
   useEffect(() => {
@@ -250,7 +250,7 @@ const CollectionMenu = ({player, Hide}) => {
 const CollectionControls = ({player}) => {
   const collectionInfo = player.controls.GetCollectionInfo();
 
-  if(!collectionInfo || collectionInfo.mediaLength === 0) { return null; }
+  if(!collectionInfo || collectionInfo.mediaLength === 0 || !collectionInfo.isPlaylist) { return null; }
 
   const previousMedia = collectionInfo.content[collectionInfo.mediaIndex - 1];
   const nextMedia = collectionInfo.content[collectionInfo.mediaIndex + 1];
@@ -294,14 +294,13 @@ const WebControls = ({player, dimensions, playbackStarted, recentlyInteracted, c
   useEffect(() => {
     setPlayerClickHandler(PlayerClick({player}));
 
-    const RemoveObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
+    const disposeVideoObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
 
-    const onSettingsUpdate = () => setSettingsKey(Math.random());
-    player.__AddSettingsListener(onSettingsUpdate);
+    const disposePlayerSettingsListener = player.RegisterSettingsListener(() => setSettingsKey(Math.random()));
 
     return () => {
-      RemoveObserver();
-      player.__RemoveSettingsListener(onSettingsUpdate);
+      disposeVideoObserver && disposeVideoObserver();
+      disposePlayerSettingsListener && disposePlayerSettingsListener();
     };
   }, []);
 
