@@ -1,7 +1,11 @@
 {
-  "plugins": ["stylelint-scss"],
+  "plugins": [
+    "stylelint-scss",
+    "stylelint-order"
+  ],
   "extends": "stylelint-config-standard",
   "rules": {
+    "order/properties-alphabetical-order": true,
     "color-function-notation": null,
     "at-rule-no-unknown": null,
     "scss/at-rule-no-unknown": true,

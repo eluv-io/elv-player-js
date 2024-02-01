@@ -57,10 +57,10 @@
   /* revert for bug in Chromium browsers
      - fix for the content editable attribute will work properly. */
   :where([contenteditable]) {
-    -moz-user-modify: read-write;
     -webkit-line-break: after-white-space;
-    -webkit-user-modify: read-write;
     overflow-wrap: break-word;
+    -moz-user-modify: read-write;
+    -webkit-user-modify: read-write;
   }
 
   @media (prefers-reduced-motion: reduce) {

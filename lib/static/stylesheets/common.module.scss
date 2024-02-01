@@ -1,14 +1,14 @@
 .spinner {
   --color-highlight: 55, 132, 235;
 
-  display: inline-block;
-  height: 100%;
-  width: auto;
+  animation: spin 1.5s ease infinite;
   aspect-ratio: 1;
   border: 6px solid rgba(#FFF, 30%);
   border-radius: 50%;
   border-top-color: #FFF;
-  animation: spin 1.5s ease infinite;
+  display: inline-block;
+  height: 100%;
+  width: auto;
 
   &--light {
     border-width: 3px;

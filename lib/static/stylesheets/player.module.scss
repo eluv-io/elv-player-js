@@ -1,7 +1,7 @@
 .player-target {
-  position: relative;
   font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   overscroll-behavior: none;
+  position: relative;
 }
 
 .player-container {
@@ -12,20 +12,20 @@
 
   --color-error: #f00;
 
-  position: absolute;
-  inset: 0;
   height: 100%;
+  inset: 0;
+  position: absolute;
   width: 100%;
 }
 
 .spinner-container {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  width: 100%;
-  display: flex;
   align-items: center;
+  display: flex;
+  height: 100%;
+  inset: 0;
   justify-content: center;
+  position: absolute;
+  width: 100%;
 
   .spinner {
     height: 50px;
@@ -38,39 +38,39 @@
 }
 
 .video {
+  background: transparent;
   height: 100%;
   object-fit: contain;
   width: 100%;
-  background: transparent;
   z-index: var(--layer-video);
 }
 
 .poster {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: 100%;
-  z-index: var(--layer-poster);
+  left: 0;
   object-fit: cover;
   object-position: center;
+  position: absolute;
+  top: 0;
   user-select: none;
+  width: 100%;
+  z-index: var(--layer-poster);
 }
 
 .error-message {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: var(--layer-error);
   color: var(--color-error);
-  top: 0;
-  left: 0;
+  display: flex;
   font-size: 24px;
   font-weight: 300;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  position: absolute;
   text-align: center;
+  top: 0;
+  width: 100%;
+  z-index: var(--layer-error);
 }
 
 .size-xl {
