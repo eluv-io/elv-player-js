@@ -1,7 +1,7 @@
 import TicketFormStyles from "../static/stylesheets/ticket-form.module.scss";
 
 import React, {useEffect, useState} from "react";
-import {Spinner} from "./Common";
+import {Spinner} from "./Components.jsx";
 
 const TicketForm = ({parameters, dimensions, onComplete}) => {
   let { tenantId, ntpId, ticketCode, ticketSubject } = (parameters.clientOptions || {});

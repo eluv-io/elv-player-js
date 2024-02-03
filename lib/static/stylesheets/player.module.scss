@@ -73,33 +73,9 @@
   z-index: var(--layer-error);
 }
 
-.size-xl {
-
-}
-
-.size-lg {
-
-}
-
-.size-md {
-
-}
-
-.size-sm {
-
-}
-
-.size-md,
-.size-sm {
+:global(.__eluvio-player--size-md),
+:global(.__eluvio-player--size-sm) {
   .error-message {
     font-size: 16px;
   }
-}
-
-.orientation-landscape {
-
-}
-
-.orientation-portrait {
-
 }

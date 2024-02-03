@@ -17,7 +17,8 @@ import {
 } from "./Observers.js";
 import WebControls from "./WebControls.jsx";
 import TicketForm from "./TicketForm.jsx";
-import {Spinner} from "./Common";
+import {Spinner} from "./Components.jsx";
+import TVControls from "./TVControls.jsx";
 
 const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
@@ -151,10 +152,11 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
         "--portal-width": `${dimensions.width}px`,
         "--portal-height": `${dimensions.height}px`
       }}
-      className={[PlayerStyles["player-container"], PlayerStyles[`size-${size}`], PlayerStyles[`orientation-${orientation}`]].join(" ")}
+      className={[PlayerStyles["player-container"], `__eluvio-player--size-${size}`, `__eluvio-player--orientation-${orientation}`].join(" ")}
     >
       <video
         playsInline
+        disablePictureInPicture
         ref={videoRef}
         muted={[EluvioPlayerParameters.muted.ON, EluvioPlayerParameters.muted.WHEN_NOT_VISIBLE].includes(parameters.playerOptions.muted)}
         controls={parameters.playerOptions.controls === EluvioPlayerParameters.controls.DEFAULT}
@@ -176,15 +178,20 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
           <div className={PlayerStyles["error-message"]}>{ errorMessage }</div>
       }
       {
-        player && parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB ?
-          <WebControls
-            player={player}
-            dimensions={{size, orientation}}
-            playbackStarted={!!playbackStarted}
-            recentlyInteracted={recentlyInteracted}
-            className={PlayerStyles.controls}
-          /> :
-          null
+        !player ? null :
+          parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB ?
+            <WebControls
+              player={player}
+              playbackStarted={!!playbackStarted}
+              recentlyInteracted={recentlyInteracted}
+              className={PlayerStyles.controls}
+            /> :
+            <TVControls
+              player={player}
+              playbackStarted={!!playbackStarted}
+              recentlyInteracted={recentlyInteracted}
+              className={PlayerStyles.controls}
+            />
       }
     </div>
   );
