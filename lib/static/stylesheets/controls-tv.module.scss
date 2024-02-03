@@ -125,7 +125,7 @@
   height: 125px;
   transition: opacity 0.5s ease;
   width: 125px;
-  z-index: var(--layer-poster);
+  z-index: var(--layer-controls);
 
   &--hidden {
     opacity: 0;
