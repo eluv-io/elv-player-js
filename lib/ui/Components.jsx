@@ -1,6 +1,7 @@
 import CommonStyles from "../static/stylesheets/common.module.scss";
 
-import {createRef, useEffect, useState} from "react";
+// eslint-disable-next-line no-unused-vars
+import React, {createRef, useEffect, useState} from "react";
 import {SeekSliderKeyDown} from "./Common.js";
 import {ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import * as Icons from "../static/icons/Icons.js";

@@ -1,9 +1,11 @@
-import {useEffect, useState} from "react";
 import ControlStyles from "../static/stylesheets/controls-tv.module.scss";
+
+// eslint-disable-next-line no-unused-vars
+import React, {useEffect, useState} from "react";
 import * as Icons from "../static/icons/Icons.js";
 import {ObserveVideo, ObserveVideoTime} from "./Observers.js";
 import "focus-visible";
-import {PlayerClick, Time, VolumeSliderKeydown} from "./Common.js";
+import {PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
