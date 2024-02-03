@@ -207,6 +207,13 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, className=""})
         menuActive ? "menu-active" : ""
       ].join(" ")}
     >
+      <IconButton
+        aria-label="Play"
+        tabIndex={playbackStarted ? -1 : 0}
+        icon={Icons.CenterPlayCircleIcon}
+        onClick={() => player.controls.Play()}
+        className={`${ControlStyles["center-play-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
+      />
       {
         showInfo ?
           <InfoBox player={player} Hide={() => setShowInfo(false)} /> :
@@ -249,13 +256,6 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, className=""})
             </div>
           </div>
       }
-      <IconButton
-        aria-label="Play"
-        tabIndex={playbackStarted ? -1 : 0}
-        icon={Icons.CenterPlayCircleIcon}
-        onClick={() => player.controls.Play()}
-        className={`${ControlStyles["center-play-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
-      />
       {
         // Watermark
         player.playerOptions.watermark === EluvioPlayerParameters.watermark.OFF ? null :

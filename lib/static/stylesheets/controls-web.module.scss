@@ -12,6 +12,7 @@
 
   --layer-title: 1;
   --layer-controls: 2;
+  --layer-center-button: 3;
 
   --color-highlight: #3784eb;
 
@@ -130,7 +131,7 @@
   height: 125px;
   transition: opacity 0.5s ease;
   width: 125px;
-  z-index: var(--layer-poster);
+  z-index: var(--layer-center-button);
 
   &--hidden {
     opacity: 0;

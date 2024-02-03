@@ -14,7 +14,8 @@
 
   --layer-title: 1;
   --layer-controls: 2;
-  --layer-info: 3;
+  --layer-info: 4;
+  --layer-center-button: 3;
 
   --color-highlight: #3784eb;
 
@@ -134,9 +135,10 @@
 
 .center-play-button {
   height: 125px;
+  position: relative;
   transition: opacity 0.5s ease;
   width: 125px;
-  z-index: var(--layer-controls);
+  z-index: var(--layer-center-button);
 
   &--hidden {
     opacity: 0;
@@ -346,8 +348,7 @@
 :global(.__eluvio-player--size-md),
 :global(.__eluvio-player--size-sm) {
   .center-play-button {
-    height: 75px;
-    width: 75px;
+    display: none;
   }
 
   .bottom-controls-container {
