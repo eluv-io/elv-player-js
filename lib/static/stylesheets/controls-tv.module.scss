@@ -111,14 +111,25 @@
 
 .bottom-controls-container {
   animation: 0.5s fadein ease;
-  background: linear-gradient(transparent, rgba(0,0,0,80%));
   bottom: 0;
   max-width: 100%;
-  padding: 100px 50px 30px;
+  padding: 0 50px 30px;
   position: absolute;
   transition: opacity 0.5s ease;
   width: 100%;
   z-index: var(--layer-controls);
+}
+
+.bottom-controls-gradient {
+  background: linear-gradient(transparent, rgba(0,0,0,100%));
+  bottom: 0;
+  height: 150%;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  user-select: none;
+  z-index: 0;
 }
 
 .center-play-button {
@@ -140,6 +151,7 @@
   display: flex;
   gap: 20px;
   margin-bottom: 10px;
+  position: relative;
   width: 100%;
 
   .title {
@@ -155,6 +167,7 @@
   align-items: center;
   display: flex;
   margin-top: 10px;
+  position: relative;
 }
 
 .bottom-controls {
@@ -244,6 +257,7 @@
   flex-grow: 1;
   gap: 10px;
   height: 100%;
+  padding-top: 10px;
 }
 
 .info-box-description {
@@ -321,6 +335,11 @@
   .info-box-container {
     left: 30px;
     right: 30px;
+  }
+
+  .center-play-button {
+    height: 100px;
+    width: 100px;
   }
 }
 

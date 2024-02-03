@@ -182,6 +182,7 @@ const WebControls = ({player, playbackStarted, recentlyInteracted, className=""}
               className={`${ControlStyles["center-play-button"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
             />
             <div className={`${ControlStyles["bottom-controls-container"]} ${player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
+              <div className={ControlStyles["bottom-controls-gradient"]} />
               <SeekBar player={player} videoState={videoState} className={ControlStyles["seek"]} />
               <div className={ControlStyles["controls"]}>
                 <IconButton

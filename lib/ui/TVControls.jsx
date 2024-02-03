@@ -42,10 +42,8 @@ const TimeIndicator = ({player, videoState}) => {
 const CenterButtons = ({player, videoState}) => {
   const collectionInfo = player.controls.GetCollectionInfo();
 
-  if(!collectionInfo || collectionInfo.mediaLength === 0) { return null; }
-
-  const previousMedia = collectionInfo.isPlaylist && collectionInfo.content[collectionInfo.mediaIndex - 1];
-  const nextMedia = collectionInfo.isPlaylist && collectionInfo.content[collectionInfo.mediaIndex + 1];
+  const previousMedia = collectionInfo && collectionInfo.isPlaylist && collectionInfo.content[collectionInfo.mediaIndex - 1];
+  const nextMedia = collectionInfo && collectionInfo.isPlaylist && collectionInfo.content[collectionInfo.mediaIndex + 1];
 
   const playerReady = player.controls.IsReady();
   return (
@@ -212,8 +210,8 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, className=""})
       {
         showInfo ?
           <InfoBox player={player} Hide={() => setShowInfo(false)} /> :
-          <div
-            className={`${ControlStyles["bottom-controls-container"]} ${player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
+          <div className={`${ControlStyles["bottom-controls-container"]} ${player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
+            <div className={ControlStyles["bottom-controls-gradient"]} />
             <div className={ControlStyles["title-container"]}>
               <div className={ControlStyles["title"]}>
                 {player.playerOptions.title === EluvioPlayerParameters.title.OFF ? "" : title || ""}
