@@ -173,14 +173,14 @@ const InfoBox = ({player, Hide}) => {
 };
 
 
-const TVControls = ({player, playbackStarted, recentlyInteracted, className=""}) => {
+const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserAction, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
   const [menuActive, setMenuActive] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
-    setPlayerClickHandler(PlayerClick({player}));
+    setPlayerClickHandler(PlayerClick({player, setRecentUserAction}));
 
     const disposeVideoObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
 

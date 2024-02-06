@@ -17,7 +17,7 @@ import {
 } from "./Observers.js";
 import WebControls from "./WebControls.jsx";
 import TicketForm from "./TicketForm.jsx";
-import {Spinner} from "./Components.jsx";
+import {Spinner, UserActionIndicator} from "./Components.jsx";
 import TVControls from "./TVControls.jsx";
 
 const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) => {
@@ -34,9 +34,12 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
   const [playbackStarted, setPlaybackStarted] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [recentlyInteracted, setRecentlyInteracted] = useState(true);
+  const [recentUserAction, setRecentUserAction] = useState(undefined);
   const videoRef = useRef();
 
   const playerSet = !!player;
+
+  const onUserAction = ({action, text}) => setRecentUserAction({action, text, key: Math.random()});
 
   useEffect(() => {
     setMounted(true);
@@ -54,8 +57,6 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
     if(!videoRef || !videoRef.current || !mounted) {
       return;
     }
-
-    //return;
 
     try {
       setPlaybackStarted(false);
@@ -98,7 +99,10 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
       });
 
       // Keyboard controls
-      const disposeKeyboardControls = ObserveKeydown({player: newPlayer});
+      const disposeKeyboardControls = ObserveKeydown({
+        player: newPlayer,
+        setRecentUserAction: onUserAction
+      });
 
       // Media session
       const disposeMediaSessionObserver = ObserveMediaSession({player: newPlayer});
@@ -184,14 +188,23 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
               player={player}
               playbackStarted={!!playbackStarted}
               recentlyInteracted={recentlyInteracted}
+              setRecentUserAction={onUserAction}
               className={PlayerStyles.controls}
             /> :
             <TVControls
               player={player}
               playbackStarted={!!playbackStarted}
               recentlyInteracted={recentlyInteracted}
+              setRecentUserAction={onUserAction}
               className={PlayerStyles.controls}
             />
+      }
+      {
+        !recentUserAction ? null :
+          <UserActionIndicator
+            action={recentUserAction}
+            key={`action-indicator-${recentUserAction && recentUserAction.key}`}
+          />
       }
     </div>
   );

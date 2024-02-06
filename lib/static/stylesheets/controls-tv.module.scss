@@ -388,7 +388,6 @@
   }
 
   .menu {
-    bottom: 100%;
     max-height: calc(var(--portal-height) - 250px)!important;
   }
 
@@ -411,6 +410,10 @@
 
   .info-box-description {
     font-size: 14px;
+  }
+
+  .watermark {
+    right: 30px;
   }
 }
 

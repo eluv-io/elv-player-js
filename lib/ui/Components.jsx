@@ -2,7 +2,7 @@ import CommonStyles from "../static/stylesheets/common.module.scss";
 
 // eslint-disable-next-line no-unused-vars
 import React, {createRef, useEffect, useState} from "react";
-import {SeekSliderKeyDown} from "./Common.js";
+import {ACTIONS, SeekSliderKeyDown} from "./Common.js";
 import {ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import * as Icons from "../static/icons/Icons.js";
 
@@ -15,6 +15,49 @@ export const Spinner = ({light, className=""}) => (
 );
 
 export const SVG = ({icon, className=""}) => <div className={`${CommonStyles["svg"]} ${className}`} dangerouslySetInnerHTML={{__html: icon}} />;
+
+
+const icons = {
+  [ACTIONS.PLAY]: Icons.PlayIcon,
+  [ACTIONS.PAUSE]: Icons.PauseIcon,
+  [ACTIONS.MUTE]: Icons.MutedIcon,
+  [ACTIONS.UNMUTE]: Icons.VolumeHighIcon,
+  [ACTIONS.VOLUME_DOWN]: Icons.VolumeLowIcon,
+  [ACTIONS.VOLUME_UP]: Icons.VolumeHighIcon,
+  [ACTIONS.SEEK_BACK]: Icons.BackwardIcon,
+  [ACTIONS.SEEK_FORWARD]: Icons.ForwardIcon,
+  [ACTIONS.PLAYBACK_RATE_DOWN]: Icons.BackwardIcon,
+  [ACTIONS.PLAYBACK_RATE_UP]: Icons.ForwardIcon,
+  [ACTIONS.SUBTITLES_ON]: Icons.CaptionsIcon,
+  [ACTIONS.SUBTITLES_OFF]: Icons.CaptionsOffIcon,
+  [ACTIONS.PLAY_PREVIOUS]: Icons.PreviousTrackIcon,
+  [ACTIONS.PLAY_NEXT]: Icons.NextTrackIcon
+};
+
+// Show a short indication when an action occurs due to keyboard controls etc.
+export const UserActionIndicator = ({action}) => {
+  if(!action || !icons[action.action]) {
+    return;
+  }
+
+  return (
+    <div className={CommonStyles["user-action-indicator-container"]}>
+      <div className={CommonStyles["user-action-indicator"]}>
+        <SVG
+          icon={icons[action.action]}
+          aria-label={`Action indicator ${action}`}
+          className={CommonStyles["user-action-indicator-icon"]}
+        />
+      </div>
+      {
+        !action.text ? null :
+          <div className={CommonStyles["user-action-indicator-text"]}>
+            { action.text }
+          </div>
+      }
+    </div>
+  );
+};
 
 export const SeekBar = ({player, videoState, className=""}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);

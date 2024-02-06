@@ -31,8 +31,8 @@ const Initialize = async () => {
 
   // Flash
   // versionHash = "hq__2C97Ma85zRS1pwD1dLk5PEzvuujK7y65hzZbjA2wiVQSL5EjfmGePCRAGv2dPr9rNbokvQit9d"; // clear
-  versionHash = "hq__2YAGWTsaw6FDv9S6QPwQ1VHTDVgctwDKXkC5qD4pCgJjJAidifpZ3ccxcGp7XLeyzmHxEakfXq"; // widevine
-  //authorizationToken = "acspjckaJceLc7Hr4vpS5eBkiW9uX9stHLDUdAYRepszwUxD2Jud7wM9Ay7g6jLnxSxNVvppV5s5MUtJoCaY4v3zE5xACfx9WAtrWe54aazs2abkQrMZyhNdLDgjRgrYARL6YgLjSGFrbH5nzxodb4eU9zky6SVBHF8n9Zq9ZWNoeT85gbD5mbveewgZL4QkVCUsARrbfHE7pJSUXiqq4Rzigwz2bakNijrhnpzhrW69cngT3485jJoz5UssNUNLzWwKwsCvZKrb39KuZU5nQgy9ofxroX5bkS8Qkm56QPjdZg";
+  //versionHash = "hq__2YAGWTsaw6FDv9S6QPwQ1VHTDVgctwDKXkC5qD4pCgJjJAidifpZ3ccxcGp7XLeyzmHxEakfXq"; // widevine
+  //authorizationToken = "acspjc27Y8gfK8Rm2Tbkm38sYE8ZZFwMumFmc5Kke7CdpkfyWCYZKC2dE82vmK4yVeHRtHiGc2EPB7wp2WoXePGCyK5bfvbvuH48YYegtvrYVCtiw5ULBgj5e47AbJUVSSruKc3zgsHZ3J2bgzaLRP1Xv3oQqkYxWxVVue4PUeDPNz5bPGygj6Kt68FR9X8r5WAqV2XxS45atYi7XR7SmfiMhcWb6m338znTp4UE7BtwhPgFexnZHtLQg39XJ6wKuU5bJEaGVZakyySD4PAL3ABgemMUR6LyfYrtciewxzae5vw";
 
 
   // Collection
@@ -73,7 +73,7 @@ const Initialize = async () => {
       },
       playerOptions: {
         //posterUrl: "https://miro.medium.com/v2/resize:fit:1099/1*5PeT0-Dch_KhFwjYwUWiDA.png",
-        ui: EluvioPlayerParameters.ui.TV,
+        //ui: EluvioPlayerParameters.ui.TV,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
         controls: EluvioPlayerParameters.controls.ON,

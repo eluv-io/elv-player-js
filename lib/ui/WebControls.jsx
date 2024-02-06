@@ -103,7 +103,12 @@ const VolumeControls = ({player, videoState}) => {
       <IconButton
         key="mute-button"
         aria-label={videoState.muted ? "Unmute" : "Mute"}
-        icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : videoState.volume < 0.5 ? Icons.VolumeLowIcon : Icons.VolumeHighIcon}
+        icon={
+          videoState.muted || videoState.volume === 0 ? Icons.MutedIcon :
+            videoState.volume < 0.4 ? Icons.VolumeLowIcon :
+              videoState.volume < 0.8 ? Icons.VolumeMediumIcon :
+                Icons.VolumeHighIcon
+        }
         onClick={() => player.controls.ToggleMuted()}
         className={ControlStyles["volume-button"]}
       />
@@ -129,13 +134,13 @@ const VolumeControls = ({player, videoState}) => {
   );
 };
 
-const WebControls = ({player, playbackStarted, recentlyInteracted, className=""}) => {
+const WebControls = ({player, playbackStarted, recentlyInteracted, setRecentUserAction, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
-  const [menuActive, setMenuActive] = useState(false);
+  const [activeMenus, setActiveMenus] = useState(0);
 
   useEffect(() => {
-    setPlayerClickHandler(PlayerClick({player}));
+    setPlayerClickHandler(PlayerClick({player, setRecentUserAction}));
 
     const disposeVideoObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
 
@@ -146,6 +151,8 @@ const WebControls = ({player, playbackStarted, recentlyInteracted, className=""}
 
   const { title, description } = (player.controls.GetContentTitle() || {});
   const collectionInfo = player.controls.GetCollectionInfo();
+  const menuActive = activeMenus > 0;
+  const setMenuActive = active => setActiveMenus(active ? activeMenus + 1 : Math.max(0, activeMenus - 1));
 
   return (
     <div
@@ -199,9 +206,21 @@ const WebControls = ({player, playbackStarted, recentlyInteracted, className=""}
 
                 {
                   !collectionInfo ? null :
-                    <MenuButton label="Collection Menu" icon={Icons.CollectionIcon} player={player} setMenuActive={setMenuActive} MenuComponent={CollectionMenu} />
+                    <MenuButton
+                      label="Collection Menu"
+                      icon={Icons.CollectionIcon}
+                      player={player}
+                      setMenuActive={setMenuActive}
+                      MenuComponent={CollectionMenu}
+                    />
                 }
-                <MenuButton label="Settings Menu" icon={Icons.SettingsIcon} player={player} setMenuActive={setMenuActive} MenuComponent={SettingsMenu} />
+                <MenuButton
+                  label="Settings Menu"
+                  icon={Icons.SettingsIcon}
+                  player={player}
+                  setMenuActive={setMenuActive}
+                  MenuComponent={SettingsMenu}
+                />
                 <IconButton
                   aria-label={videoState.fullscreen ? "Exit Fullscreen" : "Fullscreen"}
                   icon={videoState.fullscreen ? Icons.ExitFullscreenIcon : Icons.FullscreenIcon}

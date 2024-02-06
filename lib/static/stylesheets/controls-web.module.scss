@@ -13,6 +13,7 @@
   --layer-title: 1;
   --layer-controls: 2;
   --layer-center-button: 3;
+  --layer-menu: 4;
 
   --color-highlight: #3784eb;
 
@@ -24,7 +25,7 @@
   --color-volume-background: rgba(255, 255, 255, 20%);
   --color-volume-active: #fff;
 
-  --color-menu-background: rgba(25, 25, 25, 50%);
+  --color-menu-background: rgba(0, 0, 0, 75%);
   --color-menu-button-active: rgba(255, 255, 255, 10%);
   --color-menu-button-focused: rgba(255, 255, 255, 15%);
   --color-menu-text: #EEE;
@@ -38,6 +39,12 @@
   &--default-controls {
     pointer-events: none;
     user-select: none;
+  }
+
+  &:global(.menu-active) {
+    .bottom-controls-container {
+      z-index: var(--layer-menu);
+    }
   }
 }
 
@@ -342,6 +349,7 @@
     &:focus-visible {
       background-color: rgba(255, 255, 255, 85%);
       color: #000;
+      filter: drop-shadow(0 0 5px #FFF);
     }
 
     &:focus-visible {
@@ -415,10 +423,6 @@
 
   .volume-slider {
     display: none;
-  }
-
-  .menu-header {
-    font-size: 16px;
   }
 
   .watermark {
