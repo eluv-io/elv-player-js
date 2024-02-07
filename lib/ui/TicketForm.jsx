@@ -116,6 +116,7 @@ const TicketForm = ({parameters, dimensions, onComplete}) => {
               disabled={invalid}
               autoFocus
               type="text"
+              placeholder="Ticket Code"
               value={code}
               aria-label="Ticket Code"
               aria-invalid={!!errorMessage && !invalid}

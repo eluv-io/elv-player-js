@@ -66,6 +66,12 @@
   text-align: center;
   width: 100%;
 
+  &::placeholder {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: initial;
+  }
+
   &:disabled {
     cursor: default;
   }

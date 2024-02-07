@@ -152,7 +152,14 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
     },
     profile: {
       label: "Player Profile",
-      Update: index => player.controls.SetPlayerProfile(index)
+      Update: index => {
+        if(index === "custom") {
+          player.controls.ShowPlayerProfileForm();
+          Hide();
+        } else {
+          player.controls.SetPlayerProfile({profile: index});
+        }
+      }
     },
     rate: {
       label: "Playback Rate",

@@ -53,7 +53,7 @@ const Initialize = async () => {
         //promptTicket: true,
         tenantId: "iten4TXq2en3qtu3JREnE5tSLRf9zLod",
         ntpId: "QOTPLznozufnUVC",
-        ticketCode: "BkiWYk"
+        //ticketCode: "BkiWYk"
       },
       sourceOptions: {
         //protocols: ["dash"],
@@ -76,16 +76,17 @@ const Initialize = async () => {
         //ui: EluvioPlayerParameters.ui.TV,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
+        //controls: EluvioPlayerParameters.controls.AUTO_HIDE,
         controls: EluvioPlayerParameters.controls.ON,
         watermark: EluvioPlayerParameters.watermark.ON,
         autoplay: EluvioPlayerParameters.autoplay.OFF,
         title: EluvioPlayerParameters.title.ON,
         keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
-        maxBitrate: 50000,
+        //maxBitrate: 50000,
         debugLogging: true,
         hlsjsOptions: {
-          maxBufferLength: 1,
-          maxBufferSize: 0.5 * 1000 * 1000
+          //maxBufferLength: 1,
+          //maxBufferSize: 0.5 * 1000 * 1000
         }
       }
     }

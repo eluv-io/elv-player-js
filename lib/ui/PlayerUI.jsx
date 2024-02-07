@@ -19,6 +19,7 @@ import WebControls from "./WebControls.jsx";
 import TicketForm from "./TicketForm.jsx";
 import {Spinner, UserActionIndicator} from "./Components.jsx";
 import TVControls from "./TVControls.jsx";
+import PlayerProfileForm from "./PlayerProfileForm.jsx";
 
 const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
@@ -33,6 +34,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
   const [playerInitialized, setPlayerInitialized] = useState(false);
   const [playbackStarted, setPlaybackStarted] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showPlayerProfileForm, setShowPlayerProfileForm] = useState(false);
   const [recentlyInteracted, setRecentlyInteracted] = useState(true);
   const [recentUserAction, setRecentUserAction] = useState(undefined);
   const videoRef = useRef();
@@ -59,6 +61,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
     }
 
     try {
+      setPlayerInitialized(false);
       setPlaybackStarted(false);
 
       // Use ticket client if present
@@ -78,6 +81,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
         () => {
           setPlaybackStarted(newPlayer.playbackStarted);
           setPlayerInitialized(!newPlayer.loading);
+          setShowPlayerProfileForm(newPlayer.__showPlayerProfileForm);
         }
       );
 
@@ -158,6 +162,10 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
       }}
       className={[PlayerStyles["player-container"], `__eluvio-player--size-${size}`, `__eluvio-player--orientation-${orientation}`].join(" ")}
     >
+      {
+        !showPlayerProfileForm || !playerInitialized ? null :
+          <PlayerProfileForm player={player} Close={() => player.controls.HidePlayerProfileForm()} />
+      }
       <video
         playsInline
         disablePictureInPicture
