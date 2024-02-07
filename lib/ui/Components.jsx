@@ -127,7 +127,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const RemoveMenuListener = RegisterModal({element: menuRef.current, Hide});
+    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
 
     return () => RemoveMenuListener && RemoveMenuListener();
   }, [menuRef, menuRef?.current]);
@@ -253,7 +253,7 @@ export const CollectionMenu = ({player, Hide, className=""}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const RemoveMenuListener = RegisterModal({element: menuRef.current, Hide});
+    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
 
     return () => RemoveMenuListener && RemoveMenuListener();
   }, [menuRef, menuRef?.current]);
