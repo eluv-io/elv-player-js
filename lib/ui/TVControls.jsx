@@ -211,7 +211,11 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserA
         aria-label="Play"
         tabIndex={playbackStarted ? -1 : 0}
         icon={Icons.CenterPlayCircleIcon}
-        onClick={() => player.controls.Play()}
+        onClick={() => {
+          player.controls.Play();
+          // Take focus off of this button because it should no longer be selectable after playback starts
+          player.target.firstChild.focus();
+        }}
         className={`${ControlStyles["center-play-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
       />
       {

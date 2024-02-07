@@ -154,7 +154,8 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
   return (
     <div
       role="complementary"
-      tabIndex={-1}
+      aria-label="Eluvio Video Player"
+      tabIndex={0}
       style={{
         backgroundColor: parameters.playerOptions.backgroundColor || "transparent",
         "--portal-width": `${dimensions.width}px`,
