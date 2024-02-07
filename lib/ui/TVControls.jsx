@@ -251,7 +251,9 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserA
               </div>
               <CenterButtons player={player} videoState={videoState}/>
               <div className={ControlStyles["bottom-right-controls"]}>
-                <button className={ControlStyles["text-button"]}>Stream Selector</button>
+                {
+                  // <button className={ControlStyles["text-button"]}>Stream Selector</button>
+                }
               </div>
             </div>
           </div>
