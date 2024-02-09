@@ -20,6 +20,32 @@ import TicketForm from "./TicketForm.jsx";
 import {Spinner, UserActionIndicator} from "./Components.jsx";
 import TVControls from "./TVControls.jsx";
 import PlayerProfileForm from "./PlayerProfileForm.jsx";
+import {ImageUrl} from "./Common.js";
+
+const Poster = ({player}) => {
+  const [imageUrl, setImageUrl] = useState(undefined);
+
+  const { posterImage } = (player.controls.GetContentInfo() || {});
+
+  useEffect(() => {
+    setImageUrl(undefined);
+
+    if(!posterImage) { return; }
+
+    ImageUrl({player, pathOrUrl: posterImage, width: 200})
+      .then(imageUrl => setImageUrl(imageUrl));
+  }, [posterImage]);
+
+  if(!imageUrl) { return null; }
+
+  return (
+    <img
+      alt="Video Poster"
+      src={imageUrl}
+      className={PlayerStyles["poster"]}
+    />
+  );
+};
 
 const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) => {
   const [player, setPlayer] = useState(undefined);
@@ -177,8 +203,8 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
         className={PlayerStyles.video}
       />
       {
-        playbackStarted || !parameters.playerOptions.posterUrl ? null :
-          <img alt="Video Poster" src={parameters.playerOptions.posterUrl} className={PlayerStyles["poster"]} />
+        !player || playbackStarted ? null :
+          <Poster player={player} />
       }
       {
         playerInitialized || errorMessage ? null :
