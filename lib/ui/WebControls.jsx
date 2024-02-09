@@ -5,7 +5,7 @@ import React, {useEffect, useState} from "react";
 import * as Icons from "../static/icons/Icons.js";
 import {ObserveVideo, ObserveVideoTime} from "./Observers.js";
 import "focus-visible";
-import {PlayerClick, Time, VolumeSliderKeydown} from "./Common.js";
+import {ImageUrl, PlayerClick, Time, VolumeSliderKeydown} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
@@ -134,6 +134,50 @@ const VolumeControls = ({player, videoState}) => {
   );
 };
 
+const ContentInfo = ({player}) => {
+  const [imageUrl, setImageUrl] = useState(undefined);
+
+  const { title, description, image, headers } = (player.controls.GetContentInfo() || {});
+
+  useEffect(() => {
+    setImageUrl(undefined);
+
+    if(!image) { return; }
+
+    ImageUrl({player, pathOrUrl: image, width: 200})
+      .then(imageUrl => setImageUrl(imageUrl));
+  }, [image]);
+
+  if(!title || player.playerOptions.title === EluvioPlayerParameters.title.OFF) {
+    return null;
+  }
+
+  return (
+    <div className={ControlStyles["info-container"]}>
+      {
+        !imageUrl ? null :
+          <div className={ControlStyles["info-image-container"]}>
+            <img src={imageUrl} alt="Image" className={ControlStyles["info-image"]} />
+          </div>
+      }
+      <div className={ControlStyles["info-text"]}>
+        {
+          headers.length === 0 ? null :
+            <div className={ControlStyles["info-headers"]}>
+              {headers.map((text, index) =>
+                <div key={`header-${index}`} className={ControlStyles["info-header"]}>
+                  { text }
+                </div>
+              )}
+            </div>
+        }
+        <div className={ControlStyles["info-title"]}>{title}</div>
+        <div className={ControlStyles["info-description"]}>{description}</div>
+      </div>
+    </div>
+  );
+};
+
 const WebControls = ({player, playbackStarted, recentlyInteracted, setRecentUserAction, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
@@ -149,7 +193,7 @@ const WebControls = ({player, playbackStarted, recentlyInteracted, setRecentUser
 
   if(!videoState) { return null; }
 
-  const { title, description } = (player.controls.GetContentTitle() || {});
+
   const collectionInfo = player.controls.GetCollectionInfo();
   const menuActive = activeMenus > 0;
   const setMenuActive = active => setActiveMenus(active ? activeMenus + 1 : Math.max(0, activeMenus - 1));
@@ -165,14 +209,7 @@ const WebControls = ({player, playbackStarted, recentlyInteracted, setRecentUser
         menuActive ? "menu-active" : ""
       ].join(" ")}
     >
-      {
-        // Title and description
-        !title || player.playerOptions.title === EluvioPlayerParameters.title.OFF ? null :
-          <div className={ControlStyles["title-container"]}>
-            <div className={ControlStyles["title"]}>{title}</div>
-            <div className={ControlStyles["description"]}>{description}</div>
-          </div>
-      }
+      <ContentInfo key={`content-info-${collectionInfo && collectionInfo.mediaIndex}`} player={player} />
       {
         // Main bottom control bar
         [

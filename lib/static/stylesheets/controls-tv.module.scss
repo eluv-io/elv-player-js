@@ -30,6 +30,8 @@
   --color-menu-text: #282828;
   --color-menu-text-secondary: #666;
 
+  --content-image-size: 150px;
+
   &--default-controls {
     pointer-events: none;
     user-select: none;
@@ -229,7 +231,7 @@
 .info-box {
   align-items: center;
   backdrop-filter: blur(5px);
-  background: rgba(0, 0, 0, 70%);
+  background: rgba(10, 10, 10, 70%);
   border-radius: 7px;
   box-shadow: 0 0 32px 0 rgba(0, 0, 0, 100%);
   display: flex;
@@ -239,17 +241,18 @@
 
 .info-box-image-container {
   border-radius: 5px;
-  height: 125px;
-  min-height: 125px;
-  min-width: 125px;
+  height: var(--content-image-size);
+  min-height: var(--content-image-size);
+  min-width: var(--content-image-size);
   overflow: hidden;
-  width: 125px;
+  width: var(--content-image-size);
 }
 
 .info-box-image {
   background: #111;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   width: 100%;
 }
 
@@ -259,7 +262,18 @@
   flex-grow: 1;
   gap: 10px;
   height: 100%;
-  padding-top: 10px;
+
+  &--top-padding {
+    padding-top: 10px;
+  }
+}
+
+.info-box-headers {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 16px;
+  font-weight: 600;
+  gap: 20px;
 }
 
 .info-box-description {
@@ -398,7 +412,37 @@
   }
 
   .info-box {
+    padding-bottom: 75px;
+  }
+
+  .info-box-button--restart {
+    bottom: 15px;
+    font-size: 12px;
+    height: auto;
+    left: 15px;
+    padding-inline: 10px;
+    position: absolute;
+    width: 150px;
+  }
+
+  .info-box-title {
+    font-size: 20px;
+  }
+
+  .info-box-description {
+    font-size: 16px;
+  }
+
+  .watermark {
+    right: 30px;
+  }
+}
+
+:global(.__eluvio-player--size-sm) {
+  .info-box {
+    align-items: flex-start;
     flex-direction: column;
+    justify-content: flex-start;
     max-height: calc(var(--portal-height) - 125px);
     overflow-y: auto;
     padding: 50px 20px;
@@ -408,12 +452,9 @@
     font-size: 16px;
   }
 
+  .info-box-headers,
   .info-box-description {
-    font-size: 14px;
-  }
-
-  .watermark {
-    right: 30px;
+    font-size: 12px;
   }
 }
 

@@ -5,7 +5,7 @@ import React, {useEffect, useState} from "react";
 import * as Icons from "../static/icons/Icons.js";
 import {ObserveVideo, ObserveVideoTime} from "./Observers.js";
 import "focus-visible";
-import {PlayerClick, Time} from "./Common.js";
+import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
@@ -119,7 +119,18 @@ const MenuButton = ({label, icon, player, setMenuActive, MenuComponent}) => {
 };
 
 const InfoBox = ({player, Hide}) => {
-  const {title, description} = player.controls.GetContentTitle() || {};
+  const [imageUrl, setImageUrl] = useState(undefined);
+
+  const {title, description, image, headers} = player.controls.GetContentInfo() || {};
+
+  useEffect(() => {
+    setImageUrl(undefined);
+
+    if(!image) { return; }
+
+    ImageUrl({player, pathOrUrl: image, width: 200})
+      .then(imageUrl => setImageUrl(imageUrl));
+  }, [image]);
 
   useEffect(() => {
     const onEscape = event => {
@@ -133,7 +144,6 @@ const InfoBox = ({player, Hide}) => {
     return () => document.body.removeEventListener("keydown", onEscape);
   }, []);
 
-
   return (
     <div className={ControlStyles["info-box-container"]}>
       <button
@@ -144,10 +154,23 @@ const InfoBox = ({player, Hide}) => {
         Info
       </button>
       <div className={ControlStyles["info-box"]}>
-        <div className={ControlStyles["info-box-image-container"]}>
-          <div className={ControlStyles["info-box-image"]} />
-        </div>
-        <div className={ControlStyles["info-box-text"]}>
+        {
+          !imageUrl ? null :
+            <div className={ControlStyles["info-box-image-container"]}>
+              <img src={imageUrl} alt="Image" className={ControlStyles["info-box-image"]}/>
+            </div>
+        }
+        <div className={`${ControlStyles["info-box-text"]} ${imageUrl && headers && headers.length === 0 ? ControlStyles["info-box-text--top-padding"] : ""}`}>
+          {
+            !headers || headers.length === 0 ? null :
+              <div className={ControlStyles["info-box-headers"]}>
+                {headers.map((text, index) =>
+                  <div key={`header-${index}`} className={ControlStyles["info-box-header"]}>
+                    { text }
+                  </div>
+                )}
+              </div>
+          }
           <div className={ControlStyles["info-box-title"]}>
             { title || "" }
           </div>
@@ -191,7 +214,7 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserA
     return null;
   }
 
-  const { title } = (player.controls.GetContentTitle() || {});
+  const { title } = (player.controls.GetContentInfo() || {});
 
   const collectionInfo = player.controls.GetCollectionInfo();
 
@@ -251,7 +274,10 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserA
             <TimeIndicator player={player} videoState={videoState}/>
             <div className={ControlStyles["bottom-controls"]}>
               <div className={ControlStyles["bottom-left-controls"]}>
-                <button className={ControlStyles["text-button"]} onClick={() => setShowInfo(true)}>Info</button>
+                {
+                  !title || player.playerOptions.title === EluvioPlayerParameters.title.OFF ? null :
+                    <button className={ControlStyles["text-button"]} onClick={() => setShowInfo(true)}>Info</button>
+                }
               </div>
               <CenterButtons player={player} videoState={videoState}/>
               <div className={ControlStyles["bottom-right-controls"]}>

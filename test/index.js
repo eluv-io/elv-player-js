@@ -26,7 +26,7 @@ const Initialize = async () => {
 
   // Clear
 
-  //versionHash = "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo";
+  versionHash = "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo";
   //authorizationToken = "";
 
   // Flash
@@ -37,8 +37,10 @@ const Initialize = async () => {
 
   // Collection
   network = "DEMO";
-  mediaCatalogId = "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2";
-  mediaCollectionId = "JN8ecVA5Jt5cK2PjHXz12A";
+  //mediaCatalogId = "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2";
+  //mediaCollectionId = "JN8ecVA5Jt5cK2PjHXz12A";
+  // First item in collection
+  versionHash = "hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD";
 
   // Ticket content
   //network = "DEMO";
@@ -66,14 +68,16 @@ const Initialize = async () => {
           mediaCatalogObjectId: mediaCatalogId,
           collectionId: mediaCollectionId
         },
-        contentOptions: {
-          title: "My Big Title",
-          description: "My big description"
+        contentInfo: {
+          //title: "My Big Title",
+          description: "My big description",
+          headers: ["pg-13"],
+          image: "/public/display_image"
         }
       },
       playerOptions: {
         //posterUrl: "https://miro.medium.com/v2/resize:fit:1099/1*5PeT0-Dch_KhFwjYwUWiDA.png",
-        ui: EluvioPlayerParameters.ui.TV,
+        //ui: EluvioPlayerParameters.ui.TV,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
         //controls: EluvioPlayerParameters.controls.AUTO_HIDE,

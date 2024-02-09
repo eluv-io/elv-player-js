@@ -130,7 +130,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
     const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
 
     return () => RemoveMenuListener && RemoveMenuListener();
-  }, [menuRef, menuRef?.current]);
+  }, [menuRef && menuRef.current]);
 
   if(!options) { return null; }
 
@@ -204,32 +204,32 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
   return (
     <div key="menu" role="menu" className={`${CommonStyles["menu"]} ${CommonStyles["settings-menu"]} ${className}`} ref={menuRef}>
       <button autoFocus role="menuitem" onClick={() => SetSubmenu("quality")} className={CommonStyles["menu-option"]}>
-        { `${settings.quality.label}: ${options.quality.active?.activeLabel || ""}` }
+        { `${settings.quality.label}: ${(options.quality.active && options.quality.active.activeLabel) || ""}` }
         <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]} />
       </button>
       {
         options.audio.options.length <= 1 ? null :
           <button role="menuitem" onClick={() => SetSubmenu("audio")} className={CommonStyles["menu-option"]}>
-            { `${settings.audio.label}: ${options.audio.active?.label || ""}` }
+            { `${settings.audio.label}: ${(options.audio.active && options.audio.active.label) || ""}` }
             <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]} />
           </button>
       }
       {
         options.text.options.length <= 1 ? null :
           <button role="menuitem" onClick={() => SetSubmenu("text")} className={CommonStyles["menu-option"]}>
-            { `${settings.text.label}: ${options.text.active?.label || ""}` }
+            { `${settings.text.label}: ${(options.text.active && options.text.active.label) || ""}` }
             <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]} />
           </button>
       }
       {
         options.profile.options.length === 0 ? null :
           <button role="menuitem" onClick={() => SetSubmenu("profile")} className={CommonStyles["menu-option"]}>
-            { `${settings.profile.label}: ${options.profile.active?.label || ""}` }
+            { `${settings.profile.label}: ${(options.profile.active && options.profile.active.label) || ""}` }
             <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]} />
           </button>
       }
       <button role="menuitem" onClick={() => SetSubmenu("rate")} className={CommonStyles["menu-option"]}>
-        { `${settings.rate.label}: ${options.rate.active?.label || "" }` }
+        { `${settings.rate.label}: ${(options.rate.active && options.rate.active.label) || "" }` }
         <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]} />
       </button>
     </div>
@@ -256,7 +256,7 @@ export const CollectionMenu = ({player, Hide, className=""}) => {
     const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
 
     return () => RemoveMenuListener && RemoveMenuListener();
-  }, [menuRef, menuRef?.current]);
+  }, [menuRef && menuRef.current]);
 
   if(!collectionInfo) { return null; }
 
