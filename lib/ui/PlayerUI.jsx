@@ -103,7 +103,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
       window.__elvPlayer = newPlayer;
 
       // Observe player settings to keep track of whether playback has started
-      const disposePlayerSettingsListener = newPlayer.RegisterSettingsListener(
+      const disposePlayerSettingsListener = newPlayer.controls.RegisterSettingsListener(
         () => {
           setPlaybackStarted(newPlayer.playbackStarted);
           setPlayerInitialized(!newPlayer.loading);

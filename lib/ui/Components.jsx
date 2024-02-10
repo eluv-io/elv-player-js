@@ -119,7 +119,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
 
     UpdateSettings();
 
-    const disposePlayerSettingsListener = player.RegisterSettingsListener(UpdateSettings);
+    const disposePlayerSettingsListener = player.controls.RegisterSettingsListener(UpdateSettings);
 
     return () => disposePlayerSettingsListener && disposePlayerSettingsListener();
   }, []);
@@ -245,7 +245,7 @@ export const CollectionMenu = ({player, Hide, className=""}) => {
 
     UpdateCollectionInfo();
 
-    const disposePlayerSettingsListener = player.RegisterSettingsListener(UpdateCollectionInfo);
+    const disposePlayerSettingsListener = player.controls.RegisterSettingsListener(UpdateCollectionInfo);
 
     return () => disposePlayerSettingsListener && disposePlayerSettingsListener();
   }, []);

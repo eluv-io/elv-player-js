@@ -3,7 +3,6 @@
   "version": "1.0.137",
   "description": "![Eluvio Logo](lib/static/images/Logo.png \"Eluvio Logo\")",
   "main": "lib/index.js",
-  "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/eluv-io/elv-player-js",
   "scripts": {
@@ -13,6 +12,7 @@
     "serve-https": "SERVE_HTTPS=true vite --host 0.0.0.0 --port 8089",
     "build": "npm run build-icons ; vite build",
     "build-analyze": "vite-bundle-visualizer",
+    "build-docs": "echo \"\n\n**** Note: \"type\" must be removed or changed to 'commonjs' in package.json for docs build to work ***\n\n\n\" && ./node_modules/.bin/jsdoc --configure ./.jsdoc.json --readme README.md",
     "preview": "vite preview",
     "build-icons": "node lib/ui/BuildIcons.cjs",
     "lint": "npm run fix-scss ; npm run fix-js",
@@ -56,6 +56,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "jsdoc": "^4.0.0",
     "stylelint": "^16.2.0",
     "stylelint-config-standard": "^36.0.0",
     "stylelint-order": "^6.0.4",
