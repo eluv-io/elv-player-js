@@ -32,7 +32,8 @@ export default defineConfig(() => {
       lib: {
         entry: path.resolve(__dirname, "lib/index.js"),
         name: "@eluvio/elv-player-js",
-        fileName: (format) => `elv-player-js.${format}.js`
+        fileName: (format) => `elv-player-js.${format}.js`,
+        formats: ["es", "cjs"]
       },
       cssCodeSplit: false,
       manifest: true

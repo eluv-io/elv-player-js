@@ -12,7 +12,7 @@
     "serve-https": "SERVE_HTTPS=true vite --host 0.0.0.0 --port 8089",
     "build": "npm run build-icons ; vite build",
     "build-analyze": "vite-bundle-visualizer",
-    "build-docs": "echo \"\n\n**** Note: \"type\" must be removed or changed to 'commonjs' in package.json for docs build to work ***\n\n\n\" && ./node_modules/.bin/jsdoc --configure ./.jsdoc.json --readme README.md",
+    "build-docs": "./node_modules/.bin/jsdoc --configure ./.jsdoc.json --readme README.md",
     "preview": "vite preview",
     "build-icons": "node lib/ui/BuildIcons.cjs",
     "lint": "npm run fix-scss ; npm run fix-js",
