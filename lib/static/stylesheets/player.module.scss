@@ -9,6 +9,7 @@
   --layer-poster: 2;
   --layer-error: 3;
   --layer-controls: 4;
+  --layer-spinner: 5;
 
   --color-highlight: #3784eb;
   --color-error: #f00;
@@ -27,6 +28,7 @@
   justify-content: center;
   position: absolute;
   width: 100%;
+  z-index: var(--layer-spinner);
 
   .spinner {
     height: 50px;
