@@ -112,9 +112,11 @@ class PlayerControls {
    * Play the video
    *
    * @methodGroup Playback
+   *
+   * @returns {boolean} - Whether or not the video was able to start playing. Browser autoplay policies may block video from playing without user interaction.
    */
-  Play() {
-    this.player.video.play();
+  async Play() {
+    return await this.player.__Play();
   }
 
   /**
