@@ -256,7 +256,7 @@ export const CollectionMenu = ({player, Hide, className=""}) => {
     const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
 
     return () => RemoveMenuListener && RemoveMenuListener();
-  }, [menuRef && menuRef.current]);
+  }, [menuRef]);
 
   if(!collectionInfo) { return null; }
 
