@@ -3,11 +3,9 @@ import PlayerStyles from "../static/stylesheets/player.module.scss";
 
 import React, {useEffect, useRef, useState} from "react";
 import ReactDOM from "react-dom/client";
-import MergeWith from "lodash/mergeWith.js";
-import Clone from "lodash/cloneDeep.js";
 
 import EluvioPlayer from "../player/Player.js";
-import EluvioPlayerParameters, {DefaultParameters} from "../player/PlayerParameters.js";
+import EluvioPlayerParameters from "../player/PlayerParameters.js";
 import {
   ObserveInteraction,
   ObserveKeydown,
@@ -20,7 +18,7 @@ import TicketForm from "./TicketForm.jsx";
 import {Spinner, UserActionIndicator} from "./Components.jsx";
 import TVControls from "./TVControls.jsx";
 import PlayerProfileForm from "./PlayerProfileForm.jsx";
-import {ImageUrl} from "./Common.js";
+import {ImageUrl, MergeDefaultParameters} from "./Common.js";
 
 const Poster = ({player}) => {
   const [imageUrl, setImageUrl] = useState(undefined);
@@ -47,7 +45,7 @@ const Poster = ({player}) => {
   );
 };
 
-const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) => {
+const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Reset}) => {
   const [player, setPlayer] = useState(undefined);
   const [client, setClient] = useState(undefined);
   const [size, setSize] = useState("lg");
@@ -115,6 +113,10 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
       newPlayer.Destroy = () => {
         newPlayer.__DestroyPlayer();
         Unmount();
+      };
+
+      newPlayer.Reset = () => {
+        Reset();
       };
 
       // Observe whether player is visible for autoplay/mute on visibility functionality
@@ -245,20 +247,24 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount}) =>
   );
 };
 
+const PlayerWrapper = (args) => {
+  const [playerKey, setPlayerKey] = useState(Math.random());
+
+  return (
+    <PlayerUI
+      {...args}
+      key={`player-${playerKey}`}
+      Reset={() => setPlayerKey(Math.random())}
+    />
+  );
+};
+
 const Initialize = (target, parameters) => {
   target.innerHTML = "";
   target.classList.add(ResetStyle.reset);
   target.classList.add(PlayerStyles["player-target"]);
 
-  const clientOptions = parameters.clientOptions;
-
-  // Clone parameters and merge with defaults, but *ensure client is not cloned*
-  parameters = MergeWith(
-    Clone(DefaultParameters),
-    Clone({...parameters, clientOptions: undefined})
-  );
-
-  parameters.clientOptions = clientOptions;
+  parameters = MergeDefaultParameters(parameters);
 
   if(parameters.playerOptions && parameters.playerOptions.backgroundColor) {
     target.style.backgroundColor = parameters.playerOptions.backgroundColor;
@@ -269,7 +275,7 @@ const Initialize = (target, parameters) => {
 
     root.render(
       <React.StrictMode>
-        <PlayerUI
+        <PlayerWrapper
           target={target}
           parameters={parameters}
           InitCallback={resolve}

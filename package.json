@@ -40,7 +40,6 @@
     "dashjs": "~4.7.0",
     "focus-visible": "^5.2.0",
     "hls.js": "~1.4.12",
-    "lodash": "^4.17.21",
     "mux-embed": "^4.30.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -61,6 +60,7 @@
     "stylelint-config-standard": "^36.0.0",
     "stylelint-order": "^6.0.4",
     "stylelint-scss": "^6.1.0",
+    "taffydb": "^2.7.3",
     "vite": "^5.0.11",
     "vite-bundle-visualizer": "^1.0.0",
     "vite-plugin-svgr": "^4.2.0"
