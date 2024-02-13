@@ -28,7 +28,7 @@
   justify-content: center;
   position: absolute;
   width: 100%;
-  z-index: var(--layer-spinner);
+  //z-index: var(--layer-spinner);
 
   .spinner {
     height: 50px;
@@ -57,7 +57,7 @@
   top: 0;
   user-select: none;
   width: 100%;
-  z-index: var(--layer-poster);
+  //z-index: var(--layer-poster);
 }
 
 .error-message {
