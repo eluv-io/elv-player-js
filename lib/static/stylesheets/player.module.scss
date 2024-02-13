@@ -6,8 +6,6 @@
 
 .player-container {
   --layer-video: 1;
-  --layer-poster: 2;
-  --layer-spinner: 3;
   --layer-error: 4;
   --layer-controls: 5;
 
@@ -28,7 +26,6 @@
   justify-content: center;
   position: absolute;
   width: 100%;
-  //z-index: var(--layer-spinner);
 
   .spinner {
     height: 50px;
@@ -57,7 +54,6 @@
   top: 0;
   user-select: none;
   width: 100%;
-  //z-index: var(--layer-poster);
 }
 
 .error-message {

@@ -84,7 +84,7 @@ const Initialize = async () => {
         //controls: EluvioPlayerParameters.controls.AUTO_HIDE,
         controls: EluvioPlayerParameters.controls.ON,
         watermark: EluvioPlayerParameters.watermark.ON,
-        autoplay: EluvioPlayerParameters.autoplay.OFF,
+        autoplay: EluvioPlayerParameters.autoplay.WHEN_VISIBLE,
         title: EluvioPlayerParameters.title.ON,
         keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
         //maxBitrate: 50000,
