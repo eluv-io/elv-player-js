@@ -388,11 +388,12 @@ class PlayerControls {
    * @namedParams
    * @param {number=} mediaIndex - Specify a collection item by its index in the collection
    * @param {string=} mediaId - Specify a collection item by its ID
+   * @param {boolean=} autoplay - Whether or not the video should automatically start playing when the collection item starts. If omitted, autoplay state will depend on whether the video is currently playing.
    */
-  CollectionPlay({mediaIndex, mediaId}) {
+  CollectionPlay({mediaIndex, mediaId, autoplay}) {
     if(this.player.loading) { return; }
 
-    this.player.__CollectionPlay({mediaId, mediaIndex});
+    this.player.__CollectionPlay({mediaId, mediaIndex, autoplay});
 
     this.player.__SettingsUpdate();
   }
@@ -401,8 +402,10 @@ class PlayerControls {
    * Play the next item in the collection, if present
    *
    * @methodGroup Collections
+   * @namedParams
+   * @param {boolean=} autoplay - Whether or not the video should automatically start playing when the collection item starts. If omitted, autoplay state will depend on whether the video is currently playing.
    */
-  CollectionPlayNext() {
+  CollectionPlayNext({autoplay}={}) {
     const collectionInfo = this.GetCollectionInfo();
 
     if(!collectionInfo) { return; }
@@ -411,15 +414,17 @@ class PlayerControls {
 
     if(nextIndex === collectionInfo.mediaIndex) { return; }
 
-    this.CollectionPlay({mediaIndex: nextIndex});
+    this.CollectionPlay({mediaIndex: nextIndex, autoplay});
   }
 
   /**
    * Play the previous item in the collection, if present
    *
    * @methodGroup Collections
+   * @namedParams
+   * @param {boolean=} autoplay - Whether or not the video should automatically start playing when the collection item starts. If omitted, autoplay state will depend on whether the video is currently playing.
    */
-  CollectionPlayPrevious() {
+  CollectionPlayPrevious({autoplay}={}) {
     const collectionInfo = this.GetCollectionInfo();
 
     if(!collectionInfo) { return; }
@@ -428,7 +433,7 @@ class PlayerControls {
 
     if(previousIndex === collectionInfo.mediaIndex) { return; }
 
-    this.CollectionPlay({mediaIndex: previousIndex});
+    this.CollectionPlay({mediaIndex: previousIndex, autoplay});
   }
 
   // Content
@@ -448,7 +453,7 @@ class PlayerControls {
           title: collectionInfo.active.title || "",
           description: collectionInfo.active.description || "",
           image: (collectionInfo.active.image &amp;&amp; collectionInfo.active.image.url) || "",
-          posterImage: (collectionInfo.active.posterImage &amp;&amp; collectionInfo.active.posterImage.url) || "",
+          posterImage: (collectionInfo.active.poster_image &amp;&amp; collectionInfo.active.poster_image.url) || "",
           headers: collectionInfo.active.headers || []
         };
       } else if(this.player.sourceOptions.contentInfo) {

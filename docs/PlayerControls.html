@@ -177,7 +177,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
     </a>
     <h4 class="name" id="CollectionPlay">
-      <span class="type-signature"></span>CollectionPlay<span class="signature">({<div class="block-param">mediaIndex<span class="signature-attributes">optional</span>,</div><div class="block-param">mediaId<span class="signature-attributes">optional</span></div>})</span><span class="type-signature"></span>
+      <span class="type-signature"></span>CollectionPlay<span class="signature">({<div class="block-param">mediaIndex<span class="signature-attributes">optional</span>,</div><div class="block-param">mediaId<span class="signature-attributes">optional</span>,</div><div class="block-param">autoplay<span class="signature-attributes">optional</span></div>})</span><span class="type-signature"></span>
     </h4>
   </span>
 
@@ -301,6 +301,45 @@
       </tr>
 
     
+      <tr>
+        
+          <td class="name"><code>autoplay</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      boolean
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+          <td class="attributes">
+            
+              &lt;optional><br>
+            
+
+            
+
+            
+          </td>
+        
+
+        
+
+        <td class="description last">
+          <p>Whether or not the video should automatically start playing when the collection item starts. If omitted, autoplay state will depend on whether the video is currently playing.</p>
+          
+        </td>
+      </tr>
+
+    
   </tbody>
 </table>
 
@@ -351,7 +390,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line341">line 341</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line342">line 342</a>
         </li>
       </ul>
     </dd>
@@ -374,7 +413,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
     </a>
     <h4 class="name" id="CollectionPlayNext">
-      <span class="type-signature"></span>CollectionPlayNext<span class="signature">()</span><span class="type-signature"></span>
+      <span class="type-signature"></span>CollectionPlayNext<span class="signature">({<span class="inline-param">autoplay<span class="signature-attributes">optional</span></span>})</span><span class="type-signature"></span>
     </h4>
   </span>
 
@@ -394,6 +433,73 @@
 
 
 
+
+
+  <h5>Parameters:</h5>
+  
+
+<table class="params">
+  <thead>
+    <tr>
+      
+        <th>Name</th>
+      
+
+      <th>Type</th>
+
+      
+        <th>Attributes</th>
+      
+
+      
+
+      <th class="last">Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    
+      <tr>
+        
+          <td class="name"><code>autoplay</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      boolean
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+          <td class="attributes">
+            
+              &lt;optional><br>
+            
+
+            
+
+            
+          </td>
+        
+
+        
+
+        <td class="description last">
+          <p>Whether or not the video should automatically start playing when the collection item starts. If omitted, autoplay state will depend on whether the video is currently playing.</p>
+          
+        </td>
+      </tr>
+
+    
+  </tbody>
+</table>
 
 
 
@@ -442,7 +548,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line354">line 354</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line357">line 357</a>
         </li>
       </ul>
     </dd>
@@ -465,7 +571,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
     </a>
     <h4 class="name" id="CollectionPlayPrevious">
-      <span class="type-signature"></span>CollectionPlayPrevious<span class="signature">()</span><span class="type-signature"></span>
+      <span class="type-signature"></span>CollectionPlayPrevious<span class="signature">({<span class="inline-param">autoplay<span class="signature-attributes">optional</span></span>})</span><span class="type-signature"></span>
     </h4>
   </span>
 
@@ -485,6 +591,73 @@
 
 
 
+
+
+  <h5>Parameters:</h5>
+  
+
+<table class="params">
+  <thead>
+    <tr>
+      
+        <th>Name</th>
+      
+
+      <th>Type</th>
+
+      
+        <th>Attributes</th>
+      
+
+      
+
+      <th class="last">Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    
+      <tr>
+        
+          <td class="name"><code>autoplay</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      boolean
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+          <td class="attributes">
+            
+              &lt;optional><br>
+            
+
+            
+
+            
+          </td>
+        
+
+        
+
+        <td class="description last">
+          <p>Whether or not the video should automatically start playing when the collection item starts. If omitted, autoplay state will depend on whether the video is currently playing.</p>
+          
+        </td>
+      </tr>
+
+    
+  </tbody>
+</table>
 
 
 
@@ -533,7 +706,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line371">line 371</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line376">line 376</a>
         </li>
       </ul>
     </dd>
@@ -624,7 +797,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line823">line 823</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line828">line 828</a>
         </li>
       </ul>
     </dd>
@@ -904,7 +1077,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line512">line 512</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line517">line 517</a>
         </li>
       </ul>
     </dd>
@@ -1100,7 +1273,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line392">line 392</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line397">line 397</a>
         </li>
       </ul>
     </dd>
@@ -1394,7 +1567,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line677">line 677</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line682">line 682</a>
         </li>
       </ul>
     </dd>
@@ -1492,7 +1665,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line742">line 742</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line747">line 747</a>
         </li>
       </ul>
     </dd>
@@ -1590,7 +1763,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line424">line 424</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line429">line 429</a>
         </li>
       </ul>
     </dd>
@@ -1688,7 +1861,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line568">line 568</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line573">line 573</a>
         </li>
       </ul>
     </dd>
@@ -1975,7 +2148,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line786">line 786</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line791">line 791</a>
         </li>
       </ul>
     </dd>
@@ -2784,7 +2957,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line814">line 814</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line819">line 819</a>
         </li>
       </ul>
     </dd>
@@ -2949,7 +3122,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line802">line 802</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line807">line 807</a>
         </li>
       </ul>
     </dd>
@@ -3329,7 +3502,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line547">line 547</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line552">line 552</a>
         </li>
       </ul>
     </dd>
@@ -3533,7 +3706,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line713">line 713</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line718">line 718</a>
         </li>
       </ul>
     </dd>
@@ -3728,7 +3901,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line767">line 767</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line772">line 772</a>
         </li>
       </ul>
     </dd>
@@ -3865,7 +4038,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line480">line 480</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line485">line 485</a>
         </li>
       </ul>
     </dd>
@@ -4002,7 +4175,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line611">line 611</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line616">line 616</a>
         </li>
       </ul>
     </dd>
@@ -4297,7 +4470,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line776">line 776</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line781">line 781</a>
         </li>
       </ul>
     </dd>
@@ -4786,7 +4959,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line642">line 642</a>
+          <a href="Controls.js.html">Controls.js</a>, <a href="Controls.js.html#line647">line 647</a>
         </li>
       </ul>
     </dd>
