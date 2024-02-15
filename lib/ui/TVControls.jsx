@@ -270,7 +270,7 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserA
                 setMenuActive={setMenuActive}
               />
             </div>
-            <SeekBar player={player} videoState={videoState}/>
+            <SeekBar player={player} videoState={videoState} setRecentUserAction={setRecentUserAction} />
             <TimeIndicator player={player} videoState={videoState}/>
             <div className={ControlStyles["bottom-controls"]}>
               <div className={ControlStyles["bottom-left-controls"]}>

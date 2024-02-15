@@ -59,13 +59,13 @@ export const UserActionIndicator = ({action}) => {
   );
 };
 
-export const SeekBar = ({player, videoState, className=""}) => {
+export const SeekBar = ({player, videoState, setRecentUserAction, className=""}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
   const [bufferFraction, setBufferFraction] = useState(0);
   const [seekKeydownHandler, setSeekKeydownHandler] = useState(undefined);
 
   useEffect(() => {
-    setSeekKeydownHandler(SeekSliderKeyDown(player));
+    setSeekKeydownHandler(SeekSliderKeyDown(player, setRecentUserAction));
 
     const disposeVideoTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 60});
     const disposeVideoBufferObserver = ObserveVideoBuffer({video: player.video, setBufferFraction});
