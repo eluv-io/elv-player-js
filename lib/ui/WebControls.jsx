@@ -178,7 +178,7 @@ const ContentInfo = ({player}) => {
   );
 };
 
-const WebControls = ({player, playbackStarted, recentlyInteracted, setRecentUserAction, className=""}) => {
+const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRecentUserAction, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
   const [activeMenus, setActiveMenus] = useState(0);
@@ -193,10 +193,15 @@ const WebControls = ({player, playbackStarted, recentlyInteracted, setRecentUser
 
   if(!videoState) { return null; }
 
-
   const collectionInfo = player.controls.GetCollectionInfo();
   const menuActive = activeMenus > 0;
   const setMenuActive = active => setActiveMenus(active ? activeMenus + 1 : Math.max(0, activeMenus - 1));
+
+  // Title autohide is not dependent on controls settings
+  const showUI = recentlyInteracted || !playbackStarted || menuActive;
+  const hideControls = !showUI && player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE;
+
+  player.__SetControlsVisibility(!hideControls);
 
   return (
     <div
@@ -204,7 +209,7 @@ const WebControls = ({player, playbackStarted, recentlyInteracted, setRecentUser
       className={[
         className,
         ControlStyles["container"],
-        recentlyInteracted || !playbackStarted || menuActive ? "" : ControlStyles["autohide"],
+        showUI ? "" : ControlStyles["autohide"],
         player.playerOptions.controls !== EluvioPlayerParameters.controls.DEFAULT ? "" : ControlStyles["container--default-controls"],
         menuActive ? "menu-active" : ""
       ].join(" ")}
@@ -227,9 +232,9 @@ const WebControls = ({player, playbackStarted, recentlyInteracted, setRecentUser
                 // Take focus off of this button because it should no longer be selectable after playback starts
                 player.target.firstChild.focus();
               }}
-              className={`${ControlStyles["center-play-button"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
+              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
             />
-            <div className={`${ControlStyles["bottom-controls-container"]} ${player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
+            <div className={`${ControlStyles["bottom-controls-container"]} ${hideControls ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
               <div className={ControlStyles["bottom-controls-gradient"]} />
               <SeekBar player={player} videoState={videoState} setRecentUserAction={setRecentUserAction} className={ControlStyles["seek"]} />
               <div className={ControlStyles["controls"]}>

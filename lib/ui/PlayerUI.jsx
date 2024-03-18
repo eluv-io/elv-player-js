@@ -57,6 +57,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
   const [errorMessage, setErrorMessage] = useState(undefined);
   const [playerInitialized, setPlayerInitialized] = useState(false);
   const [playbackStarted, setPlaybackStarted] = useState(false);
+  const [canPlay, setCanPlay] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showPlayerProfileForm, setShowPlayerProfileForm] = useState(false);
   const [recentlyInteracted, setRecentlyInteracted] = useState(true);
@@ -125,7 +126,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
       // Observe interaction for autohiding control elements
       const disposeInteractionObserver = ObserveInteraction({
         player: newPlayer,
-        inactivityPeriod: 3000,
+        inactivityPeriod: 5000,
         onWake: () => setRecentlyInteracted(true),
         onSleep: () => setRecentlyInteracted(false)
       });
@@ -142,6 +143,9 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
       InitCallback(newPlayer);
       setPlayer(newPlayer);
 
+      // Can play
+      const disposeCanPlayListener = newPlayer.controls.RegisterVideoEventListener("canplay", () => setCanPlay(true));
+
       return () => {
         videoRef && videoRef.current && videoRef.current.removeEventListener("play", setPlaybackStarted);
 
@@ -150,6 +154,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
         disposeInteractionObserver && disposeInteractionObserver();
         disposeKeyboardControls && disposeKeyboardControls();
         disposeMediaSessionObserver && disposeMediaSessionObserver();
+        disposeCanPlayListener && disposeCanPlayListener();
 
         newPlayer && newPlayer.__DestroyPlayer();
       };
@@ -205,7 +210,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
         className={PlayerStyles.video}
       />
       {
-        !player || playbackStarted ? null :
+        !player || playbackStarted || !canPlay ? null :
           <Poster player={player} />
       }
       {
@@ -224,6 +229,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
             <WebControls
               player={player}
               playbackStarted={!!playbackStarted}
+              canPlay={canPlay}
               recentlyInteracted={recentlyInteracted}
               setRecentUserAction={onUserAction}
               className={PlayerStyles.controls}
@@ -231,6 +237,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
             <TVControls
               player={player}
               playbackStarted={!!playbackStarted}
+              canPlay={canPlay}
               recentlyInteracted={recentlyInteracted}
               setRecentUserAction={onUserAction}
               className={PlayerStyles.controls}
@@ -280,7 +287,17 @@ const Initialize = (target, parameters) => {
           parameters={parameters}
           InitCallback={resolve}
           ErrorCallback={reject}
-          Unmount={() => root.unmount()}
+          Unmount={async () => {
+            try {
+              await root.unmount();
+            } catch(error) {
+              // eslint-disable-next-line no-console
+              console.error("Failed to unmount Eluvio Player");
+              // eslint-disable-next-line no-console
+              console.error(error);
+            }
+          }
+          }
         />
       </React.StrictMode>
     );

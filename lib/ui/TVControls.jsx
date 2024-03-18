@@ -196,7 +196,7 @@ const InfoBox = ({player, Hide}) => {
 };
 
 
-const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserAction, className=""}) => {
+const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRecentUserAction, className=""}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
   const [menuActive, setMenuActive] = useState(false);
@@ -218,6 +218,12 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserA
 
   const collectionInfo = player.controls.GetCollectionInfo();
 
+  // Title autohide is not dependent on controls settings
+  const showUI = recentlyInteracted || !playbackStarted || menuActive;
+  const hideControls = !showUI && player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE;
+
+  player.__SetControlsVisibility(!hideControls);
+
   return (
     <div
       key="controls"
@@ -225,7 +231,7 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserA
       className={[
         className,
         ControlStyles["container"],
-        recentlyInteracted || !playbackStarted || menuActive ? "" : ControlStyles["autohide"],
+        showUI ? "" : ControlStyles["autohide"],
         player.playerOptions.controls !== EluvioPlayerParameters.controls.DEFAULT ? "" : ControlStyles["container--default-controls"],
         menuActive ? "menu-active" : ""
       ].join(" ")}
@@ -239,12 +245,12 @@ const TVControls = ({player, playbackStarted, recentlyInteracted, setRecentUserA
           // Take focus off of this button because it should no longer be selectable after playback starts
           player.target.firstChild.focus();
         }}
-        className={`${ControlStyles["center-play-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]} ${!playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
+        className={`${ControlStyles["center-play-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]} ${canPlay && !playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
       />
       {
         showInfo ?
           <InfoBox player={player} Hide={() => setShowInfo(false)} /> :
-          <div className={`${ControlStyles["bottom-controls-container"]} ${player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
+          <div className={`${ControlStyles["bottom-controls-container"]} ${hideControls ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
             <div className={ControlStyles["bottom-controls-gradient"]} />
             <div className={ControlStyles["title-container"]}>
               <div className={ControlStyles["title"]}>
