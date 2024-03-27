@@ -2,9 +2,10 @@ import CommonStyles from "../static/stylesheets/common.module.scss";
 
 // eslint-disable-next-line no-unused-vars
 import React, {createRef, useEffect, useState} from "react";
-import {ACTIONS, SeekSliderKeyDown} from "./Common.js";
+import {ACTIONS, SeekSliderKeyDown, VolumeSliderKeydown} from "./Common.js";
 import {ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import * as Icons from "../static/icons/Icons.js";
+import {IconButton} from "./WebControls";
 
 // Components
 
@@ -76,6 +77,10 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
     };
   }, []);
 
+  if(player.isLive) {
+    return null;
+  }
+
   return (
     <div className={`${className} ${CommonStyles["seek-container"]} ${className}`}>
       <progress
@@ -99,6 +104,43 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
         onKeyDown={seekKeydownHandler}
         className={CommonStyles["seek-input"]}
       />
+    </div>
+  );
+};
+
+export const VolumeControls = ({player, videoState}) => {
+  return (
+    <div className={CommonStyles["volume-controls"]}>
+      <IconButton
+        key="mute-button"
+        aria-label={videoState.muted ? "Unmute" : "Mute"}
+        icon={
+          videoState.muted || videoState.volume === 0 ? Icons.MutedIcon :
+            videoState.volume < 0.4 ? Icons.VolumeLowIcon :
+              videoState.volume < 0.8 ? Icons.VolumeMediumIcon :
+                Icons.VolumeHighIcon
+        }
+        onClick={() => player.controls.ToggleMuted()}
+        className={CommonStyles["volume-button"]}
+      />
+      <div className={CommonStyles["volume-slider"]}>
+        <progress
+          max={1}
+          value={videoState.muted ? 0 : videoState.volume}
+          className={CommonStyles["volume-progress"]}
+        />
+        <input
+          aria-label="Volume slider"
+          type="range"
+          min={0}
+          max={1}
+          step={0.001}
+          value={videoState.muted ? 0 : videoState.volume}
+          onInput={event => player.controls.SetVolume({fraction: event.currentTarget.value})}
+          onKeyDown={VolumeSliderKeydown(player)}
+          className={CommonStyles["volume-input"]}
+        />
+      </div>
     </div>
   );
 };

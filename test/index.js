@@ -20,13 +20,13 @@ const Initialize = async () => {
 
   let network = "MAIN";
 
-  let versionHash, authorizationToken, mediaCatalogId, mediaCollectionId;
+  let objectId, versionHash, authorizationToken, mediaCatalogId, mediaCollectionId;
   const ticketCode = "BkiWYk";
 
 
   // Clear
 
-  versionHash = "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo";
+  //versionHash = "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo";
   //authorizationToken = "";
 
   // Flash
@@ -37,17 +37,19 @@ const Initialize = async () => {
 
   // Collection
   network = "DEMO";
-  mediaCatalogId = "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2";
-  mediaCollectionId = "JN8ecVA5Jt5cK2PjHXz12A";
+  //mediaCatalogId = "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2";
+  //mediaCollectionId = "JN8ecVA5Jt5cK2PjHXz12A";
   // First item in collection
-  //versionHash = "hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD";
+  versionHash = "hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD";
 
   // Ticket content
   //network = "DEMO";
   //versionHash = "hq__i8Sf43pUfsmmgd7iu5m4Mp27ct3eqUJ5rYCenUh6HxBW6du1Ets3fBVg1spWCNkpaMa94LrP2"
+  //network = "MAIN";
+  //objectId = "iq__3TrvvPrt9Xa2nHhaNsL5sjNSMCdn";
 
 
-  await InitializeEluvioPlayer(
+  window.player = await InitializeEluvioPlayer(
     document.getElementById("player-target"),
     {
       clientOptions: {
@@ -61,33 +63,38 @@ const Initialize = async () => {
         //protocols: ["dash"],
         //drms: ["clear"],
         playoutParameters: {
+          objectId,
           versionHash,
-          authorizationToken
+          authorizationToken,
+          //offering: "default",
+          //offerings: ["none", "some"]
         },
         mediaCollectionOptions: {
           mediaCatalogObjectId: mediaCatalogId,
           collectionId: mediaCollectionId
         },
         contentInfo: {
-          //title: "My Big Title",
+          title: "My Big Title",
+          subtitle: "My subtitle",
           description: "My big description",
           headers: ["pg-13"],
           image: "/public/display_image",
+          //type: EluvioPlayerParameters.type.LIVE,
           //posterImage: "https://demov3.net955210.contentfabric.io/s/demov3/q/hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD/meta/public/display_image"
         }
       },
       playerOptions: {
         //posterUrl: "https://miro.medium.com/v2/resize:fit:1099/1*5PeT0-Dch_KhFwjYwUWiDA.png",
-        //ui: EluvioPlayerParameters.ui.TV,
+        ui: EluvioPlayerParameters.ui.TV,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
-        controls: EluvioPlayerParameters.controls.AUTO_HIDE,
-        //controls: EluvioPlayerParameters.controls.ON,
+        controls: EluvioPlayerParameters.controls.ON,
+        //controls: EluvioPlayerParameters.controls.AUTO_HIDE,
         watermark: EluvioPlayerParameters.watermark.ON,
-        autoplay: EluvioPlayerParameters.autoplay.OFF,
-        title: EluvioPlayerParameters.title.ON,
+        autoplay: EluvioPlayerParameters.autoplay.ON,
+        title: EluvioPlayerParameters.title.FULLSCREEN_ONLY,
         keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
-        //maxBitrate: 50000,
+        maxBitrate: 50000,
         debugLogging: true,
         hlsjsOptions: {
           //maxBufferLength: 1,

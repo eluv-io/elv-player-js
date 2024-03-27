@@ -22,14 +22,20 @@ body,
 }
 
 .player-target-container {
-  height: 480px;
-  width: 854px;
-  padding: 20px;
+  /*
+  height: 280px;
+  width: 651px;
+  width: 649px;
+  //padding: 20px;
   border: 1px solid black;
   resize: both;
   overflow: scroll;
 
 
-  //height: 100%;
-  //width: 100%;
+   */
+}
+
+.player-target-container {
+  height: 100%;
+  width: 100%;
 }

@@ -108,6 +108,7 @@
   padding: 5px 10px;
   transition: background-color 0.25s ease, color 0.5s ease, filter 0.25s ease;
 
+  &--active,
   &:hover,
   &:focus-visible {
     background-color: #FFF;
@@ -178,6 +179,19 @@
   position: relative;
 }
 
+.live-indicator {
+  background: #F00;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 10px;
+  position: relative;
+  text-transform: uppercase;
+  user-select: none;
+  width: max-content;
+}
+
+
 .bottom-controls {
   align-items: flex-end;
   display: flex;
@@ -208,6 +222,10 @@
 
 .bottom-left-controls,
 .bottom-right-controls {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  height: 35px;
   position: absolute;
 }
 

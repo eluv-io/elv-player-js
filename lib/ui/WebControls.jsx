@@ -5,11 +5,11 @@ import React, {useEffect, useState} from "react";
 import * as Icons from "../static/icons/Icons.js";
 import {ObserveVideo, ObserveVideoTime} from "./Observers.js";
 import "focus-visible";
-import {ImageUrl, PlayerClick, Time, VolumeSliderKeydown} from "./Common.js";
+import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
-import {CollectionMenu, SeekBar, SettingsMenu} from "./Components.jsx";
+import {CollectionMenu, SeekBar, SettingsMenu, VolumeControls} from "./Components.jsx";
 
 export const IconButton = ({icon, ...props}) => {
   return (
@@ -25,6 +25,14 @@ const TimeIndicator = ({player, videoState}) => {
 
     return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
+
+  if(player.isLive) {
+    return (
+      <div className={ControlStyles["live-indicator"]}>
+        Live
+      </div>
+    );
+  }
 
   return (
     <div className={ControlStyles["time"]}>
@@ -97,47 +105,10 @@ const MenuButton = ({label, icon, player, setMenuActive, MenuComponent}) => {
   );
 };
 
-const VolumeControls = ({player, videoState}) => {
-  return (
-    <div className={ControlStyles["volume-controls"]}>
-      <IconButton
-        key="mute-button"
-        aria-label={videoState.muted ? "Unmute" : "Mute"}
-        icon={
-          videoState.muted || videoState.volume === 0 ? Icons.MutedIcon :
-            videoState.volume < 0.4 ? Icons.VolumeLowIcon :
-              videoState.volume < 0.8 ? Icons.VolumeMediumIcon :
-                Icons.VolumeHighIcon
-        }
-        onClick={() => player.controls.ToggleMuted()}
-        className={ControlStyles["volume-button"]}
-      />
-      <div className={ControlStyles["volume-slider"]}>
-        <progress
-          max={1}
-          value={videoState.muted ? 0 : videoState.volume}
-          className={ControlStyles["volume-progress"]}
-        />
-        <input
-          aria-label="Volume slider"
-          type="range"
-          min={0}
-          max={1}
-          step={0.001}
-          value={videoState.muted ? 0 : videoState.volume}
-          onInput={event => player.controls.SetVolume({fraction: event.currentTarget.value})}
-          onKeyDown={VolumeSliderKeydown(player)}
-          className={ControlStyles["volume-input"]}
-        />
-      </div>
-    </div>
-  );
-};
-
 const ContentInfo = ({player}) => {
   const [imageUrl, setImageUrl] = useState(undefined);
 
-  const { title, description, image, headers } = (player.controls.GetContentInfo() || {});
+  const { title, subtitle, description, image, headers } = (player.controls.GetContentInfo() || {});
 
   useEffect(() => {
     setImageUrl(undefined);
@@ -148,7 +119,11 @@ const ContentInfo = ({player}) => {
       .then(imageUrl => setImageUrl(imageUrl));
   }, [image]);
 
-  if(!title || player.playerOptions.title === EluvioPlayerParameters.title.OFF) {
+  if(
+    !title ||
+    (player.playerOptions.title === EluvioPlayerParameters.title.FULLSCREEN_ONLY && !player.controls.IsFullscreen()) ||
+    player.playerOptions.title === EluvioPlayerParameters.title.OFF
+  ) {
     return null;
   }
 
@@ -171,8 +146,9 @@ const ContentInfo = ({player}) => {
               )}
             </div>
         }
-        <div className={ControlStyles["info-title"]}>{title}</div>
-        <div className={ControlStyles["info-description"]}>{description}</div>
+        { !title ? null : <div className={ControlStyles["info-title"]}>{title}</div> }
+        { !subtitle ? null : <div className={ControlStyles["info-subtitle"]}>{subtitle}</div> }
+        { !description ? null : <div className={ControlStyles["info-description"]}>{description}</div> }
       </div>
     </div>
   );

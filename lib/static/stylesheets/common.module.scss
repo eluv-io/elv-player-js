@@ -221,6 +221,101 @@
   }
 }
 
+/* Volume */
+
+
+.volume-controls {
+  --color-volume-background: rgba(255, 255, 255, 20%);
+  --color-volume-active: #fff;
+
+  align-items: center;
+  display: flex;
+  height: 100%;
+
+  &:hover,
+  &:focus-visible,
+  &:focus,
+  &:active,
+  &:has(:focus-visible),
+  &:has(:focus),
+  &:has(:active) {
+    .volume-slider {
+      margin-left: 5px !important;
+      width: 80px;
+    }
+  }
+}
+
+.volume-slider {
+  align-items: center;
+  border-radius: 10px;
+  display: flex;
+  height: 10px;
+  overflow: hidden;
+  position: relative;
+  transition: width 0.25s ease, margin 0.25s ease;
+  width: 0;
+}
+
+.volume-input,
+.volume-progress {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.volume-progress {
+  background: var(--color-volume-background);
+  height: 3px;
+
+  &::-webkit-progress-bar {
+    background: transparent;
+  }
+
+  &::-webkit-progress-value {
+    background-color: var(--color-volume-active);
+  }
+
+  &::-moz-progress-bar {
+    background-color: var(--color-volume-active);
+  }
+}
+
+.volume-input {
+  appearance: none;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+
+  &:focus-visible {
+    border: 1px solid var(--color-highlight);
+  }
+
+  &::-webkit-slider-runnable-track {
+    background: transparent;
+  }
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    height: 0;
+    width: 0;
+  }
+
+  &::-moz-range-track {
+    background: transparent;
+  }
+
+  &::-moz-range-thumb {
+    background: transparent;
+    border: 0;
+    height: 0;
+    width: 0;
+  }
+}
+
 
 /* Menus */
 
@@ -314,6 +409,10 @@
 /* Player size/orientation adjustments */
 
 :global(.__eluvio-player--size-sm) {
+  .volume-slider {
+    display: none;
+  }
+
   .menu {
     bottom: 75px;
     max-width: calc(100% - 30px);
@@ -323,6 +422,8 @@
 
   .menu-option {
     font-size: 14px;
+    min-height: 36px;
+    padding: 5px 10px;
   }
 
   .seek-container {

@@ -9,7 +9,7 @@ import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
-import {CollectionMenu, SeekBar, SettingsMenu, SVG} from "./Components.jsx";
+import {CollectionMenu, SeekBar, SettingsMenu, SVG, VolumeControls} from "./Components.jsx";
 
 export const IconButton = ({icon, ...props}) => {
   return (
@@ -25,6 +25,10 @@ const TimeIndicator = ({player, videoState}) => {
 
     return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
+
+  if(player.isLive) {
+    return null;
+  }
 
   return (
     <div className={ControlStyles["time-container"]}>
@@ -88,21 +92,33 @@ const CenterButtons = ({player, videoState}) => {
   );
 };
 
-const MenuButton = ({label, icon, player, setMenuActive, MenuComponent}) => {
+const MenuButton = ({label, icon, children, player, setMenuActive, MenuComponent}) => {
   const [show, setShow] = useState(false);
 
   return (
     <div className={ControlStyles["menu-control-container"]}>
-      <IconButton
-        aria-label={show ? `Hide ${label} Menu` : label}
-        aria-haspopup
-        icon={icon}
-        onClick={() => {
-          setMenuActive(!show);
-          setShow(!show);
-        }}
-        className={`${ControlStyles["icon-button--circle-focus"]} ${show ? ControlStyles["icon-button-active"] : ""}`}
-      />
+      {
+        icon ?
+          <IconButton
+            aria-label={show ? `Hide ${label} Menu` : label}
+            aria-haspopup
+            icon={icon}
+            onClick={() => {
+              setMenuActive(!show);
+              setShow(!show);
+            }}
+            className={`${ControlStyles["icon-button--circle-focus"]} ${show ? ControlStyles["icon-button-active"] : ""}`}
+          /> :
+          <button
+            onClick={() => {
+              setMenuActive(!show);
+              setShow(!show);
+            }}
+            className={`${ControlStyles["text-button"]} ${show ? ControlStyles["text-button--active"] : ""}`}
+          >
+            { children }
+          </button>
+      }
       {
         !show ? null :
           <MenuComponent
@@ -254,9 +270,20 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
             <div className={ControlStyles["bottom-controls-gradient"]} />
             <div className={ControlStyles["title-container"]}>
               <div className={ControlStyles["title"]}>
-                {player.playerOptions.title === EluvioPlayerParameters.title.OFF ? "" : title || ""}
+                {
+                  (
+                    player.playerOptions.title === EluvioPlayerParameters.title.OFF ||
+                    (player.playerOptions.title === EluvioPlayerParameters.title.FULLSCREEN_ONLY && !player.controls.IsFullscreen())
+                  ) ? "" : title || ""
+                }
               </div>
               <div className={ControlStyles["spacer"]}/>
+              {
+                !player.isLive ? null :
+                  <div className={ControlStyles["live-indicator"]}>
+                    Live
+                  </div>
+              }
               {
                 !collectionInfo ? null :
                   <MenuButton
@@ -267,14 +294,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
                     MenuComponent={CollectionMenu}
                   />
               }
-              <MenuButton
-                key="settings-button"
-                label="Settings"
-                icon={Icons.SettingsIcon}
-                player={player}
-                MenuComponent={SettingsMenu}
-                setMenuActive={setMenuActive}
-              />
+
             </div>
             <SeekBar player={player} videoState={videoState} setRecentUserAction={setRecentUserAction} />
             <TimeIndicator player={player} videoState={videoState}/>
@@ -287,9 +307,15 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
               </div>
               <CenterButtons player={player} videoState={videoState}/>
               <div className={ControlStyles["bottom-right-controls"]}>
-                {
-                  // <button className={ControlStyles["text-button"]}>Stream Selector</button>
-                }
+                <MenuButton
+                  key="settings-button"
+                  label="Settings"
+                  player={player}
+                  MenuComponent={SettingsMenu}
+                  setMenuActive={setMenuActive}
+                >
+                  Settings
+                </MenuButton>
               </div>
             </div>
           </div>
