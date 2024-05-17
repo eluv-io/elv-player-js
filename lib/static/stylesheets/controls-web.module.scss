@@ -10,10 +10,11 @@
   top: 0;
   width: 100%;
 
-  --layer-title: 1;
-  --layer-controls: 2;
-  --layer-center-button: 3;
-  --layer-menu: 4;
+  --layer-gradient: 1;
+  --layer-title: 2;
+  --layer-controls: 3;
+  --layer-center-button: 4;
+  --layer-menu: 5;
 
   --color-text: #FFF;
   --color-text-secondary: #DDD;
@@ -206,6 +207,7 @@
   position: absolute;
   right: 0;
   user-select: none;
+  z-index: var(--layer-gradient);
 }
 
 .controls {
@@ -216,6 +218,7 @@
   height: 50px;
   padding: 6px 10px 12px;
   position: relative;
+  z-index: var(--layer-controls);
 
   .play-pause-button {
     padding: 0;
