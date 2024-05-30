@@ -62,6 +62,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
   const [showPlayerProfileForm, setShowPlayerProfileForm] = useState(false);
   const [recentlyInteracted, setRecentlyInteracted] = useState(true);
   const [recentUserAction, setRecentUserAction] = useState(undefined);
+  const [allowRotation, setAllowRotation] = useState(undefined);
   const videoRef = useRef();
 
   const playerSet = !!player;
@@ -104,6 +105,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
       // Observe player settings to keep track of whether playback has started
       const disposePlayerSettingsListener = newPlayer.controls.RegisterSettingsListener(
         () => {
+          setAllowRotation(newPlayer.controls.AllowRotation());
           setPlaybackStarted(newPlayer.playbackStarted);
           setPlayerInitialized(!newPlayer.loading);
           setShowPlayerProfileForm(newPlayer.__showPlayerProfileForm);
@@ -184,6 +186,11 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
     );
   }
 
+  const shouldRotate =
+    player &&
+    player.controls.IsRotatable() &&
+    allowRotation;
+
   return (
     <div
       role="complementary"
@@ -194,7 +201,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
         "--portal-width": `${dimensions.width}px`,
         "--portal-height": `${dimensions.height}px`
       }}
-      className={[PlayerStyles["player-container"], `__eluvio-player--size-${size}`, `__eluvio-player--orientation-${orientation}`].join(" ")}
+      className={[PlayerStyles["player-container"], shouldRotate ? PlayerStyles["player-container--rotated"] : "", `__eluvio-player--size-${size}`, `__eluvio-player--orientation-${orientation}`].join(" ")}
     >
       {
         !showPlayerProfileForm || !playerInitialized ? null :

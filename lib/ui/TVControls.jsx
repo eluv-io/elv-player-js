@@ -307,15 +307,18 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
               </div>
               <CenterButtons player={player} videoState={videoState}/>
               <div className={ControlStyles["bottom-right-controls"]}>
-                <MenuButton
-                  key="settings-button"
-                  label="Settings"
-                  player={player}
-                  MenuComponent={SettingsMenu}
-                  setMenuActive={setMenuActive}
-                >
-                  Settings
-                </MenuButton>
+                {
+                  !player.controls.GetOptions().hasAnyOptions ? null :
+                    <MenuButton
+                      key="settings-button"
+                      label="Settings"
+                      player={player}
+                      MenuComponent={SettingsMenu}
+                      setMenuActive={setMenuActive}
+                    >
+                      Settings
+                    </MenuButton>
+                }
               </div>
             </div>
           </div>

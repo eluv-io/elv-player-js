@@ -16,6 +16,18 @@
   inset: 0;
   position: absolute;
   width: 100%;
+
+  &--rotated {
+    height: 100vw;
+    margin-top: -100vw;
+    object-fit: cover;
+    position: absolute;
+    transform: rotate(90deg);
+    transform-origin: bottom left;
+    visibility: visible;
+    width: 100vh;
+    z-index: 4;
+  }
 }
 
 .spinner-container {

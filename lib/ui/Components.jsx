@@ -151,13 +151,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
   const menuRef = createRef();
 
   useEffect(() => {
-    const UpdateSettings = () => setOptions({
-      quality: player.controls.GetQualityLevels(),
-      audio: player.controls.GetAudioTracks(),
-      text: player.controls.GetTextTracks(),
-      profile: player.controls.GetPlayerProfiles(),
-      rate: player.controls.GetPlaybackRates()
-    });
+    const UpdateSettings = () => setOptions(player.controls.GetOptions());
 
     UpdateSettings();
 
@@ -245,15 +239,10 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
       </div>
     );
   } else {
-    const hasQualityOptions = options.quality.options.length > 0;
-    const hasAudioOptions = options.audio.options.length > 0;
-    const hasTextOptions = options.text.options.length > 0;
-    const hasProfileOptons = options.profile.options.length > 0;
-
     content = (
       <div key="menu" role="menu" className={`${CommonStyles["menu"]} ${CommonStyles["settings-menu"]} ${className}`}>
         {
-          !hasQualityOptions <= 1 ? null :
+          !options.hasQualityOptions <= 1 ? null :
             <button autoFocus role="menuitem" onClick={() => SetSubmenu("quality")}
                     className={CommonStyles["menu-option"]}>
               {`${settings.quality.label}: ${(options.quality.active && options.quality.active.activeLabel) || ""}`}
@@ -261,30 +250,33 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
             </button>
         }
         {
-          !hasAudioOptions ? null :
-            <button autoFocus={!hasQualityOptions} role="menuitem" onClick={() => SetSubmenu("audio")} className={CommonStyles["menu-option"]}>
+          !options.hasAudioOptions ? null :
+            <button autoFocus={!options.hasQualityOptions} role="menuitem" onClick={() => SetSubmenu("audio")} className={CommonStyles["menu-option"]}>
               {`${settings.audio.label}: ${(options.audio.active && options.audio.active.label) || ""}`}
               <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
             </button>
         }
         {
-          !hasTextOptions ? null :
-            <button autoFocus={!hasQualityOptions && !hasAudioOptions} role="menuitem" onClick={() => SetSubmenu("text")} className={CommonStyles["menu-option"]}>
+          !options.hasTextOptions ? null :
+            <button autoFocus={!options.hasQualityOptions && !options.hasAudioOptions} role="menuitem" onClick={() => SetSubmenu("text")} className={CommonStyles["menu-option"]}>
               {`${settings.text.label}: ${(options.text.active && options.text.active.label) || ""}`}
               <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
             </button>
         }
         {
-          !hasProfileOptons ? null :
-            <button autoFocus={!hasQualityOptions && !hasAudioOptions && !hasTextOptions} role="menuitem" onClick={() => SetSubmenu("profile")} className={CommonStyles["menu-option"]}>
+          !options.hasProfileOptons ? null :
+            <button autoFocus={!options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions} role="menuitem" onClick={() => SetSubmenu("profile")} className={CommonStyles["menu-option"]}>
               {`${settings.profile.label}: ${(options.profile.active && options.profile.active.label) || ""}`}
               <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
             </button>
         }
-        <button autoFocus={!hasQualityOptions && !hasAudioOptions && !hasTextOptions && !hasProfileOptons} role="menuitem" onClick={() => SetSubmenu("rate")} className={CommonStyles["menu-option"]}>
-          {`${settings.rate.label}: ${(options.rate.active && options.rate.active.label) || ""}`}
-          <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
-        </button>
+        {
+          !options.hasRateOptions ? null :
+            <button autoFocus={!options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions && !options.hasProfileOptons} role="menuitem" onClick={() => SetSubmenu("rate")} className={CommonStyles["menu-option"]}>
+              {`${settings.rate.label}: ${(options.rate.active && options.rate.active.label) || ""}`}
+              <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
+            </button>
+        }
       </div>
     );
   }

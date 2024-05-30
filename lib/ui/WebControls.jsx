@@ -236,13 +236,24 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
                       MenuComponent={CollectionMenu}
                     />
                 }
-                <MenuButton
-                  label="Settings Menu"
-                  icon={Icons.SettingsIcon}
-                  player={player}
-                  setMenuActive={setMenuActive}
-                  MenuComponent={SettingsMenu}
-                />
+                {
+                  !player.controls.IsRotatable() ? null :
+                    <IconButton
+                      aria-label="Rotate Video"
+                      icon={Icons.RotateIcon}
+                      onClick={() => player.controls.SetAllowRotation(!player.controls.AllowRotation())}
+                    />
+                }
+                {
+                  !player.controls.GetOptions().hasAnyOptions ? null :
+                    <MenuButton
+                      label="Settings Menu"
+                      icon={Icons.SettingsIcon}
+                      player={player}
+                      setMenuActive={setMenuActive}
+                      MenuComponent={SettingsMenu}
+                    />
+                }
                 <IconButton
                   aria-label={videoState.fullscreen ? "Exit Fullscreen" : "Fullscreen"}
                   icon={videoState.fullscreen ? Icons.ExitFullscreenIcon : Icons.FullscreenIcon}
