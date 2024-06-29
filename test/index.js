@@ -11,21 +11,11 @@ import {InitializeEluvioPlayer, EluvioPlayerParameters} from "../lib";
 
 
 const Initialize = async () => {
-  /*
-  const client = await ElvClient.FromConfigurationUrl({
-    configUrl: "https://main.net955305.contentfabric.io/config"
-  });
-
-   */
-
   let network = "MAIN";
-
   let objectId, versionHash, authorizationToken, mediaCatalogId, mediaCollectionId;
   const ticketCode = "BkiWYk";
 
-
   // Clear
-
   //versionHash = "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo";
   //authorizationToken = "";
 
@@ -33,7 +23,6 @@ const Initialize = async () => {
   // versionHash = "hq__2C97Ma85zRS1pwD1dLk5PEzvuujK7y65hzZbjA2wiVQSL5EjfmGePCRAGv2dPr9rNbokvQit9d"; // clear
   //versionHash = "hq__2YAGWTsaw6FDv9S6QPwQ1VHTDVgctwDKXkC5qD4pCgJjJAidifpZ3ccxcGp7XLeyzmHxEakfXq"; // widevine
   //authorizationToken = "acspjc27Y8gfK8Rm2Tbkm38sYE8ZZFwMumFmc5Kke7CdpkfyWCYZKC2dE82vmK4yVeHRtHiGc2EPB7wp2WoXePGCyK5bfvbvuH48YYegtvrYVCtiw5ULBgj5e47AbJUVSSruKc3zgsHZ3J2bgzaLRP1Xv3oQqkYxWxVVue4PUeDPNz5bPGygj6Kt68FR9X8r5WAqV2XxS45atYi7XR7SmfiMhcWb6m338znTp4UE7BtwhPgFexnZHtLQg39XJ6wKuU5bJEaGVZakyySD4PAL3ABgemMUR6LyfYrtciewxzae5vw";
-
 
   // Collection
   network = "DEMO";
@@ -49,11 +38,36 @@ const Initialize = async () => {
   //network = "MAIN";
   //objectId = "iq__3TrvvPrt9Xa2nHhaNsL5sjNSMCdn";
 
+  // PlayReady
+  // network = "DEMO_LOCAL";
+  // versionHash = "hq__s5J7DRGyi4CMMS8Sqb7CfhbskZcyMDK2Cv1BbLbuENafE271gW2q1ddAp6koTVx8roDKJPhpo";
+
+  // const client = await ElvClient.FromConfigurationUrl({
+  //   configUrl: EluvioPlayerParameters.networks[network]
+  // });
+  // const client = new ElvClient({
+  //     nodeId: "inod3EFQaXzGAFz7ndDoeDxwYsxU2RQs",
+  //     contentSpaceId: "ispc3ANoVSzNA3P6t7abLR69ho5YPPZU",
+  //     networkId: 955210,
+  //     networkName: "demov3",
+  //     fabricURIs: [ "https://not-a-real.contentfabric.io" ], // "http://localhost:8008"
+  //     ethereumURIs: [ "https://host-76-74-28-234.contentfabric.io/eth/" ],
+  //     authServiceURIs: [],
+  //     kmsURIs: [],
+  //     searchURIs: [],
+  //     fabricVersion: 3
+  //   });
+  // const wallet = client.GenerateWallet();
+  // const signer = wallet.AddAccount({
+  //   privateKey: "0x8be967c33a08e038183da80362c752852395bc1a4a7ef3b015e81772df6c55ac"
+  // });
+  // client.SetSigner({signer});
 
   window.player = await InitializeEluvioPlayer(
     document.getElementById("player-target"),
     {
       clientOptions: {
+        // client: client,
         network: EluvioPlayerParameters.networks[network],
         //promptTicket: true,
         tenantId: "iten4TXq2en3qtu3JREnE5tSLRf9zLod",
