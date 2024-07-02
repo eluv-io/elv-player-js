@@ -42,32 +42,10 @@ const Initialize = async () => {
   // network = "DEMO_LOCAL";
   // versionHash = "hq__s5J7DRGyi4CMMS8Sqb7CfhbskZcyMDK2Cv1BbLbuENafE271gW2q1ddAp6koTVx8roDKJPhpo";
 
-  // const client = await ElvClient.FromConfigurationUrl({
-  //   configUrl: EluvioPlayerParameters.networks[network]
-  // });
-  // const client = new ElvClient({
-  //     nodeId: "inod3EFQaXzGAFz7ndDoeDxwYsxU2RQs",
-  //     contentSpaceId: "ispc3ANoVSzNA3P6t7abLR69ho5YPPZU",
-  //     networkId: 955210,
-  //     networkName: "demov3",
-  //     fabricURIs: [ "https://not-a-real.contentfabric.io" ], // "http://localhost:8008"
-  //     ethereumURIs: [ "https://host-76-74-28-234.contentfabric.io/eth/" ],
-  //     authServiceURIs: [],
-  //     kmsURIs: [],
-  //     searchURIs: [],
-  //     fabricVersion: 3
-  //   });
-  // const wallet = client.GenerateWallet();
-  // const signer = wallet.AddAccount({
-  //   privateKey: "0x8be967c33a08e038183da80362c752852395bc1a4a7ef3b015e81772df6c55ac"
-  // });
-  // client.SetSigner({signer});
-
   window.player = await InitializeEluvioPlayer(
     document.getElementById("player-target"),
     {
       clientOptions: {
-        // client: client,
         network: EluvioPlayerParameters.networks[network],
         //promptTicket: true,
         tenantId: "iten4TXq2en3qtu3JREnE5tSLRf9zLod",
