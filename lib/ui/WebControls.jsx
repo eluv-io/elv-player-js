@@ -38,11 +38,18 @@ const TimeIndicator = ({player, videoState}) => {
     <div className={ControlStyles["time"]}>
       {
         !player.isLive ? null :
-          <button onClick={() => player.controls.Seek({time: player.controls.GetDuration() - 2})} className={ControlStyles["live-indicator"]}>
+          <button
+            onClick={() => player.controls.Seek({time: player.controls.GetDuration() - 2})}
+            className={`${ControlStyles["live-indicator"]} ${player.isLive && player.behindLiveEdge ? ControlStyles["live-indicator--faded"] : ""}`}
+          >
             Live
           </button>
       }
-      { Time(currentTime, videoState.duration) } / { Time(videoState.duration, videoState.duration) }
+      {
+        player.isLive && !player.behindLiveEdge ? null :
+          `${Time(currentTime, videoState.duration)} / `
+      }
+      { Time(videoState.duration, videoState.duration) }
     </div>
   );
 };

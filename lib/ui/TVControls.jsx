@@ -32,9 +32,12 @@ const TimeIndicator = ({player, videoState}) => {
 
   return (
     <div className={ControlStyles["time-container"]}>
-      <div className={ControlStyles["time"]}>
-      { Time(currentTime, videoState.duration) }
-      </div>
+      {
+        player.isLive && !player.behindLiveEdge ? null :
+          <div className={ControlStyles["time"]}>
+          { Time(currentTime, videoState.duration) }
+          </div>
+      }
       <div className={ControlStyles["spacer"]} />
       <div className={ControlStyles["time"]}>
         { Time(videoState.duration, videoState.duration) }
@@ -307,7 +310,10 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
               {
                 !player.isLive ? null :
                   player.dvrEnabled ?
-                    <button onClick={() => player.controls.Seek({time: player.controls.GetDuration() - 2})} className={ControlStyles["live-indicator"]}>
+                    <button
+                      onClick={() => player.controls.Seek({time: player.controls.GetDuration() - 2})}
+                      className={`${ControlStyles["live-indicator"]} ${player.isLive && player.behindLiveEdge ? ControlStyles["live-indicator--faded"] : ""}`}
+                    >
                       Live
                     </button> :
                     <div className={ControlStyles["live-indicator"]}>
