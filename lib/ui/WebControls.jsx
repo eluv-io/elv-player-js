@@ -9,7 +9,7 @@ import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
-import {CollectionMenu, ContentVerificationMenu, SeekBar, SettingsMenu, VolumeControls} from "./Components.jsx";
+import {ContentVerificationMenu, SeekBar, SettingsMenu, VolumeControls} from "./Components.jsx";
 
 export const IconButton = ({icon, className="", ...props}) => {
   return (
@@ -21,7 +21,7 @@ const TimeIndicator = ({player, videoState}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
 
   useEffect(() => {
-    const disposeVideoTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 10});
+    const disposeVideoTimeObserver = ObserveVideoTime({player, setCurrentTime, rate: 10});
 
     return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
@@ -211,7 +211,7 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
     const UpdateMenuVisibility = () => setMenuVisible(player.controls.IsMenuVisible());
     const disposeSettingsListener = player.controls.RegisterSettingsListener(UpdateMenuVisibility);
 
-    const disposeVideoObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
+    const disposeVideoObserver = ObserveVideo({player, setVideoState});
 
     return () => {
       disposeSettingsListener && disposeSettingsListener();
@@ -258,7 +258,7 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
                 // Take focus off of this button because it should no longer be selectable after playback starts
                 player.target.firstChild.focus();
               }}
-              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
+              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted && !player?.casting ? "" : ControlStyles["center-play-button--hidden"]}`}
             />
             <div className={`${ControlStyles["bottom-controls-container"]} ${hideControls ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
               <div className={ControlStyles["bottom-controls-gradient"]} />

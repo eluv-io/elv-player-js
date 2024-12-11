@@ -21,7 +21,7 @@ const TimeIndicator = ({player, videoState}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
 
   useEffect(() => {
-    const disposeVideoTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 10});
+    const disposeVideoTimeObserver = ObserveVideoTime({player, setCurrentTime, rate: 10});
 
     return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
@@ -250,7 +250,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
   useEffect(() => {
     setPlayerClickHandler(PlayerClick({player, setRecentUserAction}));
 
-    const disposeVideoObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
+    const disposeVideoObserver = ObserveVideo({player, setVideoState});
 
     return () => disposeVideoObserver && disposeVideoObserver();
   }, []);
