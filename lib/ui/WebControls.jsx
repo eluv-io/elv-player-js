@@ -270,23 +270,30 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
                   onClick={() => player.controls.TogglePlay()}
                   className={ControlStyles["play-pause-button"]}
                 />
-                <CollectionControls player={player} />
-                <VolumeControls player={player} videoState={videoState} />
+                <CollectionControls player={player}/>
+                <VolumeControls player={player} videoState={videoState}/>
                 <TimeIndicator player={player} videoState={videoState}/>
 
                 <div className={ControlStyles["spacer"]}/>
 
-                <ContentVerificationControls player={player} />
+                <ContentVerificationControls player={player}/>
 
                 {
-                  !collectionInfo ? null :
-                    <MenuButton
-                      label="Collection Menu"
-                      icon={Icons.CollectionIcon}
-                      player={player}
-                      MenuComponent={CollectionMenu}
+                  !player.chromecastAvailable ? null :
+                    <div className={ControlStyles["icon-button"]}>
+                      <google-cast-launcher className={ControlStyles["cast-button"]}></google-cast-launcher>
+                    </div>
+                }
+
+                {
+                  !player.airplayAvailable ? null :
+                    <IconButton
+                      aria-label="Airplay"
+                      onClick={() => player.video.webkitShowPlaybackTargetPicker()}
+                      icon={Icons.AirplayIcon}
                     />
                 }
+
                 {
                   !player.controls.IsRotatable() ? null :
                     <IconButton

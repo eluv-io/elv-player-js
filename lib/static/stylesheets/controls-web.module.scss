@@ -70,6 +70,10 @@
   transition: color 0.15s ease;
   width: 30px;
 
+  /* Chromecast variables */
+  --disconnected-color: var(--color-button);
+  --connected-color: var(--color-text-highlight);
+
   svg {
     height: 100%;
     max-width: 100%;
@@ -86,6 +90,14 @@
 
   &:disabled {
     opacity: 0.5;
+  }
+}
+
+.cast-button {
+  --disconnected-color: var(--color-button)!important;
+
+  * {
+    transition: color 0.15s ease;
   }
 }
 

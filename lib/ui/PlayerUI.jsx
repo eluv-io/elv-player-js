@@ -225,6 +225,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
         muted={[EluvioPlayerParameters.muted.ON, EluvioPlayerParameters.muted.WHEN_NOT_VISIBLE].includes(parameters.playerOptions.muted)}
         controls={parameters.playerOptions.controls === EluvioPlayerParameters.controls.DEFAULT}
         loop={parameters.playerOptions.loop === EluvioPlayerParameters.loop.ON}
+        crossOrigin="anonymous"
         className={PlayerStyles.video}
       />
       {
