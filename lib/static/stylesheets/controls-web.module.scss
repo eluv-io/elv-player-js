@@ -70,15 +70,6 @@
   transition: color 0.15s ease;
   width: 30px;
 
-  /* Chromecast variables */
-  --disconnected-color: var(--color-button);
-  --connected-color: var(--color-text-highlight);
-
-  .cast-button {
-    height: 30px!important;
-    width: 30px!important;
-  }
-
   svg {
     height: 100%;
     max-width: 100%;
@@ -98,11 +89,14 @@
   }
 }
 
-.cast-button {
+google-cast-launcher {
   --disconnected-color: var(--color-button)!important;
+  --connected-color: var(--color-text-highlight)!important;
 
-  height: 30px;
-  width: 30px;
+  animation: 0.5s fadein ease!important;
+  cursor: pointer;
+  height: 30px!important;
+  width: 30px!important;
 
   * {
     transition: color 0.15s ease;

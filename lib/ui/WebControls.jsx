@@ -282,9 +282,7 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
 
                 {
                   !player.chromecastAvailable ? null :
-                    <div className={ControlStyles["icon-button"]}>
-                      <google-cast-launcher className={ControlStyles["cast-button"]}></google-cast-launcher>
-                    </div>
+                    <google-cast-launcher></google-cast-launcher>
                 }
 
                 {

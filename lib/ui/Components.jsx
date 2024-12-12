@@ -85,7 +85,7 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
     <div className={`${className} ${CommonStyles["seek-container"]} ${className}`}>
       <progress
         max={1}
-        value={bufferFraction}
+        value={player.casting ? 0 : bufferFraction}
         className={CommonStyles["seek-buffer"]}
       />
       <progress
