@@ -95,6 +95,8 @@
 
 .cast-button {
   --disconnected-color: var(--color-button)!important;
+  height: 30px;
+  width: 30px;
 
   * {
     transition: color 0.15s ease;
