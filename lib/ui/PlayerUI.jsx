@@ -19,6 +19,7 @@ import {Spinner, UserActionIndicator} from "./Components.jsx";
 import TVControls from "./TVControls.jsx";
 import PlayerProfileForm from "./PlayerProfileForm.jsx";
 import {ImageUrl, MergeDefaultParameters} from "./Common.js";
+import {ChromecastIcon} from "../static/icons/Icons.js";
 
 const Poster = ({player}) => {
   const [imageUrl, setImageUrl] = useState(undefined);
@@ -64,6 +65,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
   const [recentlyInteracted, setRecentlyInteracted] = useState(true);
   const [recentUserAction, setRecentUserAction] = useState(undefined);
   const [allowRotation, setAllowRotation] = useState(undefined);
+  const [casting, setCasting] = useState(false);
   const videoRef = useRef();
 
   const playerSet = !!player;
@@ -110,6 +112,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
           setPlaybackStarted(newPlayer.playbackStarted);
           setPlayerInitialized(!newPlayer.loading);
           setShowPlayerProfileForm(newPlayer.__showPlayerProfileForm);
+          setCasting(newPlayer && newPlayer.casting);
         }
       );
 
@@ -225,6 +228,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
         muted={[EluvioPlayerParameters.muted.ON, EluvioPlayerParameters.muted.WHEN_NOT_VISIBLE].includes(parameters.playerOptions.muted)}
         controls={parameters.playerOptions.controls === EluvioPlayerParameters.controls.DEFAULT}
         loop={parameters.playerOptions.loop === EluvioPlayerParameters.loop.ON}
+        crossOrigin="anonymous"
         className={PlayerStyles.video}
       />
       {
@@ -235,6 +239,12 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
         playerInitialized || errorMessage || !parameters.playerOptions.showLoader ? null :
           <div className={PlayerStyles["spinner-container"]}>
             <Spinner className={PlayerStyles["spinner"]} />
+          </div>
+      }
+      {
+        !casting ? null :
+          <div className={PlayerStyles["cast-indicator-container"]}>
+            <div dangerouslySetInnerHTML={{ __html: ChromecastIcon }} />
           </div>
       }
       {

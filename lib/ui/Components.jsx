@@ -61,23 +61,30 @@ export const UserActionIndicator = ({action}) => {
 };
 
 export const SeekBar = ({player, videoState, setRecentUserAction, className=""}) => {
-  const [currentTime, setCurrentTime] = useState(player.video.currentTime);
+  const [currentTime, setCurrentTime] = useState(player.controls.GetCurrentTime());
   const [bufferFraction, setBufferFraction] = useState(0);
   const [seekKeydownHandler, setSeekKeydownHandler] = useState(undefined);
+  const [dvrEnabled, setDVREnabled] = useState(player.controls.IsDVREnabled());
 
   useEffect(() => {
     setSeekKeydownHandler(SeekSliderKeyDown(player, setRecentUserAction));
 
-    const disposeVideoTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 60});
+    const disposeVideoTimeObserver = ObserveVideoTime({player, setCurrentTime, rate: 60});
     const disposeVideoBufferObserver = ObserveVideoBuffer({video: player.video, setBufferFraction});
+    const disposeSettingsListener = player.controls.RegisterSettingsListener(() => {
+      if(!player.controls) { return; }
+
+      setDVREnabled(player.controls.IsDVREnabled())
+    });
 
     return () => {
       disposeVideoTimeObserver && disposeVideoTimeObserver();
       disposeVideoBufferObserver && disposeVideoBufferObserver();
+      disposeSettingsListener && disposeSettingsListener();
     };
-  }, []);
+  }, [player && player.controls]);
 
-  if(player.isLive && !player.dvrEnabled) {
+  if(player.isLive && !dvrEnabled) {
     return null;
   }
 
@@ -85,7 +92,7 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
     <div className={`${className} ${CommonStyles["seek-container"]} ${className}`}>
       <progress
         max={1}
-        value={bufferFraction}
+        value={player.casting ? 0 : bufferFraction}
         className={CommonStyles["seek-buffer"]}
       />
       <progress
@@ -284,6 +291,38 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
   return (
     <div ref={menuRef}>
       { content }
+    </div>
+  );
+};
+
+export const DVRToggle = ({player}) => {
+  const [dvrEnabled, setDVREnabled] = useState(player.dvrEnabled);
+
+  useEffect(() => {
+    const disposer = player.controls.RegisterSettingsListener(() => {
+      if(!player.controls) { return; }
+
+      setDVREnabled(player.controls.IsDVREnabled())
+    });
+
+    return () => disposer && disposer();
+  }, [player && player.controls]);
+
+  return (
+    <div className={CommonStyles["dvr-toggle"]}>
+      <button
+        onClick={() => player.controls.SetDVREnabled(false)}
+        className={`${CommonStyles["dvr-toggle__live"]} ${!dvrEnabled ? CommonStyles["dvr-toggle__live--active"] : ""}`}
+      >
+        LIVE
+      </button>
+      <button
+        onClick={() => player.controls.SetDVREnabled(true)}
+        className={`${CommonStyles["dvr-toggle__dvr"]} ${dvrEnabled ? CommonStyles["dvr-toggle__dvr--active"] : ""}`}
+      >
+        DVR
+      </button>
+      <div className={CommonStyles["dvr-toggle__border"]}/>
     </div>
   );
 };

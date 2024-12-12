@@ -543,6 +543,57 @@
   }
 }
 
+.dvr-toggle {
+  --border-color: #a2a3a3;
+
+  display: flex;
+  height: 30px;
+  position: relative;
+
+  &__border {
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    height: 100%;
+    inset: 0;
+    opacity: 0.5;
+    position: absolute;
+    z-index: 0;
+  }
+
+  &__live,
+  &__dvr {
+    align-items: center;
+    border-radius: 5px;
+    color: var(--border-color);
+    cursor: pointer!important;
+    display: flex;
+    font-size: 16px;
+    font-weight: 500;
+    height: 100%;
+    justify-content: center;
+    opacity: 0.5;
+    transition: background-color 0.25s ease, color 0.25s ease, opacity 0.25s ease;
+    width: 75px;
+    z-index: 1;
+
+    &--active {
+      color: var(--color-text);
+      opacity: 1;
+    }
+  }
+
+  &__live {
+    &--active {
+      background-color: #ea3323;
+    }
+  }
+
+  &__dvr {
+    &--active {
+      background-color: #4666ac;
+    }
+  }
+}
 
 /* Player size/orientation adjustments */
 
@@ -595,6 +646,20 @@
 
     &__detail-copy {
       height: 15px;
+    }
+  }
+
+  .dvr-toggle {
+    height: 25px;
+
+    &__border {
+      border-width: 1px;
+    }
+
+    &__live,
+    &__dvr {
+      font-size: 10px;
+      width: 40px;
     }
   }
 }

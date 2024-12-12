@@ -45,6 +45,22 @@
   }
 }
 
+.cast-indicator-container {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  z-index: var(--layer-center-button);
+
+  svg {
+    color: #FFF;
+    height: 50px;
+    width: 50px;
+  }
+}
+
+
 .controls {
   z-index: var(--layer-controls);
 }

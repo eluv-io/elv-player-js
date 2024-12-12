@@ -347,6 +347,7 @@
 
 .menu-control-container {
   position: relative;
+  z-index: var(--layer-menu);
 
   .icon-button {
     height: 45px;

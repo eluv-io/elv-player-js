@@ -9,7 +9,7 @@ import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
-import {CollectionMenu, ContentVerificationMenu, SeekBar, SettingsMenu, VolumeControls} from "./Components.jsx";
+import {ContentVerificationMenu, DVRToggle, SeekBar, SettingsMenu, VolumeControls} from "./Components.jsx";
 
 export const IconButton = ({icon, className="", ...props}) => {
   return (
@@ -21,12 +21,12 @@ const TimeIndicator = ({player, videoState}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
 
   useEffect(() => {
-    const disposeVideoTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 10});
+    const disposeVideoTimeObserver = ObserveVideoTime({player, setCurrentTime, rate: 10});
 
     return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
 
-  if(player.isLive && !player.dvrEnabled) {
+  if(player.isLive && !player.controls.IsDVRAvailable()) {
     return (
       <div className={ControlStyles["live-indicator"]}>
         Live
@@ -37,19 +37,17 @@ const TimeIndicator = ({player, videoState}) => {
   return (
     <div className={ControlStyles["time"]}>
       {
-        !player.isLive ? null :
-          <button
-            onClick={() => player.controls.Seek({time: player.controls.GetDuration() - 2})}
-            className={`${ControlStyles["live-indicator"]} ${player.isLive && player.behindLiveEdge ? ControlStyles["live-indicator--faded"] : ""}`}
-          >
-            Live
-          </button>
+        !player.isLive || !player.controls.IsDVRAvailable() ? null :
+          <DVRToggle player={player} />
       }
       {
         player.isLive && !player.behindLiveEdge ? null :
           `${Time(currentTime, videoState.duration)} / `
       }
-      { Time(videoState.duration, videoState.duration) }
+      {
+        !player.dvrEnabled ? null :
+          Time(videoState.duration, videoState.duration)
+      }
     </div>
   );
 };
@@ -171,11 +169,11 @@ const ContentVerificationControls = ({player}) => {
   const [contentVerified, setContentVerified] = useState(false);
 
   useEffect(() => {
-    const UpdateVerification = () => setContentVerified(player.controls.ContentVerified());
+    const UpdateVerification = () => player && player.controls && setContentVerified(player.controls.ContentVerified());
 
     UpdateVerification();
 
-    const disposeSettingsListener = player.controls.RegisterSettingsListener(UpdateVerification);
+    const disposeSettingsListener = player.controls && player.controls.RegisterSettingsListener(UpdateVerification);
 
     return () => disposeSettingsListener && disposeSettingsListener();
   }, []);
@@ -206,12 +204,14 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
   const [menuVisible, setMenuVisible] = useState(player.controls.IsMenuVisible());
 
   useEffect(() => {
+    if(!player.controls) { return; }
+
     setPlayerClickHandler(PlayerClick({player, setRecentUserAction}));
 
-    const UpdateMenuVisibility = () => setMenuVisible(player.controls.IsMenuVisible());
+    const UpdateMenuVisibility = () => player && player.controls && setMenuVisible(player.controls.IsMenuVisible());
     const disposeSettingsListener = player.controls.RegisterSettingsListener(UpdateMenuVisibility);
 
-    const disposeVideoObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
+    const disposeVideoObserver = ObserveVideo({player, setVideoState});
 
     return () => {
       disposeSettingsListener && disposeSettingsListener();
@@ -258,7 +258,7 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
                 // Take focus off of this button because it should no longer be selectable after playback starts
                 player.target.firstChild.focus();
               }}
-              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
+              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted && !(player && player.casting) ? "" : ControlStyles["center-play-button--hidden"]}`}
             />
             <div className={`${ControlStyles["bottom-controls-container"]} ${hideControls ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
               <div className={ControlStyles["bottom-controls-gradient"]} />
@@ -270,23 +270,28 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
                   onClick={() => player.controls.TogglePlay()}
                   className={ControlStyles["play-pause-button"]}
                 />
-                <CollectionControls player={player} />
-                <VolumeControls player={player} videoState={videoState} />
+                <CollectionControls player={player}/>
+                <VolumeControls player={player} videoState={videoState}/>
                 <TimeIndicator player={player} videoState={videoState}/>
 
                 <div className={ControlStyles["spacer"]}/>
 
-                <ContentVerificationControls player={player} />
+                <ContentVerificationControls player={player}/>
 
                 {
-                  !collectionInfo ? null :
-                    <MenuButton
-                      label="Collection Menu"
-                      icon={Icons.CollectionIcon}
-                      player={player}
-                      MenuComponent={CollectionMenu}
+                  !player.chromecastAvailable ? null :
+                    <google-cast-launcher></google-cast-launcher>
+                }
+
+                {
+                  !player.airplayAvailable ? null :
+                    <IconButton
+                      aria-label="Airplay"
+                      onClick={() => player.video.webkitShowPlaybackTargetPicker()}
+                      icon={Icons.AirplayIcon}
                     />
                 }
+
                 {
                   !player.controls.IsRotatable() ? null :
                     <IconButton

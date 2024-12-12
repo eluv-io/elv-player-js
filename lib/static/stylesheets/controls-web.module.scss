@@ -89,6 +89,20 @@
   }
 }
 
+google-cast-launcher {
+  --disconnected-color: var(--color-button)!important;
+  --connected-color: var(--color-text-highlight)!important;
+
+  animation: 0.5s fadein ease!important;
+  cursor: pointer;
+  height: 30px!important;
+  width: 30px!important;
+
+  * {
+    transition: color 0.15s ease;
+  }
+}
+
 /* Content Info */
 
 .info-container {
@@ -342,6 +356,7 @@
 
 .menu-control-container {
   position: relative;
+  z-index: var(--layer-menu);
 
   .icon-button {
     border: 1px solid transparent;

@@ -9,7 +9,14 @@ import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
-import {CollectionMenu, ContentVerificationMenu, SeekBar, SettingsMenu, SVG, VolumeControls} from "./Components.jsx";
+import {
+  CollectionMenu,
+  ContentVerificationMenu,
+  DVRToggle,
+  SeekBar,
+  SettingsMenu,
+  SVG
+} from "./Components.jsx";
 
 export const IconButton = ({icon, ...props}) => {
   return (
@@ -21,7 +28,7 @@ const TimeIndicator = ({player, videoState}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
 
   useEffect(() => {
-    const disposeVideoTimeObserver = ObserveVideoTime({video: player.video, setCurrentTime, rate: 10});
+    const disposeVideoTimeObserver = ObserveVideoTime({player, setCurrentTime, rate: 10});
 
     return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
@@ -250,7 +257,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
   useEffect(() => {
     setPlayerClickHandler(PlayerClick({player, setRecentUserAction}));
 
-    const disposeVideoObserver = ObserveVideo({target: player.target, video: player.video, setVideoState});
+    const disposeVideoObserver = ObserveVideo({player, setVideoState});
 
     return () => disposeVideoObserver && disposeVideoObserver();
   }, []);
@@ -290,7 +297,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
           // Take focus off of this button because it should no longer be selectable after playback starts
           player.target.firstChild.focus();
         }}
-        className={`${ControlStyles["center-play-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]} ${canPlay && !playbackStarted ? "" : ControlStyles["center-play-button--hidden"]}`}
+        className={`${ControlStyles["center-play-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]} ${(canPlay && !playbackStarted && !player.casting) ? "" : ControlStyles["center-play-button--hidden"]}`}
       />
       {
         showInfo ?
@@ -309,13 +316,8 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
               <div className={ControlStyles["spacer"]}/>
               {
                 !player.isLive ? null :
-                  player.dvrEnabled ?
-                    <button
-                      onClick={() => player.controls.Seek({time: player.controls.GetDuration() - 2})}
-                      className={`${ControlStyles["live-indicator"]} ${player.isLive && player.behindLiveEdge ? ControlStyles["live-indicator--faded"] : ""}`}
-                    >
-                      Live
-                    </button> :
+                  player.controls.IsDVRAvailable() ?
+                    <DVRToggle player={player} /> :
                     <div className={ControlStyles["live-indicator"]}>
                       Live
                     </div>
@@ -343,6 +345,18 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
               <CenterButtons player={player} videoState={videoState}/>
               <div className={ControlStyles["bottom-right-controls"]}>
                 <ContentVerificationControls player={player} />
+                {
+                  !player.airplayAvailable ? null :
+                    <IconButton
+                      aria-label="Airplay"
+                      onClick={() => player.video.webkitShowPlaybackTargetPicker()}
+                      icon={Icons.AirplayIcon}
+                    />
+                }
+                {
+                  !player.chromecastAvailable ? null :
+                    <google-cast-launcher></google-cast-launcher>
+                }
                 {
                   !player.controls.GetOptions().hasAnyOptions ? null :
                     <MenuButton
