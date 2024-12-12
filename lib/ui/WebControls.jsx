@@ -9,7 +9,7 @@ import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
 import EluvioLogo from "../static/images/Logo.png";
-import {ContentVerificationMenu, SeekBar, SettingsMenu, VolumeControls} from "./Components.jsx";
+import {ContentVerificationMenu, DVRToggle, SeekBar, SettingsMenu, VolumeControls} from "./Components.jsx";
 
 export const IconButton = ({icon, className="", ...props}) => {
   return (
@@ -26,7 +26,7 @@ const TimeIndicator = ({player, videoState}) => {
     return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
 
-  if(player.isLive && !player.dvrEnabled) {
+  if(player.isLive && !player.controls.IsDVRAvailable()) {
     return (
       <div className={ControlStyles["live-indicator"]}>
         Live
@@ -37,19 +37,17 @@ const TimeIndicator = ({player, videoState}) => {
   return (
     <div className={ControlStyles["time"]}>
       {
-        !player.isLive ? null :
-          <button
-            onClick={() => player.controls.Seek({time: player.controls.GetDuration() - 2})}
-            className={`${ControlStyles["live-indicator"]} ${player.isLive && player.behindLiveEdge ? ControlStyles["live-indicator--faded"] : ""}`}
-          >
-            Live
-          </button>
+        !player.isLive || !player.controls.IsDVRAvailable() ? null :
+          <DVRToggle player={player} />
       }
       {
         player.isLive && !player.behindLiveEdge ? null :
           `${Time(currentTime, videoState.duration)} / `
       }
-      { Time(videoState.duration, videoState.duration) }
+      {
+        !player.dvrEnabled ? null :
+          Time(videoState.duration, videoState.duration)
+      }
     </div>
   );
 };
