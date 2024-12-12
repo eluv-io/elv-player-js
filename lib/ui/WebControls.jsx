@@ -171,11 +171,11 @@ const ContentVerificationControls = ({player}) => {
   const [contentVerified, setContentVerified] = useState(false);
 
   useEffect(() => {
-    const UpdateVerification = () => setContentVerified(player.controls.ContentVerified());
+    const UpdateVerification = () => player && player.controls && setContentVerified(player.controls.ContentVerified());
 
     UpdateVerification();
 
-    const disposeSettingsListener = player.controls.RegisterSettingsListener(UpdateVerification);
+    const disposeSettingsListener = player.controls && player.controls.RegisterSettingsListener(UpdateVerification);
 
     return () => disposeSettingsListener && disposeSettingsListener();
   }, []);
@@ -206,9 +206,11 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
   const [menuVisible, setMenuVisible] = useState(player.controls.IsMenuVisible());
 
   useEffect(() => {
+    if(!player.controls) { return; }
+
     setPlayerClickHandler(PlayerClick({player, setRecentUserAction}));
 
-    const UpdateMenuVisibility = () => setMenuVisible(player.controls.IsMenuVisible());
+    const UpdateMenuVisibility = () => player && player.controls && setMenuVisible(player.controls.IsMenuVisible());
     const disposeSettingsListener = player.controls.RegisterSettingsListener(UpdateMenuVisibility);
 
     const disposeVideoObserver = ObserveVideo({player, setVideoState});
@@ -258,7 +260,7 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
                 // Take focus off of this button because it should no longer be selectable after playback starts
                 player.target.firstChild.focus();
               }}
-              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted && !player?.casting ? "" : ControlStyles["center-play-button--hidden"]}`}
+              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted && !(player && player.casting) ? "" : ControlStyles["center-play-button--hidden"]}`}
             />
             <div className={`${ControlStyles["bottom-controls-container"]} ${hideControls ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
               <div className={ControlStyles["bottom-controls-gradient"]} />

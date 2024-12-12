@@ -112,7 +112,7 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
           setPlaybackStarted(newPlayer.playbackStarted);
           setPlayerInitialized(!newPlayer.loading);
           setShowPlayerProfileForm(newPlayer.__showPlayerProfileForm);
-          setCasting(newPlayer?.casting);
+          setCasting(newPlayer && newPlayer.casting);
         }
       );
 
