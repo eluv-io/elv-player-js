@@ -45,7 +45,7 @@ const TimeIndicator = ({player, videoState}) => {
           `${Time(currentTime, videoState.duration)} / `
       }
       {
-        !player.dvrEnabled ? null :
+        (player.isLive && !player.dvrEnabled) ? null :
           Time(videoState.duration, videoState.duration)
       }
     </div>
