@@ -142,6 +142,7 @@ The library includes a helpful collection of configuration options in `EluvioPla
     capLevelToPlayerSize: EluvioPlayerParameters.capLevelToPlayerSize.OFF,
     collectVideoAnalytics: EluvioPlayerParameters.collectVideoAnalytics.ON,
     startTime: undefined,
+    startProgress: undefined,
     posterUrl: undefined,
     hlsjsOptions: undefined,
     dashjsOptions: undefined,
@@ -189,6 +190,7 @@ The library includes a helpful collection of configuration options in `EluvioPla
   * `DISABLE_COOKIES`- Player performance analytics will be collected, but browser cookies will not be used
   * `OFF` - Player performance analytics will not be collected
 * `startTime` - Start the video at the specified time, in seconds
+* `startProgress` - Start the video at the specified progress amount, from 0.0 for the start of the video to 1.0 for the end of the video.
 * `backgroundColor` - Specify the background color of the player. Must be a valid option for css `background-color`
 * `maxBitrate` - Maximum bitrate that the player will automatically use, in bits/second.
 * `posterUrl` - Specify a URL for the poster image for the player
