@@ -15,11 +15,12 @@ import {
 } from "./Observers.js";
 import WebControls from "./WebControls.jsx";
 import TicketForm from "./TicketForm.jsx";
-import {Spinner, UserActionIndicator} from "./Components.jsx";
+import {Copy, Spinner, SVG, UserActionIndicator} from "./Components.jsx";
 import TVControls from "./TVControls.jsx";
 import PlayerProfileForm from "./PlayerProfileForm.jsx";
 import {ImageUrl, MergeDefaultParameters} from "./Common.js";
 import {ChromecastIcon} from "../static/icons/Icons.js";
+import * as Icons from "../static/icons/Icons";
 
 const Poster = ({player}) => {
   const [imageUrl, setImageUrl] = useState(undefined);
@@ -249,7 +250,18 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
       }
       {
         !errorMessage ? null :
-          <div className={PlayerStyles["error-message"]}>{ errorMessage }</div>
+          <div className={PlayerStyles["error-message"]}>
+            <div className={PlayerStyles["error-message__message"]}>
+              { errorMessage }
+            </div>
+            <button
+              className={PlayerStyles["error-message__copy-debug-button"]}
+              onClick={() => Copy(JSON.stringify(player.controls.GetDebugInfo(), null, 2))}
+            >
+              <SVG icon={Icons.InfoIcon} className={PlayerStyles["error-message__icon"]}/>
+              Copy Troubleshooting Info
+            </button>
+          </div>
       }
       {
         !player ? null :

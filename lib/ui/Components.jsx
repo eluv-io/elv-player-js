@@ -17,6 +17,20 @@ export const Spinner = ({light, className=""}) => (
 
 export const SVG = ({icon, className=""}) => <div className={`${CommonStyles["svg"]} ${className}`} dangerouslySetInnerHTML={{__html: icon}} />;
 
+export const Copy = async (value) => {
+  try {
+    value = (value || "").toString();
+
+    await navigator.clipboard.writeText(value);
+  } catch(error) {
+    const input = document.createElement("input");
+
+    input.value = value;
+    input.select();
+    input.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+  }
+};
 
 const icons = {
   [ACTIONS.PLAY]: Icons.PlayIcon,
@@ -209,6 +223,15 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
     rate: {
       label: "Playback Rate",
       Update: index => player.controls.SetPlaybackRate({index})
+    },
+    advanced: {
+      label: "Advanced",
+      Update: option => {
+        if(option === "copy_debug_info") {
+          Copy(JSON.stringify(player.controls.GetDebugInfo(), null, 2));
+          Hide();
+        }
+      }
     }
   };
 
@@ -225,23 +248,36 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
           <div>{ settings[activeMenu].label }</div>
         </button>
         {
-          options[activeMenu].options.map(option =>
+          activeMenu === "advanced" ?
             <button
-              key={`option-${option.index}`}
-              role="menuitemradio"
-              aria-checked={option.active}
-              autoFocus={option.active}
-              aria-label={`${settings[activeMenu].label}: ${option.label || ""}`}
+              role="button"
+              autoFocus
+              aria-label="Copy Debug Info"
               onClick={() => {
-                settings[activeMenu].Update(option.index);
+                settings[activeMenu].Update("copy_debug_info");
                 SetSubmenu(undefined);
               }}
-              className={`${CommonStyles["menu-option"]} ${option.active ? CommonStyles["menu-option-active"] : ""}`}
+              className={CommonStyles["menu-option"]}
             >
-              { option.label || "" }
-              { option.active ? <SVG icon={Icons.CheckmarkIcon} className={CommonStyles["menu-option-icon"]} /> : null }
-            </button>
-          )
+              Copy Debug Info
+            </button> :
+            options[activeMenu].options.map(option =>
+              <button
+                key={`option-${option.index}`}
+                role="menuitemradio"
+                aria-checked={option.active}
+                autoFocus={option.active}
+                aria-label={`${settings[activeMenu].label}: ${option.label || ""}`}
+                onClick={() => {
+                  settings[activeMenu].Update(option.index);
+                  SetSubmenu(undefined);
+                }}
+                className={`${CommonStyles["menu-option"]} ${option.active ? CommonStyles["menu-option-active"] : ""}`}
+              >
+                {option.label || ""}
+                {option.active ? <SVG icon={Icons.CheckmarkIcon} className={CommonStyles["menu-option-icon"]}/> : null}
+              </button>
+            )
         }
       </div>
     );
@@ -250,47 +286,79 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
       <div key="menu" role="menu" className={`${CommonStyles["menu"]} ${className}`}>
         {
           !options.hasQualityOptions ? null :
-            <button autoFocus role="menuitem" onClick={() => SetSubmenu("quality")}
-                    className={CommonStyles["menu-option"]}>
+            <button
+              autoFocus role="menuitem"
+              onClick={() => SetSubmenu("quality")}
+              className={CommonStyles["menu-option"]}
+            >
               {`${settings.quality.label}: ${(options.quality.active && options.quality.active.activeLabel) || ""}`}
               <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
             </button>
         }
         {
           !options.hasAudioOptions ? null :
-            <button autoFocus={!options.hasQualityOptions} role="menuitem" onClick={() => SetSubmenu("audio")} className={CommonStyles["menu-option"]}>
+            <button
+              autoFocus={!options.hasQualityOptions}
+              role="menuitem"
+              onClick={() => SetSubmenu("audio")}
+              className={CommonStyles["menu-option"]}
+            >
               {`${settings.audio.label}: ${(options.audio.active && options.audio.active.label) || ""}`}
               <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
             </button>
         }
         {
           !options.hasTextOptions ? null :
-            <button autoFocus={!options.hasQualityOptions && !options.hasAudioOptions} role="menuitem" onClick={() => SetSubmenu("text")} className={CommonStyles["menu-option"]}>
+            <button
+              autoFocus={!options.hasQualityOptions && !options.hasAudioOptions}
+              role="menuitem"
+              onClick={() => SetSubmenu("text")}
+              className={CommonStyles["menu-option"]}
+            >
               {`${settings.text.label}: ${(options.text.active && options.text.active.label) || ""}`}
               <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
             </button>
         }
         {
           !options.hasProfileOptons ? null :
-            <button autoFocus={!options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions} role="menuitem" onClick={() => SetSubmenu("profile")} className={CommonStyles["menu-option"]}>
+            <button
+              autoFocus={!options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions}
+              role="menuitem"
+              onClick={() => SetSubmenu("profile")}
+              className={CommonStyles["menu-option"]}
+            >
               {`${settings.profile.label}: ${(options.profile.active && options.profile.active.label) || ""}`}
               <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
             </button>
         }
         {
           !options.hasRateOptions ? null :
-            <button autoFocus={!options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions && !options.hasProfileOptons} role="menuitem" onClick={() => SetSubmenu("rate")} className={CommonStyles["menu-option"]}>
+            <button
+              autoFocus={!options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions && !options.hasProfileOptons}
+              role="menuitem"
+              onClick={() => SetSubmenu("rate")}
+              className={CommonStyles["menu-option"]}
+            >
               {`${settings.rate.label}: ${(options.rate.active && options.rate.active.label) || ""}`}
               <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
             </button>
         }
+        <button
+          autoFocus={!options.hasRateOptions && !options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions && !options.hasProfileOptons}
+          role="button"
+          onClick={() => SetSubmenu("advanced")}
+          className={CommonStyles["menu-option"]}
+        >
+          { settings.advanced.label }
+          <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
+        </button>
       </div>
     );
   }
 
   return (
     <div ref={menuRef}>
-      { content }
+      {content}
     </div>
   );
 };
@@ -302,7 +370,7 @@ export const DVRToggle = ({player}) => {
     const disposer = player.controls.RegisterSettingsListener(() => {
       if(!player.controls) { return; }
 
-      setDVREnabled(player.controls.IsDVREnabled())
+      setDVREnabled(player.controls.IsDVREnabled());
     });
 
     return () => disposer && disposer();
@@ -325,21 +393,6 @@ export const DVRToggle = ({player}) => {
       <div className={CommonStyles["dvr-toggle__border"]}/>
     </div>
   );
-};
-
-export const Copy = async (value) => {
-  try {
-    value = (value || "").toString();
-
-    await navigator.clipboard.writeText(value);
-  } catch(error) {
-    const input = document.createElement("input");
-
-    input.value = value;
-    input.select();
-    input.setSelectionRange(0, 99999);
-    document.execCommand("copy");
-  }
 };
 
 export const CopyButton = ({label, value, className=""}) => {
