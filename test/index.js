@@ -62,10 +62,6 @@ const Initialize = async () => {
           //offering: "default",
           //offerings: ["none", "some"]
         },
-        mediaCollectionOptions: {
-          mediaCatalogObjectId: mediaCatalogId,
-          collectionId: mediaCollectionId
-        },
         contentInfo: {
           title: "My Big Title",
           subtitle: "My subtitle",
@@ -81,14 +77,15 @@ const Initialize = async () => {
         //ui: EluvioPlayerParameters.ui.TV,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
-        controls: EluvioPlayerParameters.controls.ON,
-        //controls: EluvioPlayerParameters.controls.AUTO_HIDE,
+        //controls: EluvioPlayerParameters.controls.ON,
+        controls: EluvioPlayerParameters.controls.AUTO_HIDE,
         watermark: EluvioPlayerParameters.watermark.ON,
         autoplay: EluvioPlayerParameters.autoplay.ON,
         title: EluvioPlayerParameters.title.FULLSCREEN_ONLY,
         keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
         maxBitrate: 50000,
         debugLogging: true,
+        //startProgress: 0.75,
         verifyContent: EluvioPlayerParameters.verifyContent.ON,
         hlsjsOptions: {
           //maxBufferLength: 1,
