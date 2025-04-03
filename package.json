@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@eluvio/elv-client-js": "^4.0.123",
-    "dashjs": "~4.7.0",
+    "dashjs": "git+https://github.com/elv-zenia/dash.js.git#text-track-fix",
     "focus-visible": "^5.2.0",
     "hls.js": "~1.5.12",
     "mux-embed": "^4.30.0",
