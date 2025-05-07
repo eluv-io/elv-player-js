@@ -74,7 +74,7 @@ export const UserActionIndicator = ({action}) => {
   );
 };
 
-export const SeekBar = ({player, videoState, setRecentUserAction, className=""}) => {
+export const SeekBar = ({id, player, videoState, setRecentUserAction, className=""}) => {
   const [currentTime, setCurrentTime] = useState(player.controls.GetCurrentTime());
   const [bufferFraction, setBufferFraction] = useState(0);
   const [seekKeydownHandler, setSeekKeydownHandler] = useState(undefined);
@@ -115,6 +115,7 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
         className={CommonStyles["seek-playhead"]}
       />
       <input
+        id={id}
         aria-label="Seek slider"
         type="range"
         min={0}
