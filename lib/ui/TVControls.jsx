@@ -178,7 +178,8 @@ const InfoBox = ({player, Hide}) => {
   }, []);
 
   return (
-    <div className={ControlStyles["info-box-container"]}>
+    <div id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.info_box)}
+         className={ControlStyles["info-box-container"]}>
       <button
         autoFocus
         onClick={() => Hide()}
@@ -347,7 +348,8 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
               setRecentUserAction={setRecentUserAction}
             />
             <TimeIndicator player={player} videoState={videoState}/>
-            <div className={ControlStyles["bottom-controls"]}>
+            <div id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.bottom_controls_container)}
+                 className={ControlStyles["bottom-controls"]}>
               <div className={ControlStyles["bottom-left-controls"]}>
                 {
                   !title || player.playerOptions.title === EluvioPlayerParameters.title.OFF ? null :
