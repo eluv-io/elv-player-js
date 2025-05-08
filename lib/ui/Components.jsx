@@ -88,7 +88,7 @@ export const SeekBar = ({id, player, videoState, setRecentUserAction, className=
     const disposeSettingsListener = player.controls.RegisterSettingsListener(() => {
       if(!player.controls) { return; }
 
-      setDVREnabled(player.controls.IsDVREnabled())
+      setDVREnabled(player.controls.IsDVREnabled());
     });
 
     return () => {
@@ -167,7 +167,7 @@ export const VolumeControls = ({player, videoState}) => {
   );
 };
 
-export const SettingsMenu = ({player, Hide, className=""}) => {
+export const SettingsMenu = ({player, Close, className=""}) => {
   const [activeMenu, setActiveMenu] = useState(undefined);
   const [options, setOptions] = useState(undefined);
   const menuRef = createRef();
@@ -185,7 +185,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
+    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Close});
 
     return () => {
       RemoveMenuListener && RemoveMenuListener();
@@ -215,7 +215,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
       Update: index => {
         if(index === "custom") {
           player.controls.ShowPlayerProfileForm();
-          Hide();
+          Close();
         } else {
           player.controls.SetPlayerProfile({profile: index});
         }
@@ -230,7 +230,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
       Update: option => {
         if(option === "copy_debug_info") {
           Copy(JSON.stringify(player.controls.GetDebugInfo(), null, 2));
-          Hide();
+          Close();
         }
       }
     }
@@ -435,7 +435,7 @@ const ContentDetail = ({label, value, copyable}) => {
   );
 };
 
-export const ContentVerificationMenu = ({player, Hide, className=""}) => {
+export const ContentVerificationMenu = ({player, Close, className=""}) => {
   const menuRef = createRef();
   const [audit, setAudit] = useState();
   const [showDetails, setShowDetails] = useState(false);
@@ -457,7 +457,7 @@ export const ContentVerificationMenu = ({player, Hide, className=""}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
+    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Close});
 
     return () => {
       RemoveMenuListener && RemoveMenuListener();
@@ -582,7 +582,7 @@ export const ContentVerificationMenu = ({player, Hide, className=""}) => {
   );
 };
 
-export const CollectionMenu = ({player, Hide, className=""}) => {
+export const CollectionMenu = ({player, Close, className=""}) => {
   const menuRef = createRef();
   const [collectionInfo, setCollectionInfo] = useState(undefined);
 
@@ -599,7 +599,7 @@ export const CollectionMenu = ({player, Hide, className=""}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
+    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Close});
 
     return () => RemoveMenuListener && RemoveMenuListener();
   }, [menuRef]);
@@ -608,7 +608,7 @@ export const CollectionMenu = ({player, Hide, className=""}) => {
 
   const Select = mediaIndex => {
     player.controls.CollectionPlay({mediaIndex});
-    Hide();
+    Close();
   };
 
   return (
