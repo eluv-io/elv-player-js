@@ -178,7 +178,8 @@ The library includes a helpful collection of configuration options in `EluvioPla
 * `keyboardControls` - Whether or not the player's keyboard controls will be active
   * `ON (default)` - Keyboard controls active
   * `OFF` - Keyboard controls disabled
-  * `ARROW_KEYS_DISABLED` - Keyboard controls active except for arrow keys (useful if supporting directional navigation)
+  * `SPATIAL_NAVIGATION` - Arrow keys will move focus between the player controls, other keyboard controls identical to `ON`
+  * `ARROW_KEYS_DISABLED` - Keyboard controls active except for arrow keys (useful for implementing your own directional/spatial navigation)
 * `watermark`: Whether or not the Eluvio watermark will be shown.
   * `ON (default)` - Watermark will be shown
   * `OFF` - Watermark will not be shown
