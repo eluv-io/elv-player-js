@@ -1,9 +1,9 @@
 import ControlStyles from "../static/stylesheets/controls-tv.module.scss";
 
 // eslint-disable-next-line no-unused-vars
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import * as Icons from "../static/icons/Icons.js";
-import {ObserveVideo, ObserveVideoTime} from "./Observers.js";
+import {ObserveVideo, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import "focus-visible";
 import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters, { ElvPlayerControlIds } from "../player/PlayerParameters.js";
@@ -116,7 +116,7 @@ const MenuButton = ({id, label, icon, children, player, MenuComponent}) => {
         icon ?
           <IconButton
             id={id}
-            aria-label={show ? `Hide ${label} Menu` : label}
+            aria-label={show ? `Close ${label} Menu` : label}
             aria-haspopup
             icon={icon}
             onClick={() => {
@@ -140,7 +140,7 @@ const MenuButton = ({id, label, icon, children, player, MenuComponent}) => {
         !show ? null :
           <MenuComponent
             player={player}
-            Hide={() => {
+            Close={() => {
               player.controls.__ToggleMenu(false);
               setShow(false);
             }}
@@ -151,10 +151,12 @@ const MenuButton = ({id, label, icon, children, player, MenuComponent}) => {
   );
 };
 
-const InfoBox = ({player, Hide}) => {
+const InfoBox = ({player, Close}) => {
   const [imageUrl, setImageUrl] = useState(undefined);
 
   const {title, description, image, headers} = player.controls.GetContentInfo() || {};
+
+  const containerRef = useRef();
 
   useEffect(() => {
     setImageUrl(undefined);
@@ -166,23 +168,21 @@ const InfoBox = ({player, Hide}) => {
   }, [image]);
 
   useEffect(() => {
-    const onEscape = event => {
-      if(event && (event.key || "").toLowerCase() === "escape") {
-        Hide();
-      }
-    };
+    if(!containerRef || !containerRef.current) { return; }
 
-    document.body.addEventListener("keydown", onEscape);
+    const RemoveMenuListener = RegisterModal({element: containerRef.current, Close});
 
-    return () => document.body.removeEventListener("keydown", onEscape);
-  }, []);
+    return () => RemoveMenuListener?.();
+  }, [containerRef, Close]);
 
   return (
-    <div id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.info_box)}
-         className={ControlStyles["info-box-container"]}>
+    <div
+      ref={containerRef}
+      id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.info_box)}
+      className={ControlStyles["info-box-container"]}>
       <button
         autoFocus
-        onClick={() => Hide()}
+        onClick={Close}
         className={`${ControlStyles["info-box-button"]} ${ControlStyles["info-box-button--info"]}`}
       >
         Info
@@ -216,7 +216,7 @@ const InfoBox = ({player, Hide}) => {
           <button
             onClick={() => {
               player.controls.Seek({time: 0});
-              Hide();
+              Close();
             }}
             className={`${ControlStyles["info-box-button"]} ${ControlStyles["info-box-button--restart"]}`}
           >
@@ -310,7 +310,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
       />
       {
         showInfo ?
-          <InfoBox player={player} Hide={() => setShowInfo(false)} /> :
+          <InfoBox player={player} Close={() => setShowInfo(false)} /> :
           <div className={`${ControlStyles["bottom-controls-container"]} ${hideControls ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
             <div className={ControlStyles["bottom-controls-gradient"]} />
             <div className={ControlStyles["title-container"]}>
