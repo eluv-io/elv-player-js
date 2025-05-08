@@ -65,7 +65,7 @@ const CenterButtons = ({player, videoState}) => {
       {
         !previousMedia && !nextMedia ? null :
           <IconButton
-            id={player.controls.__GetControlId(ElvPlayerControlIds.prev_track)}
+            id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.prev_track)}
             disabled={!playerReady || !previousMedia}
             icon={Icons.PreviousTrackIcon}
             onClick={() => player.controls.CollectionPlayPrevious()}
@@ -73,21 +73,21 @@ const CenterButtons = ({player, videoState}) => {
           />
       }
       <IconButton
-        id={player.controls.__GetControlId(ElvPlayerControlIds.rewind)}
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.rewind)}
         aria-label="Back 10 Seconds"
         icon={Icons.BackwardCircleIcon}
         onClick={() => player.controls.Seek({relativeSeconds: -10})}
         className={ControlStyles["icon-button--drop-shadow-focus"]}
       />
       <IconButton
-        id={player.controls.__GetControlId(ElvPlayerControlIds.play_pause)}
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.play_pause)}
         aria-label={videoState.playing ? "Pause" : "Play"}
         icon={videoState.playing ? Icons.PauseCircleIcon : Icons.PlayCircleIcon}
         onClick={() => player.controls.TogglePlay()}
         className={`${ControlStyles["play-pause-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]}`}
       />
       <IconButton
-        id={player.controls.__GetControlId(ElvPlayerControlIds.fast_forward)}
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.fast_forward)}
         aria-label="Forward 10 Seconds"
         icon={Icons.ForwardCircleIcon}
         onClick={() => player.controls.Seek({relativeSeconds: 10})}
@@ -96,7 +96,7 @@ const CenterButtons = ({player, videoState}) => {
       {
         !previousMedia && !nextMedia ? null :
           <IconButton
-            id={player.controls.__GetControlId(ElvPlayerControlIds.next_track)}
+            id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.next_track)}
             disabled={!playerReady || !nextMedia}
             icon={Icons.NextTrackIcon}
             onClick={() => player.controls.CollectionPlayNext()}
@@ -245,7 +245,7 @@ const ContentVerificationControls = ({player}) => {
 
   return (
     <MenuButton
-      id={player.controls.__GetControlId(ElvPlayerControlIds.content_verification_menu)}
+      id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.content_verification_menu)}
       label="Content Verification Menu"
       icon={Icons.ContentBadgeIcon}
       player={player}
@@ -342,7 +342,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
 
             </div>
             <SeekBar
-              id={player.controls.__GetControlId(ElvPlayerControlIds.seekbar)}
+              id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.seekbar)}
               player={player} videoState={videoState}
               setRecentUserAction={setRecentUserAction}
             />
@@ -352,7 +352,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
                 {
                   !title || player.playerOptions.title === EluvioPlayerParameters.title.OFF ? null :
                     <button
-                      id={player.controls.__GetControlId(ElvPlayerControlIds.info_button)}
+                      id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.info_button)}
                       className={ControlStyles["text-button"]} onClick={() => setShowInfo(true)}>Info</button>
                 }
               </div>
@@ -374,7 +374,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
                 {
                   !player.controls.GetOptions().hasAnyOptions ? null :
                     <MenuButton
-                      id={player.controls.__GetControlId(ElvPlayerControlIds.settings_menu)}
+                      id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.settings_menu)}
                       key="settings-button"
                       label="Settings"
                       player={player}
