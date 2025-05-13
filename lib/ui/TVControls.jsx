@@ -271,9 +271,6 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
     return () => disposeVideoObserver && disposeVideoObserver();
   }, []);
 
-  if(!videoState) {
-    return null;
-  }
 
   const { title } = (player.controls.GetContentInfo() || {});
 
@@ -283,7 +280,17 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
   const showUI = recentlyInteracted || !playbackStarted || player.controls.IsMenuVisible();
   const hideControls = !showUI && player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE;
 
-  player.__SetControlsVisibility(!hideControls);
+  useEffect(() => {
+    player.__SetControlsVisibility(!hideControls);
+    if(!hideControls) {
+      // Focus on the play/pause button when controls are shown
+      player.controls.GetPlayerControl(ElvPlayerControlIds.play_pause)?.focus();
+    }
+  }, [player, hideControls]);
+
+  if(!videoState) {
+    return null;
+  }
 
   return (
     <div
