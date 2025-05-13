@@ -156,7 +156,8 @@ const PlayerUI = ({
       // Keyboard controls
       const disposeKeyboardControls = ObserveKeydown({
         player: newPlayer,
-        setRecentUserAction: onUserAction
+        setRecentUserAction: onUserAction,
+        onHideUi: () => setRecentlyInteracted(false)
       });
 
       // Media session
