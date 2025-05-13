@@ -290,6 +290,7 @@ export const SettingsMenu = ({player, Close, className=""}) => {
     if(!menuRef || !menuRef.current) { return; }
 
     const RemoveMenuListener = RegisterModal({
+      player,
       element: menuRef.current.parentElement,
       Close,
       IsSubmenuOpen: () => activeMenu,
@@ -567,6 +568,7 @@ export const ContentVerificationMenu = ({player, Close, className=""}) => {
     if(!menuRef || !menuRef.current) { return; }
 
     const RemoveMenuListener = RegisterModal({
+      player,
       element: menuRef.current.parentElement,
       Close,
       IsSubmenuOpen: () => showDetails,
@@ -713,7 +715,7 @@ export const CollectionMenu = ({player, Close, className=""}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Close});
+    const RemoveMenuListener = RegisterModal({player, element: menuRef.current.parentElement, Close});
 
     return () => RemoveMenuListener && RemoveMenuListener();
   }, [menuRef]);
