@@ -15,7 +15,7 @@ const PlayerProfileForm = ({player, Close}) => {
   useEffect(() => {
     if(!formRef || !formRef.current) { return; }
 
-    const modalHandlerDisposer = RegisterModal({element: formRef.current, Hide: Close});
+    const modalHandlerDisposer = RegisterModal({player, element: formRef.current, Close});
 
     return () => modalHandlerDisposer && modalHandlerDisposer();
   }, [formRef]);
