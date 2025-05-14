@@ -18,7 +18,7 @@ import TicketForm from "./TicketForm.jsx";
 import {Copy, Spinner, SVG, UserActionIndicator} from "./Components.jsx";
 import TVControls from "./TVControls.jsx";
 import PlayerProfileForm from "./PlayerProfileForm.jsx";
-import {ImageUrl, MergeDefaultParameters} from "./Common.js";
+import {ImageUrl, MergeDefaultParameters, MergeParameters} from "./Common.js";
 import {ChromecastIcon} from "../static/icons/Icons.js";
 import * as Icons from "../static/icons/Icons";
 
@@ -48,7 +48,15 @@ const Poster = ({player}) => {
 };
 
 let clearInteractionTimeout;
-const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Reset}) => {
+const PlayerUI = ({
+  target,
+  parameters,
+  InitCallback,
+  ErrorCallback,
+  Unmount,
+  Reset,
+  SetAdditionalParameters
+}) => {
   const [player, setPlayer] = useState(undefined);
   const [client, setClient] = useState(undefined);
   const [size, setSize] = useState("lg");
@@ -101,7 +109,11 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
         target,
         video: videoRef.current,
         parameters,
-        SetErrorMessage: setErrorMessage
+        SetErrorMessage: setErrorMessage,
+        Reload: Reset,
+        UpdateParameters: parameters => {
+          SetAdditionalParameters(parameters);
+        }
       });
 
       window.__elvPlayer = newPlayer;
@@ -294,12 +306,15 @@ const PlayerUI = ({target, parameters, InitCallback, ErrorCallback, Unmount, Res
   );
 };
 
-const PlayerWrapper = (args) => {
+const PlayerWrapper = ({parameters, ...args}) => {
   const [playerKey, setPlayerKey] = useState(Math.random());
+  const [additionalParameters, setAdditionalParameters] = useState({});
 
   return (
     <PlayerUI
       {...args}
+      SetAdditionalParameters={setAdditionalParameters}
+      parameters={MergeParameters(parameters, additionalParameters)}
       key={`player-${playerKey}`}
       Reset={() => setPlayerKey(Math.random())}
     />

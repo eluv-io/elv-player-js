@@ -6,7 +6,8 @@ import {Spinner} from "./Components.jsx";
 import {RegisterModal} from "./Observers.js";
 
 const PlayerProfileForm = ({player, Close}) => {
-  const [playerOptions, setPlayerOptions] = useState(JSON.stringify(player.hlsOptions || "{}", null, 2));
+  const [playerOptions, setPlayerOptions] = useState(
+  );
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -19,6 +20,14 @@ const PlayerProfileForm = ({player, Close}) => {
 
     return () => modalHandlerDisposer && modalHandlerDisposer();
   }, [formRef]);
+
+  useEffect(() => {
+    let options = {...(player.hlsOptions || {})};
+    delete options.drmSystems;
+    delete options.emeEnabled;
+
+    setPlayerOptions(JSON.stringify(options, null, 2));
+  }, []);
 
   const Submit = async event => {
     event.preventDefault();
