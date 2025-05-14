@@ -308,13 +308,16 @@ const PlayerUI = ({
 
 const PlayerWrapper = ({parameters, ...args}) => {
   const [playerKey, setPlayerKey] = useState(Math.random());
-  const [additionalParameters, setAdditionalParameters] = useState({});
+  const [additionalParameters, setAdditionalParameters] = useState();
 
   return (
     <PlayerUI
       {...args}
       SetAdditionalParameters={setAdditionalParameters}
-      parameters={MergeParameters(parameters, additionalParameters)}
+      parameters={
+        !additionalParameters ? parameters :
+          MergeParameters(parameters, additionalParameters)
+      }
       key={`player-${playerKey}`}
       Reset={() => setPlayerKey(Math.random())}
     />
