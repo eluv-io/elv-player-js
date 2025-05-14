@@ -179,6 +179,8 @@ The library includes a helpful collection of configuration options in `EluvioPla
   * `ON (default)` - Keyboard controls active
   * `OFF` - Keyboard controls disabled
   * `SPATIAL_NAVIGATION` - Arrow keys will move focus between the player controls, other keyboard controls identical to `ON`
+* `keyboardBackKeys` - Which keys will be used to trigger the "back" action (close menus, hide player ui).
+  * `DEFAULT` - Escape/Backspace and some known TV "Back" keys.
 * `watermark`: Whether or not the Eluvio watermark will be shown.
   * `ON (default)` - Watermark will be shown
   * `OFF` - Watermark will not be shown
