@@ -73,8 +73,8 @@
 
 .seek-container {
   --progress-height: 3px;
-  --progress-height-expanded: 10px;
-  --progress-height-expanded-mobile: 8px;
+  --progress-height-expanded: 12px;
+  --progress-height-expanded-mobile: 12px;
   --color-seek-background: rgba(255, 255, 255, 10%);
   --color-seek-buffer: rgba(255, 255, 255, 10%);
   --color-seek-active: rgba(255, 255, 255, 50%);
@@ -91,6 +91,28 @@
   * {
     transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease, border-radius 0.25s ease;
     transition-delay: 0.25s;
+  }
+
+  .thumbnail {
+    animation: 0.5s fadein ease;
+    bottom: 100%;
+    color: transparent;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    transition-delay: 0s;
+    user-select: none;
+    width: 250px;
+
+    &--visible {
+      opacity: 1;
+    }
+
+    img {
+      border-radius: 5px;
+      height: auto;
+      width: 250px;
+    }
   }
 
   &:hover,
@@ -128,12 +150,6 @@
       height: var(--progress-height-expanded);
       transition-delay: unset;
     }
-  }
-
-  &:focus-visible,
-  &:has(:focus-visible),
-  &:hover {
-    filter: drop-shadow(0 0 5px var(--color-seek-active-focused));
   }
 }
 
@@ -691,6 +707,7 @@
 
   .seek-container {
     height: calc(var(--progress-height-expanded) + 5px);
+    position: relative;
 
     &:hover,
     &:active,

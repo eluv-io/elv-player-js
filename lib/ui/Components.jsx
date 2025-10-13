@@ -74,11 +74,48 @@ export const UserActionIndicator = ({action}) => {
   );
 };
 
+const Thumbnail = ({player, time, progress, videoState, visible}) => {
+  const [ref, setRef] = useState(null);
+
+  if(!player.thumbnailsLoaded) {
+    return null;
+  }
+
+  time = typeof time !== "undefined" ? time :
+    progress * videoState.duration;
+
+  progress = typeof progress !== "undefined" ? progress :
+    time / videoState.duration;
+
+  let maxPercent = 100;
+  if(ref) {
+    const { width } = ref.parentElement.getBoundingClientRect();
+    maxPercent = (width - 250) / width;
+  }
+
+  const thumbnailImage = player.thumbnailHandler.ThumbnailImage(time);
+
+  return (
+    <div
+      ref={setRef}
+      style={{
+        left: `${Math.min(progress, maxPercent) * 100}%`
+      }}
+      className={`${CommonStyles["thumbnail"]} ${visible ? CommonStyles["thumbnail--visible"] : ""}`}
+    >
+      <img src={thumbnailImage} alt="Thumbnail" className={CommonStyles["thumbnail__image"]} />
+    </div>
+  );
+};
+
 export const SeekBar = ({player, videoState, setRecentUserAction, className=""}) => {
   const [currentTime, setCurrentTime] = useState(player.controls.GetCurrentTime());
   const [bufferFraction, setBufferFraction] = useState(0);
   const [seekKeydownHandler, setSeekKeydownHandler] = useState(undefined);
   const [dvrEnabled, setDVREnabled] = useState(player.controls.IsDVREnabled());
+  const [hoverPosition, setHoverPosition] = useState(0);
+  const [hovering, setHovering] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   useEffect(() => {
     setSeekKeydownHandler(SeekSliderKeyDown(player, setRecentUserAction));
@@ -103,7 +140,20 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
   }
 
   return (
-    <div className={`${className} ${CommonStyles["seek-container"]} ${className}`}>
+    <div
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => {
+        setFocused(false);
+        setHovering(false);
+      }}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      onMouseMove={event => {
+        const { left, width } = event.currentTarget.getBoundingClientRect();
+        setHoverPosition(event.clientX / (width - left));
+      }}
+      className={`${className} ${CommonStyles["seek-container"]} ${className}`}
+    >
       <progress
         max={1}
         value={player.casting ? 0 : bufferFraction}
@@ -121,9 +171,26 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
         max={1}
         step={0.00001}
         value={currentTime / videoState.duration || 0}
-        onInput={event => player.controls.Seek({fraction: event.currentTarget.value})}
+        onInput={event => {
+          player.controls.Seek({fraction: event.currentTarget.value});
+        }}
+        onTouchStart={() => setHovering(true)}
+        onTouchMove={event => {
+          const { left, width } = event.currentTarget.getBoundingClientRect();
+          const progress = event.touches[0].pageX / (width - left);
+          setHoverPosition(progress);
+
+          player.controls.Seek({fraction: progress});
+        }}
+        onTouchEnd={() => setHovering(false)}
         onKeyDown={seekKeydownHandler}
         className={CommonStyles["seek-input"]}
+      />
+      <Thumbnail
+        player={player}
+        progress={focused ? currentTime / videoState.duration : hoverPosition}
+        videoState={videoState}
+        visible={hovering || focused}
       />
     </div>
   );
