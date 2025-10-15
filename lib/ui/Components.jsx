@@ -150,7 +150,7 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
       onBlur={() => setFocused(false)}
       onMouseMove={event => {
         const { left, width } = event.currentTarget.getBoundingClientRect();
-        setHoverPosition(event.clientX / (width - left));
+        setHoverPosition((event.clientX - left) / width);
       }}
       className={`${className} ${CommonStyles["seek-container"]} ${className}`}
     >
