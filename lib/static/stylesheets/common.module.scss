@@ -108,6 +108,19 @@
       opacity: 1;
     }
 
+    &__time {
+      background: rgba(0, 0, 0, 50%);
+      border-radius: 5px;
+      bottom: 5px;
+      color: white;
+      display: block;
+      font-size: 14px;
+      padding: 5px 10px;
+      position: absolute;
+      right: 5px;
+      z-index: 10;
+    }
+
     img {
       border-radius: 5px;
       height: auto;

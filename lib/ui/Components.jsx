@@ -2,7 +2,7 @@ import CommonStyles from "../static/stylesheets/common.module.scss";
 
 // eslint-disable-next-line no-unused-vars
 import React, {createRef, useEffect, useState} from "react";
-import {ACTIONS, SeekSliderKeyDown, VolumeSliderKeydown} from "./Common.js";
+import {ACTIONS, SeekSliderKeyDown, Time, VolumeSliderKeydown} from "./Common.js";
 import {ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import * as Icons from "../static/icons/Icons.js";
 import {IconButton} from "./WebControls";
@@ -95,6 +95,7 @@ const Thumbnail = ({player, time, progress, videoState, visible}) => {
 
   const thumbnailImage = player.thumbnailHandler.ThumbnailImage(time);
 
+  console.log(videoState, Time(time, videoState.duration))
   return (
     <div
       ref={setRef}
@@ -104,6 +105,9 @@ const Thumbnail = ({player, time, progress, videoState, visible}) => {
       className={`${CommonStyles["thumbnail"]} ${visible ? CommonStyles["thumbnail--visible"] : ""}`}
     >
       <img src={thumbnailImage} alt="Thumbnail" className={CommonStyles["thumbnail__image"]} />
+      <div className={CommonStyles["thumbnail__time"]}>
+        { Time(time, videoState.duration) }
+      </div>
     </div>
   );
 };
@@ -125,7 +129,7 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
     const disposeSettingsListener = player.controls.RegisterSettingsListener(() => {
       if(!player.controls) { return; }
 
-      setDVREnabled(player.controls.IsDVREnabled())
+      setDVREnabled(player.controls.IsDVREnabled());
     });
 
     return () => {
