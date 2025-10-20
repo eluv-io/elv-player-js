@@ -95,7 +95,6 @@ const Thumbnail = ({player, time, progress, videoState, visible}) => {
 
   const thumbnailImage = player.thumbnailHandler.ThumbnailImage(time);
 
-  console.log(videoState, Time(time, videoState.duration))
   return (
     <div
       ref={setRef}
@@ -509,7 +508,7 @@ export const ContentVerificationMenu = ({player, Hide, className=""}) => {
   const menuRef = createRef();
   const [audit, setAudit] = useState();
   const [showDetails, setShowDetails] = useState(false);
-  const [_, setLoaded] = useState(false);
+  const [, setLoaded] = useState(false);
 
   useEffect(() => {
     player.__LoadVerificationDetails()

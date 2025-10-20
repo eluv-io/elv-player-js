@@ -17,7 +17,7 @@
     "build-icons": "node lib/ui/BuildIcons.cjs",
     "lint": "npm run fix-scss ; npm run fix-js",
     "lint-show": "npm run lint-scss ; npm run lint-js",
-    "lint-js": "eslint \"lib/**/*.js\"",
+    "lint-js": "eslint \"lib/**/*.js\" \"lib/**/*.jsx\"",
     "lint-scss": "npx stylelint \"lib/**/*.css\" \"lib/**/*.module.scss\"",
     "fix-js": "npm run lint-js -- --fix",
     "fix-scss": "npx stylelint --fix \"lib/**/*.css\" \"lib/**/*.module.scss\""
