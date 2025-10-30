@@ -39,7 +39,7 @@
     "@eluvio/elv-client-js": "^4.2.5",
     "dashjs": "git+https://github.com/elv-zenia/dash.js.git#text-track-fix",
     "focus-visible": "^5.2.0",
-    "hls.js": "1.6.13",
+    "hls.js": "1.6.11",
     "mux-embed": "^5.9.0",
     "node-interval-tree": "^2.1.2",
     "react": "^18.2.0",
