@@ -74,7 +74,7 @@ export const UserActionIndicator = ({action}) => {
   );
 };
 
-const Thumbnail = ({player, time, progress, videoState, visible}) => {
+const Thumbnail = ({player, time, progress, duration, visible}) => {
   const [ref, setRef] = useState(null);
 
   if(!player.thumbnailsLoaded) {
@@ -82,10 +82,10 @@ const Thumbnail = ({player, time, progress, videoState, visible}) => {
   }
 
   time = typeof time !== "undefined" ? time :
-    progress * videoState.duration;
+    progress * duration;
 
   progress = typeof progress !== "undefined" ? progress :
-    time / videoState.duration;
+    time / duration;
 
   let maxPercent = 100;
   if(ref) {
@@ -105,7 +105,7 @@ const Thumbnail = ({player, time, progress, videoState, visible}) => {
     >
       <img src={thumbnailImage} alt="Thumbnail" className={CommonStyles["thumbnail__image"]} />
       <div className={CommonStyles["thumbnail__time"]}>
-        { Time(time, videoState.duration) }
+        { Time(time, duration) }
       </div>
     </div>
   );
@@ -192,7 +192,7 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
       <Thumbnail
         player={player}
         progress={focused ? currentTime / videoState.duration : hoverPosition}
-        videoState={videoState}
+        duration={videoState.duration}
         visible={hovering || focused}
       />
     </div>
