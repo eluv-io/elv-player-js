@@ -17,6 +17,7 @@ import {
   SettingsMenu,
   SVG
 } from "./Components.jsx";
+import PlayerControls from "../player/Controls";
 
 export const IconButton = ({icon, ...props}) => {
   return (
@@ -65,6 +66,7 @@ const CenterButtons = ({player, videoState}) => {
       {
         !previousMedia && !nextMedia ? null :
           <IconButton
+            id={player.controls.GetControlId(PlayerControls.ID_PREV_TRACK)}
             disabled={!playerReady || !previousMedia}
             icon={Icons.PreviousTrackIcon}
             onClick={() => player.controls.CollectionPlayPrevious()}
@@ -72,18 +74,21 @@ const CenterButtons = ({player, videoState}) => {
           />
       }
       <IconButton
+        id={player.controls.GetControlId(PlayerControls.ID_REWIND)}
         aria-label="Back 10 Seconds"
         icon={Icons.BackwardCircleIcon}
         onClick={() => player.controls.Seek({relativeSeconds: -10})}
         className={ControlStyles["icon-button--drop-shadow-focus"]}
       />
       <IconButton
+        id={player.controls.GetControlId(PlayerControls.ID_PLAYPAUSE)}
         aria-label={videoState.playing ? "Pause" : "Play"}
         icon={videoState.playing ? Icons.PauseCircleIcon : Icons.PlayCircleIcon}
         onClick={() => player.controls.TogglePlay()}
         className={`${ControlStyles["play-pause-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]}`}
       />
       <IconButton
+        id={player.controls.GetControlId(PlayerControls.ID_FASTFORWARD)}
         aria-label="Forward 10 Seconds"
         icon={Icons.ForwardCircleIcon}
         onClick={() => player.controls.Seek({relativeSeconds: 10})}
@@ -92,6 +97,7 @@ const CenterButtons = ({player, videoState}) => {
       {
         !previousMedia && !nextMedia ? null :
           <IconButton
+            id={player.controls.GetControlId(PlayerControls.ID_NEXT_TRACK)}
             disabled={!playerReady || !nextMedia}
             icon={Icons.NextTrackIcon}
             onClick={() => player.controls.CollectionPlayNext()}
@@ -102,7 +108,7 @@ const CenterButtons = ({player, videoState}) => {
   );
 };
 
-const MenuButton = ({label, icon, children, player, MenuComponent}) => {
+const MenuButton = ({id, label, icon, children, player, MenuComponent}) => {
   const [show, setShow] = useState(false);
 
   return (
@@ -110,6 +116,7 @@ const MenuButton = ({label, icon, children, player, MenuComponent}) => {
       {
         icon ?
           <IconButton
+            id={id}
             aria-label={show ? `Hide ${label} Menu` : label}
             aria-haspopup
             icon={icon}
@@ -120,6 +127,7 @@ const MenuButton = ({label, icon, children, player, MenuComponent}) => {
             className={`${ControlStyles["icon-button--circle-focus"]} ${show ? ControlStyles["icon-button-active"] : ""}`}
           /> :
           <button
+            id={id}
             onClick={() => {
               player.controls.__ToggleMenu(!show);
               setShow(!show);
@@ -238,6 +246,7 @@ const ContentVerificationControls = ({player}) => {
 
   return (
     <MenuButton
+      id={player.controls.GetControlId(PlayerControls.ID_CONTENT_VERIFICATION_MENU)}
       label="Content Verification Menu"
       icon={Icons.ContentBadgeIcon}
       player={player}
@@ -333,13 +342,19 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
               }
 
             </div>
-            <SeekBar player={player} videoState={videoState} setRecentUserAction={setRecentUserAction} />
+            <SeekBar
+              id={player.controls.GetControlId(PlayerControls.ID_SEEKBAR)}
+              player={player} videoState={videoState}
+              setRecentUserAction={setRecentUserAction}
+            />
             <TimeIndicator player={player} videoState={videoState}/>
             <div className={ControlStyles["bottom-controls"]}>
               <div className={ControlStyles["bottom-left-controls"]}>
                 {
                   !title || player.playerOptions.title === EluvioPlayerParameters.title.OFF ? null :
-                    <button className={ControlStyles["text-button"]} onClick={() => setShowInfo(true)}>Info</button>
+                    <button
+                      id={player.controls.GetControlId(PlayerControls.ID_INFO_BUTTON)}
+                      className={ControlStyles["text-button"]} onClick={() => setShowInfo(true)}>Info</button>
                 }
               </div>
               <CenterButtons player={player} videoState={videoState}/>
@@ -360,6 +375,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
                 {
                   !player.controls.GetOptions().hasAnyOptions ? null :
                     <MenuButton
+                      id={player.controls.GetControlId(PlayerControls.ID_SETTINGS_MENU)}
                       key="settings-button"
                       label="Settings"
                       player={player}
