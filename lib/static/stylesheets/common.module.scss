@@ -610,6 +610,9 @@
       color: var(--color-text);
       opacity: 1;
     }
+    &:focus-visible {
+          filter: drop-shadow(0 0 5px #FFF);
+    }
   }
 
   &__live {

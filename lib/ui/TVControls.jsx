@@ -3,7 +3,7 @@ import ControlStyles from "../static/stylesheets/controls-tv.module.scss";
 // eslint-disable-next-line no-unused-vars
 import React, {useEffect, useRef, useState} from "react";
 import * as Icons from "../static/icons/Icons.js";
-import {ObserveVideo, ObserveVideoTime, RegisterModal} from "./Observers.js";
+import {ObserveVideo, ObserveVideoTime} from "./Observers.js";
 import "focus-visible";
 import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters, { ElvPlayerControlIds } from "../player/PlayerParameters.js";
@@ -167,14 +167,6 @@ const InfoBox = ({player, Close}) => {
       .then(imageUrl => setImageUrl(imageUrl));
   }, [image]);
 
-  useEffect(() => {
-    if(!containerRef || !containerRef.current) { return; }
-
-    const RemoveMenuListener = RegisterModal({element: containerRef.current, Close});
-
-    return () => RemoveMenuListener?.();
-  }, [containerRef, Close]);
-
   return (
     <div
       ref={containerRef}
@@ -280,13 +272,21 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
   const showUI = recentlyInteracted || !playbackStarted || player.controls.IsMenuVisible();
   const hideControls = !showUI && player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE;
 
+  const hasVideoState = videoState !== undefined;
+  useEffect(() => {
+    // Make sure play/pause is focused as soon as the player is donw loading and some video data is available
+    if(hasVideoState) {
+      player.controls.GetPlayerControl(ElvPlayerControlIds.play_pause)?.focus();
+    }
+  }, [player, hasVideoState]);
+
   useEffect(() => {
     player.__SetControlsVisibility(!hideControls);
-    if(!hideControls) {
+    if(!hideControls && !showInfo) {
       // Focus on the play/pause button when controls are shown
       player.controls.GetPlayerControl(ElvPlayerControlIds.play_pause)?.focus();
     }
-  }, [player, hideControls]);
+  }, [player, hideControls, showInfo]);
 
   if(!videoState) {
     return null;

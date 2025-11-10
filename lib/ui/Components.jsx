@@ -6,6 +6,7 @@ import {ACTIONS, SeekSliderKeyDown, Time, VolumeSliderKeydown} from "./Common.js
 import {ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import * as Icons from "../static/icons/Icons.js";
 import {IconButton} from "./WebControls";
+import {ElvPlayerControlIds} from "../player/PlayerParameters";
 
 // Components
 
@@ -456,12 +457,14 @@ export const DVRToggle = ({player}) => {
   return (
     <div className={CommonStyles["dvr-toggle"]}>
       <button
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.live_toggle)}
         onClick={() => player.controls.SetDVREnabled(false)}
         className={`${CommonStyles["dvr-toggle__live"]} ${!dvrEnabled ? CommonStyles["dvr-toggle__live--active"] : ""}`}
       >
         LIVE
       </button>
       <button
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.dvr_toggle)}
         onClick={() => player.controls.SetDVREnabled(true)}
         className={`${CommonStyles["dvr-toggle__dvr"]} ${dvrEnabled ? CommonStyles["dvr-toggle__dvr--active"] : ""}`}
       >
