@@ -6,6 +6,7 @@ import {ACTIONS, SeekSliderKeyDown, Time, VolumeSliderKeydown} from "./Common.js
 import {ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import * as Icons from "../static/icons/Icons.js";
 import {IconButton} from "./WebControls";
+import {ElvPlayerControlIds} from "../player/PlayerParameters";
 
 // Components
 
@@ -112,7 +113,7 @@ const Thumbnail = ({player, time, progress, duration, visible}) => {
   );
 };
 
-export const SeekBar = ({id, player, videoState, setRecentUserAction, className=""}) => {
+export const SeekBar = ({id, player, videoState, setRecentUserAction, showInLive=false, className=""}) => {
   const [currentTime, setCurrentTime] = useState(player.controls.GetCurrentTime());
   const [bufferFraction, setBufferFraction] = useState(0);
   const [seekKeydownHandler, setSeekKeydownHandler] = useState(undefined);
@@ -139,7 +140,7 @@ export const SeekBar = ({id, player, videoState, setRecentUserAction, className=
     };
   }, [player && player.controls]);
 
-  if(player.isLive && !dvrEnabled) {
+  if(!showInLive && player.isLive && !dvrEnabled) {
     return null;
   }
 
@@ -441,6 +442,33 @@ export const SettingsMenu = ({player, Close, className=""}) => {
   );
 };
 
+/**
+ * Indicates Live/Dvr state with a single on/off Live indicator.
+ * @see DVRToggle for an explicit DVR indicator
+ */
+export const LiveIndicator = ({player}) => {
+  const [behindEdge, setBehindEdge] = useState(!!player.behindLiveEdge);
+
+  useEffect(() => {
+    const disposer = player.controls.RegisterSettingsListener(() => setBehindEdge(!!player?.behindLiveEdge));
+    return () => disposer?.();
+  }, [player]);
+
+  return (
+      <button
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.live_toggle)}
+        disabled={!behindEdge}
+        onClick={() => {
+          player.controls.Seek({time: player.controls.GetDuration() - 2});
+          player.controls.GetPlayerControl(ElvPlayerControlIds.play_pause)?.focus();
+        }}
+        className={`${CommonStyles["live-indicator"]} ${behindEdge ? "" : CommonStyles["live-indicator--active"]}`}
+      >
+        LIVE
+      </button>
+  );
+};
+
 export const DVRToggle = ({player}) => {
   const [dvrEnabled, setDVREnabled] = useState(player.dvrEnabled);
 
@@ -457,12 +485,14 @@ export const DVRToggle = ({player}) => {
   return (
     <div className={CommonStyles["dvr-toggle"]}>
       <button
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.live_toggle)}
         onClick={() => player.controls.SetDVREnabled(false)}
         className={`${CommonStyles["dvr-toggle__live"]} ${!dvrEnabled ? CommonStyles["dvr-toggle__live--active"] : ""}`}
       >
         LIVE
       </button>
       <button
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.dvr_toggle)}
         onClick={() => player.controls.SetDVREnabled(true)}
         className={`${CommonStyles["dvr-toggle__dvr"]} ${dvrEnabled ? CommonStyles["dvr-toggle__dvr--active"] : ""}`}
       >
