@@ -77,7 +77,7 @@ export const UserActionIndicator = ({action}) => {
 const Thumbnail = ({player, time, progress, duration, visible}) => {
   const [ref, setRef] = useState(null);
 
-  if(!player.thumbnailsLoaded) {
+  if(!player.thumbnailsLoaded || !visible) {
     return null;
   }
 
@@ -90,15 +90,16 @@ const Thumbnail = ({player, time, progress, duration, visible}) => {
   let maxPercent = 100;
   if(ref) {
     const { width } = ref.parentElement.getBoundingClientRect();
-    maxPercent = (width - 250) / width;
+    const thumbnailSize = width < 650 ? 150 : 250;
+    maxPercent = (width - thumbnailSize) / width;
   }
 
   const thumbnailImage = player.thumbnailHandler.ThumbnailImage(time);
-
   return (
     <div
       ref={setRef}
       style={{
+        opacity: visible ? 1 : 0,
         left: `${Math.min(progress, maxPercent) * 100}%`
       }}
       className={`${CommonStyles["thumbnail"]} ${visible ? CommonStyles["thumbnail--visible"] : ""}`}
