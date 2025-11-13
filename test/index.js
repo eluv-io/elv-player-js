@@ -30,7 +30,11 @@ const Initialize = async () => {
   //mediaCollectionId = "JN8ecVA5Jt5cK2PjHXz12A";
   // First item in collection
   //versionHash = "hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD";
-  objectId = "iq__3ZiTAEQarHZL7P1qSQ5W3a3gSPKj";
+
+  // not live
+  // objectId = "iq__2J9BsAgvJrqCXqv5nbfkNMC9aBL7";
+  // LIVE
+  objectId = "iq__2yVP8kUMeTnED9vsHRnso43B6LQc";
 
   // Ticket content
   //network = "DEMO";
@@ -68,21 +72,22 @@ const Initialize = async () => {
           description: "My big description",
           headers: ["pg-13"],
           image: "/public/display_image",
-          //type: EluvioPlayerParameters.type.LIVE,
+          liveDVR: true,
+          // type: EluvioPlayerParameters.type.LIVE,
           //posterImage: "https://demov3.net955210.contentfabric.io/s/demov3/q/hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD/meta/public/display_image"
         }
       },
       playerOptions: {
         //posterUrl: "https://miro.medium.com/v2/resize:fit:1099/1*5PeT0-Dch_KhFwjYwUWiDA.png",
-        //ui: EluvioPlayerParameters.ui.TV,
+        ui: EluvioPlayerParameters.ui.TV,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
-        //controls: EluvioPlayerParameters.controls.ON,
-        controls: EluvioPlayerParameters.controls.AUTO_HIDE,
-        watermark: EluvioPlayerParameters.watermark.ON,
+        controls: EluvioPlayerParameters.controls.ON,
+        // controls: EluvioPlayerParameters.controls.AUTO_HIDE,
+        watermark: EluvioPlayerParameters.watermark.OFF,
         autoplay: EluvioPlayerParameters.autoplay.ON,
         title: EluvioPlayerParameters.title.FULLSCREEN_ONLY,
-        keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
+        keyboardControls: EluvioPlayerParameters.keyboardControls.SPATIAL_NAVIGATION,
         maxBitrate: 50000,
         debugLogging: true,
         //startProgress: 0.75,
