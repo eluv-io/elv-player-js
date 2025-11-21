@@ -611,6 +611,9 @@
       color: var(--color-text);
       opacity: 1;
     }
+    &:focus-visible {
+          filter: drop-shadow(0 0 5px #FFF);
+    }
   }
 
   &__live {
@@ -622,6 +625,37 @@
   &__dvr {
     &--active {
       background-color: #4666ac;
+    }
+  }
+}
+
+.live-indicator {
+  --border-color: #FFFFFF;
+
+  display: flex;
+  height: 30px;
+  position: relative;
+
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  color: var(--border-color);
+  font-size: 16px;
+  font-weight: 500;
+  width: 75px;
+  background-color: #888888;
+
+  &:hover,
+  &:focus-visible {
+    border: var(--border-color) solid 2px;
+  }
+
+  &--active {
+    background-color: #ea3323;
+    color: var(--color-text);
+    opacity: 1;
+    &:hover {
+      border: none;
     }
   }
 }
