@@ -65,7 +65,7 @@
   color: var(--color-button);
   display: flex;
   height: 30px;
-  padding: 4px;
+  padding: 2px;
   transition: color 0.15s ease;
   width: 30px;
 
@@ -403,7 +403,8 @@ google-cast-launcher {
   }
 }
 
-:global(.__eluvio-player--size-sm) {
+:global(.__eluvio-player--size-sm),
+:global(.__eluvio-player--size-xs) {
   .container {
     --content-image-size: 65px;
   }
@@ -470,6 +471,29 @@ google-cast-launcher {
   }
 
   .content-verified-badge {
+    display: none;
+  }
+}
+
+:global(.__eluvio-player--size-xs) {
+  .info-container {
+    padding-bottom: 50px;
+    padding-right: 35px;
+  }
+
+  .info-title {
+    font-size: 12px;
+  }
+
+  .info-headers {
+    font-size: 10px;
+  }
+
+  .info-description {
+    font-size: 10px;
+  }
+
+  .time {
     display: none;
   }
 }

@@ -131,7 +131,8 @@
 }
 
 :global(.__eluvio-player--size-md),
-:global(.__eluvio-player--size-sm) {
+:global(.__eluvio-player--size-sm),
+:global(.__eluvio-player--size-xs) {
   .error-message {
     font-size: 16px;
   }
