@@ -393,7 +393,8 @@
 }
 
 :global(.__eluvio-player--size-md),
-:global(.__eluvio-player--size-sm) {
+:global(.__eluvio-player--size-sm),
+:global(.__eluvio-player--size-xs) {
   .center-play-button {
     display: none;
   }
@@ -471,7 +472,8 @@
   }
 }
 
-:global(.__eluvio-player--size-sm) {
+:global(.__eluvio-player--size-sm),
+:global(.__eluvio-player--size-xs) {
   .info-box {
     align-items: flex-start;
     flex-direction: column;
