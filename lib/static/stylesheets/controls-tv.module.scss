@@ -108,6 +108,8 @@
   border-radius: 5px;
   padding: 5px 10px;
   transition: background-color 0.25s ease, color 0.5s ease, filter 0.25s ease;
+  height: fit-content;
+  align-self: center;
 
   &--active,
   &:hover,
@@ -122,11 +124,17 @@
   animation: 0.5s fadein ease;
   bottom: 0;
   max-width: 100%;
-  padding: 0 50px 30px;
+  padding: 0 52px 44px;
   position: absolute;
   transition: opacity 0.5s ease;
   width: 100%;
   z-index: var(--layer-controls);
+
+  .play-seek-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
 }
 
 .bottom-controls-gradient {
@@ -176,76 +184,69 @@
 .time-container {
   align-items: center;
   display: flex;
-  margin-top: 10px;
   position: relative;
+  color: var(--color-text);
+  gap: 10px;
+  margin-left: 12px;
+
+  .duration {
+    opacity: 0.70;
+  }
+}
+
+/* Container that places all elements in a single cell to create an overlay effect. */
+.grid-frame-layout {
+  display: grid;
+
+  /* Place all direct children in the first row and first column, creating an overlay effect */
+  > * {
+    grid-area: 1 / 1;
+  }
+
+  /* Elements that take assist in measuring max width, but aren't visible */
+  .phantom {
+    opacity: 0;
+  }
 }
 
 .live-indicator {
-  background: #F00;
-  border-radius: 5px;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 3px 10px;
-  position: relative;
-  text-transform: uppercase;
-  transition: opacity 0.25s ease, background 0.15s ease, color 0.15s ease;
-  user-select: none;
-  width: max-content;
+  --border-color: #FFF;
 
-  &--faded {
-    background: #333;
-    opacity: 0.75;
+  align-self: center;
+
+  align-items: center;
+  background-color: #888;
+  border-radius: 20px;
+  color: var(--border-color);
+  padding: 6px 14px;
+
+  &:hover,
+  &:focus-visible {
+    border: var(--border-color) solid 2px;
   }
 
-  &:hover {
+  &--active {
+    background-color: #F93B5C;
+    color: var(--color-text);
     opacity: 1;
+
+    &:hover {
+      border: none;
+    }
   }
 }
-
 
 .bottom-controls {
-  align-items: flex-end;
   display: flex;
-  height: 65px;
-  justify-content: center;
   position: relative;
+  gap: 28px;
+  font-weight: 700;
+  font-size: 20px;
 }
 
-.center-buttons {
-  align-items: center;
-  display: flex;
-  gap: 15px;
-  height: 100%;
-  margin-bottom: 10px;
-
-  .icon-button {
-    height: 75%;
-  }
-
-  .play-pause-button {
-    height: 100%;
-  }
-
-  .track-button {
-    padding: 13px;
-  }
-}
-
-.bottom-left-controls,
-.bottom-right-controls {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-  height: 35px;
-  position: absolute;
-}
-
-.bottom-left-controls {
-  left: -10px;
-}
-
-.bottom-right-controls {
-  right: -10px;
+.play-pause-button {
+  height: 104px;
+  margin-right: 36px;
 }
 
 /* Info box */
@@ -347,11 +348,17 @@
 .menu-control-container {
   position: relative;
   z-index: var(--layer-menu);
+  font-weight: 500;
 
   .icon-button {
-    height: 45px;
+    height: 55px;
     padding: 10px;
-    width: 45px;
+    width: 55px;
+    opacity: 0.6;
+
+    &:focus-visible {
+      opacity: 1;
+    }
   }
 }
 
@@ -406,15 +413,6 @@
   .bottom-controls {
     height: max-content;
     padding-bottom: 20px;
-  }
-
-  .bottom-left-controls,
-  .bottom-right-controls {
-    bottom: 0;
-  }
-
-  .center-buttons {
-    height: 50px;
   }
 
   .title {

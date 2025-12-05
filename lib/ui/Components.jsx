@@ -7,6 +7,7 @@ import {ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.j
 import * as Icons from "../static/icons/Icons.js";
 import {IconButton} from "./WebControls";
 import {ElvPlayerControlIds} from "../player/PlayerParameters";
+import { EluvioPlayerParameters } from "../index";
 
 // Components
 
@@ -442,33 +443,6 @@ export const SettingsMenu = ({player, Close, className=""}) => {
   );
 };
 
-/**
- * Indicates Live/Dvr state with a single on/off Live indicator.
- * @see DVRToggle for an explicit DVR indicator
- */
-export const LiveIndicator = ({player}) => {
-  const [behindEdge, setBehindEdge] = useState(!!player.behindLiveEdge);
-
-  useEffect(() => {
-    const disposer = player.controls.RegisterSettingsListener(() => setBehindEdge(!!player?.behindLiveEdge));
-    return () => disposer?.();
-  }, [player]);
-
-  return (
-      <button
-        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.live_toggle)}
-        disabled={!behindEdge}
-        onClick={() => {
-          player.controls.Seek({time: player.controls.GetDuration() - 2});
-          player.controls.GetPlayerControl(ElvPlayerControlIds.play_pause)?.focus();
-        }}
-        className={`${CommonStyles["live-indicator"]} ${behindEdge ? "" : CommonStyles["live-indicator--active"]}`}
-      >
-        LIVE
-      </button>
-  );
-};
-
 export const DVRToggle = ({player}) => {
   const [dvrEnabled, setDVREnabled] = useState(player.dvrEnabled);
 
@@ -547,6 +521,8 @@ export const ContentVerificationMenu = ({player, Close, className=""}) => {
   const [audit, setAudit] = useState();
   const [showDetails, setShowDetails] = useState(false);
   const [, setLoaded] = useState(false);
+  // Only display the "copy" icon for non-tv UIs.
+  const copyable = player.playerOptions.ui !== EluvioPlayerParameters.ui.TV;
 
   useEffect(() => {
     player.__LoadVerificationDetails()
@@ -599,7 +575,7 @@ export const ContentVerificationMenu = ({player, Close, className=""}) => {
         <div className={CommonStyles["verification-menu__group"]}>
           <div dangerouslySetInnerHTML={{__html: Icons.ContentCredentialsIcon}} className={[CommonStyles["verification-menu__group-icon"], CommonStyles["verification-menu__group-icon--cc"]].join(" ")} />
           <div className={CommonStyles["verification-menu__group-text"]}>
-            <button onClick={() => setShowDetails(true)} className={CommonStyles["verification-menu__group-title"]}>
+            <button autoFocus onClick={() => setShowDetails(true)} className={`${CommonStyles["verification-menu__group-title"]} ${CommonStyles["menu-option"]}`}>
               View Content Credentials
               <div className={CommonStyles["verification-menu__inline-icon"]} dangerouslySetInnerHTML={{__html: Icons.ChevronRightIcon}} />
             </button>
@@ -636,10 +612,10 @@ export const ContentVerificationMenu = ({player, Close, className=""}) => {
           </div>
         </div>
         <div className={CommonStyles["verification-menu__details"]} key={`details-${audit.details._state}`}>
-          <ContentDetail label="Content Fabric Object ID" value={audit.details.objectId} copyable />
-          <ContentDetail label="Organization Address" value={audit.details.tenantAddress} copyable />
+          <ContentDetail label="Content Fabric Object ID" value={audit.details.objectId} copyable={copyable} />
+          <ContentDetail label="Organization Address" value={audit.details.tenantAddress} copyable={copyable} />
           <ContentDetail label="Organization Name" value={audit.details.tenantName && audit.details.tenantName.toString()} />
-          <ContentDetail label="Owner Address" value={audit.details.ownerAddress} copyable />
+          <ContentDetail label="Owner Address" value={audit.details.ownerAddress} copyable={copyable} />
           <ContentDetail
             label="Content Object Contract Address"
             value={
@@ -649,15 +625,15 @@ export const ContentVerificationMenu = ({player, Close, className=""}) => {
               </a> :
               audit.details.address
             }
-            copyable
+            copyable={copyable}
           />
           <ContentDetail label="Versions" value={audit.details.versionCount} />
-          <ContentDetail label="Content Version Hash" value={audit.details.versionHash} copyable />
+          <ContentDetail label="Content Version Hash" value={audit.details.versionHash} copyable={copyable} />
           {
             !audit.details.lastCommittedAt ? null :
               <ContentDetail label="Latest Commit" value={new Date(audit.details.lastCommittedAt).toLocaleTimeString(navigator.language || "en-us", {year: "numeric", "month": "long", day: "numeric"})} />
           }
-          <ContentDetail label="Latest Version Hash" value={audit.details.latestVersionHash} copyable />
+          <ContentDetail label="Latest Version Hash" value={audit.details.latestVersionHash} copyable={copyable} />
           <ContentDetail
             label="Latest Transaction"
             value={

@@ -12,7 +12,6 @@ import EluvioLogo from "../static/images/Logo.png";
 import {
   CollectionMenu,
   ContentVerificationMenu,
-  LiveIndicator,
   SeekBar,
   SettingsMenu,
   SVG
@@ -27,6 +26,29 @@ export const IconButton = ({icon, ...props}) => {
 const TimeIndicator = ({player, videoState}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
 
+  const timeString = Time(currentTime, videoState.duration);
+  const durationString = Time(videoState.duration, videoState.duration);
+
+  // Since not every digit takes up the same amount of space - swap out all digits with the widest digit (0).
+  // That way we can reserve the space and prevent elements jumping around every second as the timestamp changes.
+  const timeWidthMax = timeString.replace(/[0-9]/g, "0");
+  const durationWidthMax = durationString.replace(/[0-9]/g, "0");
+
+  // Similar to above, this is the absolute longest string we expect the whole TimeIndicator to be.
+  // There are edge cases where the content exceeds 10 hours, but those are rare enough to not cover.
+  const totalWidthMax = "0:00:00 / 0:00:00";
+
+  // Measure how many pixels [totalWidthMax] will take up and set that as the width of the entire container.
+  const [width, setWidth] = useState(0);
+  const containerRef = useRef();
+  useEffect(() => {
+    if (containerRef.current) {
+      const { font } = getComputedStyle(containerRef.current);
+      setWidth(getTextWidth(totalWidthMax, font));
+    }
+  }, [containerRef.current]);
+
+
   useEffect(() => {
     const disposeVideoTimeObserver = ObserveVideoTime({player, setCurrentTime, rate: 10});
 
@@ -34,73 +56,27 @@ const TimeIndicator = ({player, videoState}) => {
   }, []);
 
   return (
-    <div className={ControlStyles["time-container"]}>
-      {
-        player.isLive && !player.behindLiveEdge ? null :
-          <div className={ControlStyles["time"]}>
-          { Time(currentTime, videoState.duration) }
-          </div>
-      }
-      <div className={ControlStyles["spacer"]} />
-      <div className={ControlStyles["time"]}>
-        { Time(videoState.duration, videoState.duration) }
+    <div ref={containerRef} className={ControlStyles["time-container"]} style={{ width }}>
+      <div className={`${ControlStyles["time"]} ${ControlStyles["grid-frame-layout"]}`}>
+        <div className={ControlStyles["phantom"]}>{timeWidthMax}</div>
+        <div>{Time(currentTime, videoState.duration)}</div>
+      </div>
+      <div className={`${ControlStyles["duration"]} ${ControlStyles["grid-frame-layout"]}`}>
+        <div className={ControlStyles["phantom"]}>{durationWidthMax}</div>
+        <div>/&nbsp;&nbsp;&nbsp;{Time(videoState.duration, videoState.duration)}</div>
       </div>
     </div>
   );
 };
 
-const CenterButtons = ({player, videoState}) => {
-  const collectionInfo = player.controls.GetCollectionInfo();
-
-  const previousMedia = collectionInfo && collectionInfo.isPlaylist && collectionInfo.content[collectionInfo.mediaIndex - 1];
-  const nextMedia = collectionInfo && collectionInfo.isPlaylist && collectionInfo.content[collectionInfo.mediaIndex + 1];
-
-  const playerReady = player.controls.IsReady();
-  return (
-    <div className={ControlStyles["center-buttons"]}>
-      {
-        !previousMedia && !nextMedia ? null :
-          <IconButton
-            id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.prev_track)}
-            disabled={!playerReady || !previousMedia}
-            icon={Icons.PreviousTrackIcon}
-            onClick={() => player.controls.CollectionPlayPrevious()}
-            className={`${ControlStyles["track-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]}`}
-          />
-      }
-      <IconButton
-        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.rewind)}
-        aria-label="Back 10 Seconds"
-        icon={Icons.BackwardCircleIcon}
-        onClick={() => player.controls.Seek({relativeSeconds: -10})}
-        className={ControlStyles["icon-button--drop-shadow-focus"]}
-      />
-      <IconButton
-        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.play_pause)}
-        aria-label={videoState.playing ? "Pause" : "Play"}
-        icon={videoState.playing ? Icons.PauseCircleIcon : Icons.PlayCircleIcon}
-        onClick={() => player.controls.TogglePlay()}
-        className={`${ControlStyles["play-pause-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]}`}
-      />
-      <IconButton
-        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.fast_forward)}
-        aria-label="Forward 10 Seconds"
-        icon={Icons.ForwardCircleIcon}
-        onClick={() => player.controls.Seek({relativeSeconds: 10})}
-        className={ControlStyles["icon-button--drop-shadow-focus"]}
-      />
-      {
-        !previousMedia && !nextMedia ? null :
-          <IconButton
-            id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.next_track)}
-            disabled={!playerReady || !nextMedia}
-            icon={Icons.NextTrackIcon}
-            onClick={() => player.controls.CollectionPlayNext()}
-            className={`${ControlStyles["track-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]}`}
-          />
-      }
-    </div>
-  );
+const PlayPauseButton = ({ player, videoState }) => {
+  return (<IconButton
+    id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.play_pause)}
+    aria-label={videoState.playing ? "Pause" : "Play"}
+    icon={videoState.playing ? Icons.PauseCircleIcon : Icons.PlayCircleIcon}
+    onClick={() => player.controls.TogglePlay()}
+    className={`${ControlStyles["play-pause-button"]} ${ControlStyles["icon-button--drop-shadow-focus"]}`}
+  />);
 };
 
 const MenuButton = ({id, label, icon, children, player, MenuComponent}) => {
@@ -325,8 +301,7 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
                   ) ? "" : title || ""
                 }
               </div>
-              <div className={ControlStyles["spacer"]}/>
-              {player.isLive ? <LiveIndicator player={player}/> : null}
+              <div className={ControlStyles["spacer"]} />
               {
                 !collectionInfo ? null :
                   <MenuButton
@@ -338,51 +313,54 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
               }
 
             </div>
-            <SeekBar
-              id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.seekbar)}
-              player={player} videoState={videoState}
-              setRecentUserAction={setRecentUserAction}
-              showInLive={true}
-            />
-            <TimeIndicator player={player} videoState={videoState}/>
+            <div className={ControlStyles["play-seek-container"]}>
+              <PlayPauseButton player={player} videoState={videoState} />
+              <SeekBar
+                id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.seekbar)}
+                player={player} videoState={videoState}
+                setRecentUserAction={setRecentUserAction}
+                showInLive={true}
+              />
+            </div>
             <div id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.bottom_controls_container)}
                  className={ControlStyles["bottom-controls"]}>
-              <div className={ControlStyles["bottom-left-controls"]}>
-                {
-                  !title || player.playerOptions.title === EluvioPlayerParameters.title.OFF ? null :
-                    <button
-                      id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.info_button)}
-                      className={ControlStyles["text-button"]} onClick={() => setShowInfo(true)}>Info</button>
-                }
-              </div>
-              <CenterButtons player={player} videoState={videoState}/>
-              <div className={ControlStyles["bottom-right-controls"]}>
-                <ContentVerificationControls player={player} />
-                {
-                  !player.airplayAvailable ? null :
-                    <IconButton
-                      aria-label="Airplay"
-                      onClick={() => player.video.webkitShowPlaybackTargetPicker()}
-                      icon={Icons.AirplayIcon}
-                    />
-                }
-                {
-                  !player.chromecastAvailable ? null :
-                    <google-cast-launcher></google-cast-launcher>
-                }
-                {
-                  !player.controls.GetOptions().hasAnyOptions ? null :
-                    <MenuButton
-                      id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.settings_menu)}
-                      key="settings-button"
-                      label="Settings"
-                      player={player}
-                      MenuComponent={SettingsMenu}
-                    >
-                      Settings
-                    </MenuButton>
-                }
-              </div>
+              <TimeIndicator player={player} videoState={videoState} />
+              {player.isLive ? <LiveIndicator player={player} styleSheet={ControlStyles} /> : null}
+              {
+                !title || player.playerOptions.title === EluvioPlayerParameters.title.OFF ? null :
+                  <button
+                    id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.info_button)}
+                    className={ControlStyles["text-button"]} onClick={() => setShowInfo(true)}>Info</button>
+              }
+
+              <div className={ControlStyles["spacer"]} />
+
+              <ContentVerificationControls player={player} />
+              {
+                !player.airplayAvailable ? null :
+                  <IconButton
+                    aria-label="Airplay"
+                    onClick={() => player.video.webkitShowPlaybackTargetPicker()}
+                    icon={Icons.AirplayIcon}
+                  />
+              }
+              {
+                !player.chromecastAvailable ? null :
+                  <google-cast-launcher></google-cast-launcher>
+              }
+              {
+                !player.controls.GetOptions().hasAnyOptions ? null :
+                  <MenuButton
+                    id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.settings_menu)}
+                    key="settings-button"
+                    label="Settings"
+                    icon={Icons.SettingsFilledIcon}
+                    player={player}
+                    MenuComponent={SettingsMenu}
+                  >
+                    Settings
+                  </MenuButton>
+              }
             </div>
           </div>
       }
@@ -396,5 +374,46 @@ const TVControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRe
     </div>
   );
 };
+
+/**
+ * Indicates Live/Dvr state with a single on/off Live indicator.
+ * @see DVRToggle for an explicit DVR indicator
+ */
+const LiveIndicator = ({ player }) => {
+  const [behindEdge, setBehindEdge] = useState(!!player.behindLiveEdge);
+
+  useEffect(() => {
+    const disposer = player.controls.RegisterSettingsListener(() => setBehindEdge(!!player?.behindLiveEdge));
+    return () => disposer?.();
+  }, [player]);
+
+  return (
+    <button
+      id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.live_toggle)}
+      disabled={!behindEdge}
+      onClick={() => {
+        player.controls.Seek({ time: player.controls.GetDuration() - 2 });
+        player.controls.GetPlayerControl(ElvPlayerControlIds.play_pause)?.focus();
+      }}
+      className={`${ControlStyles["live-indicator"]} ${behindEdge ? "" : ControlStyles["live-indicator--active"]}`}
+    >
+      LIVE
+    </button>
+  );
+};
+
+
+/**
+ * Calculate the width required to display [text] in one line of text given the provided [font].
+ * @param text {string}
+ * @param font {string}
+ * @return {number}
+ */
+function getTextWidth(text, font) {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  context.font = font || getComputedStyle(document.body).font; // Default font if not provided
+  return context.measureText(text).width;
+}
 
 export default TVControls;
