@@ -1,7 +1,7 @@
 import ControlStyles from "../static/stylesheets/controls-tv.module.scss";
 
 // eslint-disable-next-line no-unused-vars
-import React, {useEffect, useRef, useState} from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import * as Icons from "../static/icons/Icons.js";
 import {ObserveVideo, ObserveVideoTime} from "./Observers.js";
 import "focus-visible";
@@ -17,11 +17,12 @@ import {
   SVG
 } from "./Components.jsx";
 
-export const IconButton = ({icon, ...props}) => {
+export const IconButton = forwardRef(function IconButton({ icon, ...props }, ref) {
   return (
-    <button {...props} className={`${ControlStyles["icon-button"]} ${props.className || ""}`} dangerouslySetInnerHTML={{__html: icon}} />
+    <button ref={ref} {...props} className={`${ControlStyles["icon-button"]} ${props.className || ""}`}
+            dangerouslySetInnerHTML={{ __html: icon }} />
   );
-};
+});
 
 const TimeIndicator = ({player, videoState}) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
@@ -81,6 +82,7 @@ const PlayPauseButton = ({ player, videoState }) => {
 
 const MenuButton = ({id, label, icon, children, player, MenuComponent}) => {
   const [show, setShow] = useState(false);
+  const btnRef = useRef(undefined);
 
   return (
     <div className={ControlStyles["menu-control-container"]}>
@@ -88,6 +90,7 @@ const MenuButton = ({id, label, icon, children, player, MenuComponent}) => {
         icon ?
           <IconButton
             id={id}
+            ref={btnRef}
             aria-label={show ? `Close ${label} Menu` : label}
             aria-haspopup
             icon={icon}
@@ -99,6 +102,7 @@ const MenuButton = ({id, label, icon, children, player, MenuComponent}) => {
           /> :
           <button
             id={id}
+            ref={btnRef}
             onClick={() => {
               player.controls.__ToggleMenu(!show);
               setShow(!show);
@@ -115,6 +119,8 @@ const MenuButton = ({id, label, icon, children, player, MenuComponent}) => {
             Close={() => {
               player.controls.__ToggleMenu(false);
               setShow(false);
+              // Focus button after menu closes
+              btnRef.current?.focus();
             }}
             className={ControlStyles["menu"]}
           />
