@@ -1,3 +1,5 @@
+@use "functions.scss" as *;
+
 .container {
   align-items: center;
   bottom: 0;
@@ -29,7 +31,7 @@
   --color-menu-text: #282828;
   --color-menu-text-secondary: #666;
 
-  --content-image-size: 150px;
+  --content-image-size: sp(150px);
 
   &--default-controls {
     pointer-events: none;
@@ -54,7 +56,7 @@
   color: var(--color-button);
   display: flex;
   height: 100%;
-  padding: 5px;
+  padding: sp(5px);
   transition: color 0.15s ease;
   width: auto;
 
@@ -82,7 +84,7 @@
     }
 
     &:focus-visible {
-      filter: drop-shadow(0 0 5px #FFF);
+      filter: drop-shadow(0 0 sp(5px) #FFF);
     }
   }
 
@@ -95,7 +97,7 @@
     &:focus-visible {
       background-color: #FFF;
       color: #000;
-      filter: drop-shadow(0 0 5px #FFF);
+      filter: drop-shadow(0 0 sp(5px) #FFF);
 
       * {
         color: #000;
@@ -105,8 +107,8 @@
 }
 
 .text-button {
-  border-radius: 5px;
-  padding: 5px 10px;
+  border-radius: sp(5px);
+  padding: sp(5px) sp(10px);
   transition: background-color 0.25s ease, color 0.5s ease, filter 0.25s ease;
   height: fit-content;
   align-self: center;
@@ -116,7 +118,7 @@
   &:focus-visible {
     background-color: #FFF;
     color: #000;
-    filter: drop-shadow(0 0 5px #FFF);
+    filter: drop-shadow(0 0 sp(5px) #FFF);
   }
 }
 
@@ -124,7 +126,7 @@
   animation: 0.5s fadein ease;
   bottom: 0;
   max-width: 100%;
-  padding: 0 52px 44px;
+  padding: 0 sp(52px) sp(44px);
   position: absolute;
   transition: opacity 0.5s ease;
   width: 100%;
@@ -150,10 +152,10 @@
 }
 
 .center-play-button {
-  height: 125px;
+  height: sp(125px);
   position: relative;
   transition: opacity 0.5s ease;
-  width: 125px;
+  width: sp(125px);
   z-index: var(--layer-controls);
 
   &--hidden {
@@ -167,17 +169,17 @@
 .title-container {
   align-items: center;
   display: flex;
-  gap: 20px;
-  margin-bottom: 10px;
+  gap: sp(20px);
+  margin-bottom: sp(10px);
   position: relative;
   width: 100%;
 
   .title {
-    font-size: 32px;
+    font-size: sp(32px);
   }
 
   .menu-control-container {
-    margin-right: -8px;
+    margin-right: sp(-8px);
   }
 }
 
@@ -186,8 +188,8 @@
   display: flex;
   position: relative;
   color: var(--color-text);
-  gap: 10px;
-  margin-left: 12px;
+  gap: sp(10px);
+  margin-left: sp(12px);
 
   .duration {
     opacity: 0.70;
@@ -216,13 +218,13 @@
 
   align-items: center;
   background-color: #888;
-  border-radius: 20px;
+  border-radius: sp(20px);
   color: var(--border-color);
-  padding: 6px 14px;
+  padding: sp(6px) sp(14px);
 
   &:hover,
   &:focus-visible {
-    border: var(--border-color) solid 2px;
+    border: var(--border-color) solid sp(2px);
   }
 
   &--active {
@@ -239,42 +241,42 @@
 .bottom-controls {
   display: flex;
   position: relative;
-  gap: 28px;
+  gap: sp(28px);
   font-weight: 700;
-  font-size: 20px;
+  font-size: sp(20px);
 }
 
 .play-pause-button {
-  height: 104px;
-  margin-right: 36px;
+  height: sp(104px);
+  margin-right: sp(36px);
 }
 
 /* Info box */
 .info-box-container {
   animation: 0.5s fadein ease;
-  bottom: 30px;
+  bottom: sp(30px);
   display: grid;
-  gap: 20px;
+  gap: sp(20px);
   height: max-content;
-  left: 50px;
+  left: sp(50px);
   position: absolute;
-  right: 50px;
+  right: sp(50px);
   z-index: var(--layer-info);
 }
 
 .info-box {
   align-items: center;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(sp(5px));
   background: rgba(10, 10, 10, 70%);
-  border-radius: 7px;
-  box-shadow: 0 0 32px 0 rgba(0, 0, 0, 100%);
+  border-radius: sp(7px);
+  box-shadow: 0 0 sp(32px) 0 rgba(0, 0, 0, 100%);
   display: flex;
-  gap: 30px;
-  padding: 15px 30px 15px 15px;
+  gap: sp(30px);
+  padding: sp(15px) sp(30px) sp(15px) sp(15px);
 }
 
 .info-box-image-container {
-  border-radius: 5px;
+  border-radius: sp(5px);
   height: var(--content-image-size);
   min-height: var(--content-image-size);
   min-width: var(--content-image-size);
@@ -293,53 +295,53 @@
   align-content: start;
   display: grid;
   flex-grow: 1;
-  gap: 10px;
+  gap: sp(10px);
   height: 100%;
 
   &--top-padding {
-    padding-top: 10px;
+    padding-top: sp(10px);
   }
 }
 
 .info-box-headers {
   display: flex;
   flex-wrap: wrap;
-  font-size: 16px;
+  font-size: sp(16px);
   font-weight: 600;
-  gap: 20px;
+  gap: sp(20px);
 }
 
 .info-box-description {
-  font-size: 18px;
+  font-size: sp(18px);
 }
 
 .info-box-title {
-  font-size: 24px;
+  font-size: sp(24px);
   font-weight: 600;
 }
 
 .info-box-button {
   align-items: center;
   background: #FFF;
-  border-radius: 5px;
+  border-radius: sp(5px);
   color: #000;
   display: flex;
   font-weight: 500;
-  gap: 15px;
-  padding: 5px 10px;
+  gap: sp(15px);
+  padding: sp(5px) sp(10px);
   transition: background-color 0.25s ease, color 0.25s ease, filter 0.25s ease;
   width: max-content;
 
   &:hover,
   &:focus,
   &:focus-visible {
-    filter: drop-shadow(0 0 5px #FFF);
+    filter: drop-shadow(0 0 sp(5px) #FFF);
   }
 
   &--restart {
-    height: 50px;
-    padding-left: 20px;
-    padding-right: 30px;
+    height: sp(50px);
+    padding-left: sp(20px);
+    padding-right: sp(30px);
   }
 }
 
@@ -351,9 +353,9 @@
   font-weight: 500;
 
   .icon-button {
-    height: 55px;
-    padding: 10px;
-    width: 55px;
+    height: sp(55px);
+    padding: sp(10px);
+    width: sp(55px);
     opacity: 0.6;
 
     &:focus-visible {
@@ -372,30 +374,30 @@
   height: auto;
   pointer-events: none;
   position: absolute;
-  right: 50px;
-  top: 20px;
+  right: sp(50px);
+  top: sp(20px);
   user-select: none;
-  width: 70px;
+  width: sp(70px);
   z-index: var(--layer-title);
 }
 
 :global(.__eluvio-player--size-lg) {
   .info-box-title {
-    font-size: 20px;
+    font-size: sp(20px);
   }
 
   .info-box-description {
-    font-size: 16px;
+    font-size: sp(16px);
   }
 
   .info-box-container {
-    left: 30px;
-    right: 30px;
+    left: sp(30px);
+    right: sp(30px);
   }
 
   .center-play-button {
-    height: 100px;
-    width: 100px;
+    height: sp(100px);
+    width: sp(100px);
   }
 }
 
@@ -407,66 +409,66 @@
   }
 
   .bottom-controls-container {
-    padding: 15px 30px 30px;
+    padding: sp(15px) sp(30px) sp(30px);
   }
 
   .bottom-controls {
     height: max-content;
-    padding-bottom: 20px;
+    padding-bottom: sp(20px);
   }
 
   .title {
-    font-size: 16px;
+    font-size: sp(16px);
   }
 
   .text-button {
-    font-size: 12px;
+    font-size: sp(12px);
   }
 
   .menu-control-container {
     position: unset;
 
     .icon-button {
-      height: 30px;
-      padding: 5px;
-      width: 30px;
+      height: sp(30px);
+      padding: sp(5px);
+      width: sp(30px);
     }
   }
 
   .menu {
-    max-height: calc(var(--portal-height) - 250px)!important;
+    max-height: calc(var(--portal-height) - #{sp(250px)})!important;
   }
 
   .info-box-container {
-    left: 15px;
-    max-width: calc(var(--portal-width) - 30px);
-    right: 15px;
+    left: sp(15px);
+    max-width: calc(var(--portal-width) - #{sp(30px)});
+    right: sp(15px);
   }
 
   .info-box {
-    padding-bottom: 75px;
+    padding-bottom: sp(75px);
   }
 
   .info-box-button--restart {
-    bottom: 15px;
-    font-size: 12px;
+    bottom: sp(15px);
+    font-size: sp(12px);
     height: auto;
-    left: 15px;
-    padding-inline: 10px;
+    left: sp(15px);
+    padding-inline: sp(10px);
     position: absolute;
-    width: 150px;
+    width: sp(150px);
   }
 
   .info-box-title {
-    font-size: 20px;
+    font-size: sp(20px);
   }
 
   .info-box-description {
-    font-size: 16px;
+    font-size: sp(16px);
   }
 
   .watermark {
-    right: 30px;
+    right: sp(30px);
   }
 }
 
@@ -476,18 +478,18 @@
     align-items: flex-start;
     flex-direction: column;
     justify-content: flex-start;
-    max-height: calc(var(--portal-height) - 125px);
+    max-height: calc(var(--portal-height) - #{sp(125px)});
     overflow-y: auto;
-    padding: 50px 20px;
+    padding: sp(50px) sp(20px);
   }
 
   .info-box-title {
-    font-size: 16px;
+    font-size: sp(16px);
   }
 
   .info-box-headers,
   .info-box-description {
-    font-size: 12px;
+    font-size: sp(12px);
   }
 }
 
