@@ -1,0 +1,4 @@
+// Scale pixel value according to --scale-factor.
+@function sp($pixels) {
+  @return calc($pixels * var(--scale-factor));
+}

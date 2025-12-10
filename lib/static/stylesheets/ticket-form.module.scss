@@ -1,3 +1,5 @@
+@use "functions.scss" as *;
+
 .ticket-form-container {
   height: 100%;
   inset: 0;
@@ -7,7 +9,7 @@
 
 .ticket-form-overlay {
   align-items: center;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(sp(10px));
   background: rgba(0, 0, 0, 50%);
   display: flex;
   height: 100%;
@@ -15,59 +17,59 @@
   width: 100%;
 
   .spinner {
-    height: 50px;
-    width: 50px;
+    height: sp(50px);
+    width: sp(50px);
   }
 }
 
 .ticket-form {
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(sp(10px));
   background: rgba(255, 255, 255, 10%);
-  border-radius: 5px;
+  border-radius: sp(5px);
   color: #FFF;
   display: grid;
-  max-width: MIN(600px, 100%);
-  padding: 40px 50px 50px;
+  max-width: MIN(#{sp(600px)}, 100%);
+  padding: sp(40px) sp(50px) sp(50px);
   position: relative;
 }
 
 .text {
   display: grid;
-  gap: 8px;
+  gap: sp(8px);
   text-align: center;
 }
 
 .title {
-  font-size: 20px;
+  font-size: sp(20px);
 }
 
 .description {
-  font-size: 14px;
+  font-size: sp(14px);
 }
 
 .inputs {
   display: grid;
-  gap: 10px;
+  gap: sp(10px);
   justify-content: center;
-  margin-top: 20px;
+  margin-top: sp(20px);
 }
 
 .input {
   background: #FFF;
-  border-radius: 5px;
+  border-radius: sp(5px);
   color: #000;
   display: block;
-  font-size: 20px;
+  font-size: sp(20px);
   font-weight: 600;
-  height: 35px;
-  letter-spacing: 2px;
-  max-width: 250px;
-  padding: 0 20px;
+  height: sp(35px);
+  letter-spacing: sp(2px);
+  max-width: sp(250px);
+  padding: 0 sp(20px);
   text-align: center;
   width: 100%;
 
   &::placeholder {
-    font-size: 16px;
+    font-size: sp(16px);
     font-weight: 500;
     letter-spacing: initial;
   }
@@ -79,9 +81,9 @@
 
 .submit {
   background: rgba(255, 255, 255, 20%);
-  border-radius: 5px;
-  height: 40px;
-  padding: 10px 0;
+  border-radius: sp(5px);
+  height: sp(40px);
+  padding: sp(10px) 0;
   user-select: none;
 
   &:disabled {
@@ -90,14 +92,14 @@
 }
 
 .error-message {
-  bottom: 15px;
+  bottom: sp(15px);
   color: #F00;
   display: block;
-  font-size: 14px;
+  font-size: sp(14px);
   font-weight: 600;
   left: 0;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 sp(20px);
   position: absolute;
   right: 0;
   text-align: center;
@@ -112,13 +114,13 @@
     background: transparent;
     border-radius: 0;
     height: 100%;
-    padding-inline: 20px;
+    padding-inline: sp(20px);
     width: 100%;
   }
 
   .error-message {
-    height: 20px;
-    margin-top: 20px;
+    height: sp(20px);
+    margin-top: sp(20px);
     position: unset;
   }
 }
