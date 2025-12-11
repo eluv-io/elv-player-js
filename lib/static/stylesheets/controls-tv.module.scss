@@ -31,7 +31,7 @@
   --color-menu-text: #282828;
   --color-menu-text-secondary: #666;
 
-  --content-image-size: sp(150px);
+  --content-image-size: #{sp(150px)};
 
   &--default-controls {
     pointer-events: none;
