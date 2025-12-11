@@ -31,7 +31,7 @@
   --color-menu-text-secondary: #AEAEAE;
   --color-menu-text-header: #FFF;
 
-  --content-image-size: sp(125px);
+  --content-image-size: #{sp(125px)};
 
   :global(.focus-visible) {
     outline: sp(1px) solid var(--color-highlight) !important;
@@ -375,7 +375,7 @@ google-cast-launcher {
 
 :global(.__eluvio-player--size-md) {
   .container {
-    --content-image-size: sp(90px);
+    --content-image-size: #{sp(90px)};
   }
 
   .time {
@@ -408,7 +408,7 @@ google-cast-launcher {
 :global(.__eluvio-player--size-sm),
 :global(.__eluvio-player--size-xs) {
   .container {
-    --content-image-size: sp(65px);
+    --content-image-size: #{sp(65px)};
   }
 
   .icon-button {

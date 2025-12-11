@@ -74,9 +74,9 @@
 /* Seek Bar */
 
 .seek-container {
-  --progress-height: sp(3px);
-  --progress-height-expanded: sp(12px);
-  --progress-height-expanded-mobile: sp(12px);
+  --progress-height: #{sp(3px)};
+  --progress-height-expanded: #{sp(12px)};
+  --progress-height-expanded-mobile: #{sp(12px)};
   --color-seek-background: rgba(255, 255, 255, 10%);
   --color-seek-buffer: rgba(255, 255, 255, 10%);
   --color-seek-active: rgba(255, 255, 255, 50%);
