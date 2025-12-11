@@ -40,6 +40,8 @@ const TimeIndicator = ({player, videoState}) => {
   const totalWidthMax = "0:00:00 / 0:00:00";
 
   // Measure how many pixels [totalWidthMax] will take up and set that as the width of the entire container.
+  // This size does NOT update as the window size/resolution changes, but that should happen on TVs while the
+  // component is mounted, so we're not adding logic to track that here.
   const [width, setWidth] = useState(0);
   const containerRef = useRef();
   useEffect(() => {
@@ -48,7 +50,6 @@ const TimeIndicator = ({player, videoState}) => {
       setWidth(getTextWidth(totalWidthMax, font));
     }
   }, [containerRef.current]);
-
 
   useEffect(() => {
     const disposeVideoTimeObserver = ObserveVideoTime({player, setCurrentTime, rate: 10});
