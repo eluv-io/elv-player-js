@@ -119,6 +119,7 @@
     opacity: 0.9;
     padding: sp(10px) sp(20px);
     transition: opacity 0.15s ease;
+    font-size: sp(16px);
 
     &:hover {
       opacity: 1;
@@ -129,6 +130,11 @@
   &__icon {
     height: sp(18px);
     width: sp(18px);
+
+    svg {
+      height: 100%;
+      width: 100%;
+    }
   }
 }
 
