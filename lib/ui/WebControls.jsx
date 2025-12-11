@@ -106,7 +106,7 @@ const MenuButton = ({label, icon, player, MenuComponent, className=""}) => {
         !show ? null :
           <MenuComponent
             player={player}
-            Hide={() => {
+            Close={() => {
               setShow(false);
               player.controls.__ToggleMenu(false);
             }}
