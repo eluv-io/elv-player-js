@@ -20,9 +20,6 @@ import {InitializeEluvioPlayer, EluvioPlayerParameters} from "@eluvio/elv-player
 // Or import the player and player parameter options from source (recommended if using @eluvio/elv-client-js in your project)
 import {InitializeEluvioPlayer, EluvioPlayerParameters} from "@eluvio/elv-player-js/lib/index.js";
 
-// Import CSS (if not importing from source)
-import "@eluvio/elv-player-js/dist/elv-player-js.css";
-
 const player = await InitializeEluvioPlayer(
   targetContainerElement,
   {
