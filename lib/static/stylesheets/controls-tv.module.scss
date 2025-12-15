@@ -381,6 +381,7 @@
   z-index: var(--layer-title);
 }
 
+:global(.__eluvio-player--size-xl),
 :global(.__eluvio-player--size-lg) {
   .info-box-title {
     font-size: sp(20px);
@@ -393,6 +394,18 @@
   .info-box-container {
     left: sp(30px);
     right: sp(30px);
+  }
+
+  .info-box-button--restart {
+    &__icon {
+      width: sp(24px);
+      height: sp(24px);
+
+      svg {
+        height: 100%;
+        width: 100%;
+      }
+    }
   }
 
   .center-play-button {
