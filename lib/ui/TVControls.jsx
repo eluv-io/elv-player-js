@@ -154,7 +154,7 @@ const InfoBox = ({player, Close}) => {
       <button
         autoFocus
         onClick={Close}
-        className={`${ControlStyles["info-box-button"]} ${ControlStyles["info-box-button--info"]}`}
+        className={ControlStyles["info-box-button"]}
       >
         Info
       </button>
@@ -191,7 +191,7 @@ const InfoBox = ({player, Close}) => {
             }}
             className={`${ControlStyles["info-box-button"]} ${ControlStyles["info-box-button--restart"]}`}
           >
-            <SVG icon={Icons.PlayIcon} />
+            <SVG icon={Icons.PlayIcon} className={ControlStyles["info-box-button--restart__icon"]} />
             From Beginning
           </button>
         </div>
