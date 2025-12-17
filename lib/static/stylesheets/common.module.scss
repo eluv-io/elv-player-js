@@ -133,9 +133,7 @@
 
   &:hover,
   &:active,
-  &:focus,
-  &:focus-visible,
-  &:has(:focus-visible) {
+  &:focus-within {
     transition-delay: unset;
 
     .seek-playhead,
@@ -173,6 +171,7 @@
 .seek-buffer,
 .seek-input {
   border-radius: sp(4px);
+  background: transparent;
   height: var(--progress-height);
   left: 0;
   overflow: hidden;
@@ -380,6 +379,7 @@
 
 .menu-option {
   align-items: center;
+  background: transparent;
   border: sp(1px) solid transparent;
   border-radius: sp(6px);
   display: flex;

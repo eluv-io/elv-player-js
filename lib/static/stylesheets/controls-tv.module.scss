@@ -52,6 +52,8 @@
 }
 
 .icon-button {
+  background: transparent;
+  border: none;
   align-items: center;
   color: var(--color-button);
   display: flex;
@@ -107,6 +109,11 @@
 }
 
 .text-button {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: sp(20px);
+  font-weight: 700;
   border-radius: sp(5px);
   padding: sp(5px) sp(10px);
   transition: background-color 0.25s ease, color 0.5s ease, filter 0.25s ease;
@@ -257,7 +264,7 @@
   bottom: sp(30px);
   display: grid;
   gap: sp(20px);
-  height: max-content;
+  height: auto;
   left: sp(50px);
   position: absolute;
   right: sp(50px);
@@ -323,9 +330,11 @@
 .info-box-button {
   align-items: center;
   background: #FFF;
+  border: none;
   border-radius: sp(5px);
   color: #000;
   display: flex;
+  font-size: sp(16px);
   font-weight: 500;
   gap: sp(15px);
   padding: sp(5px) sp(10px);
@@ -464,7 +473,6 @@
 
   .info-box-button--restart {
     bottom: sp(15px);
-    font-size: sp(12px);
     height: auto;
     left: sp(15px);
     padding-inline: sp(10px);
