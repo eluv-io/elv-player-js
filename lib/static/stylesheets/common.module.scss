@@ -83,7 +83,7 @@
   --color-seek-chapter-indicator: rgba(255, 255, 255, 40%);
   --color-seek-active-focused: #FFF;
   --color-thumbnail-text-background: #2F2F2F;
-  --thumbnail-width: 350px;
+  --thumbnail-width: #{sp(350px)};
 
   align-items: center;
   display: flex;
@@ -161,9 +161,7 @@
 
   &:hover,
   &:active,
-  &:focus,
-  &:focus-visible,
-  &:has(:focus-visible) {
+  &:focus-within {
     transition-delay: unset;
 
     .seek-chapter-indicator {
@@ -216,6 +214,7 @@
 .seek-buffer,
 .seek-input {
   border-radius: sp(4px);
+  background: transparent;
   height: var(--progress-height);
   left: 0;
   overflow: hidden;
@@ -425,6 +424,7 @@
 
 .menu-option {
   align-items: center;
+  background: transparent;
   border: sp(1px) solid transparent;
   border-radius: sp(6px);
   display: flex;
@@ -794,7 +794,7 @@
 
 :global(.__eluvio-player--size-md) {
   .seek-container {
-    --thumbnail-width: 225px;
+    --thumbnail-width: #{sp(225px)};
   }
 
   .thumbnail {
@@ -832,7 +832,7 @@
   }
 
   .seek-container {
-    --thumbnail-width: 150px;
+    --thumbnail-width: #{sp(150px)};
 
     height: calc(var(--progress-height-expanded) + #{sp(5px)});
     position: relative;
