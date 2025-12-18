@@ -153,7 +153,8 @@ const PlayerUI = ({
       // Keyboard controls
       const disposeKeyboardControls = ObserveKeydown({
         player: newPlayer,
-        setRecentUserAction: onUserAction
+        setRecentUserAction: onUserAction,
+        onHideUi: () => setRecentlyInteracted(false)
       });
 
       // Media session
@@ -212,11 +213,17 @@ const PlayerUI = ({
     );
   }
 
+  const ui = parameters.playerOptions.ui;
+
   const shouldRotate =
-    parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB &&
+    ui === EluvioPlayerParameters.ui.WEB &&
     player &&
     player.controls.IsRotatable() &&
     allowRotation;
+
+  // Pixel values for TV UIs are based on 720p resolution, and must be scaled to keep UI consistent across resolutions.
+  // For WEB UI, leave pixel value unchanged (scaleFactor=1)
+  const scaleFactor = ui === EluvioPlayerParameters.ui.TV ? (dimensions.width / 1280) : 1;
 
   return (
     <div
@@ -226,7 +233,8 @@ const PlayerUI = ({
       style={{
         backgroundColor: parameters.playerOptions.backgroundColor || "transparent",
         "--portal-width": `${shouldRotate ? dimensions.height : dimensions.width}px`,
-        "--portal-height": `${shouldRotate ? dimensions.width : dimensions.height}px`
+        "--portal-height": `${shouldRotate ? dimensions.width : dimensions.height}px`,
+        "--scale-factor": scaleFactor,
       }}
       className={[PlayerStyles["player-container"], shouldRotate ? PlayerStyles["player-container--rotated"] : "", `__eluvio-player--size-${size}`, `__eluvio-player--orientation-${orientation}`].join(" ")}
     >
