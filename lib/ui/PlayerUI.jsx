@@ -67,6 +67,7 @@ const PlayerUI = ({
   });
   const [errorMessage, setErrorMessage] = useState(undefined);
   const [playerInitialized, setPlayerInitialized] = useState(false);
+  const [posterReady, setPosterReady] = useState(false);
   const [playbackStarted, setPlaybackStarted] = useState(false);
   const [canPlay, setCanPlay] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -184,6 +185,10 @@ const PlayerUI = ({
   }, [videoRef, mounted, client]);
 
   useEffect(() => {
+    setTimeout(() => setPosterReady(true), 2000);
+  }, [playerInitialized]);
+
+  useEffect(() => {
     if(!playerSet) { return; }
 
     // Clean up player when unmounting
@@ -245,7 +250,9 @@ const PlayerUI = ({
         className={PlayerStyles.video}
       />
       {
-        !player || !canPlay || (playbackStarted && !parameters.playerOptions.permanentPoster) ? null :
+        !posterReady ||
+        !canPlay ||
+        (playbackStarted && !parameters.playerOptions.permanentPoster) ? null :
           <Poster player={player} />
       }
       {
