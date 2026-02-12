@@ -77,7 +77,7 @@ export const UserActionIndicator = ({action}) => {
 const Thumbnail = ({player, time, progress, duration, visible}) => {
   const [ref, setRef] = useState(null);
 
-  if(!player.thumbnailsLoaded || !visible) {
+  if(!(player.thumbnailsLoaded || player.__chapterTags) || !visible) {
     return null;
   }
 
@@ -90,11 +90,14 @@ const Thumbnail = ({player, time, progress, duration, visible}) => {
   let maxPercent = 100;
   if(ref) {
     const { width } = ref.parentElement.getBoundingClientRect();
-    const thumbnailSize = width < 650 ? 150 : 250;
+    const thumbnailSize = width < 650 ? 150 : width < 1000 ? 225 : 350;
     maxPercent = (width - thumbnailSize) / width;
   }
 
-  const thumbnailImage = player.thumbnailHandler.ThumbnailImage(time);
+  const chapterText = ((player.__chapterTags || [])
+    .find(chapter => chapter.start_time < time && chapter.end_time > time) || {}).tag || "";
+
+  const thumbnailImage = player.thumbnailHandler && player.thumbnailHandler.ThumbnailImage(time);
   return (
     <div
       ref={setRef}
@@ -102,16 +105,28 @@ const Thumbnail = ({player, time, progress, duration, visible}) => {
         opacity: visible ? 1 : 0,
         left: `${Math.min(progress, maxPercent) * 100}%`
       }}
-      className={`${CommonStyles["thumbnail"]} ${visible ? CommonStyles["thumbnail--visible"] : ""}`}
+      className={`${CommonStyles["thumbnail"]} ${visible ? CommonStyles["thumbnail--visible"] : ""} ${chapterText ? CommonStyles["thumbnail--with-text"] : ""}`}
     >
-      <img src={thumbnailImage} alt="Thumbnail" className={CommonStyles["thumbnail__image"]} />
-      <div className={CommonStyles["thumbnail__time"]}>
-        { Time(time, duration) }
-      </div>
+      {
+        !thumbnailImage ? null :
+          <>
+            <img src={thumbnailImage} alt="Thumbnail" className={CommonStyles["thumbnail__image"]}/>
+            <div className={CommonStyles["thumbnail__time"]}>
+              {Time(time, duration)}
+            </div>
+          </>
+      }
+      {
+        !chapterText ? null :
+          <div className={CommonStyles["thumbnail__text"]}>
+            { chapterText }
+          </div>
+      }
     </div>
   );
 };
 
+let mouseLeaveTimeout;
 export const SeekBar = ({player, videoState, setRecentUserAction, className=""}) => {
   const [currentTime, setCurrentTime] = useState(player.controls.GetCurrentTime());
   const [bufferFraction, setBufferFraction] = useState(0);
@@ -145,10 +160,16 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
 
   return (
     <div
-      onMouseEnter={() => setHovering(true)}
+      onMouseEnter={() => {
+        clearTimeout(mouseLeaveTimeout);
+        setHovering(true);
+      }}
       onMouseLeave={() => {
-        setFocused(false);
-        setHovering(false);
+        clearTimeout(mouseLeaveTimeout);
+        mouseLeaveTimeout = setTimeout(() => {
+          setFocused(false);
+          setHovering(false);
+        }, 100);
       }}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
@@ -190,6 +211,18 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
         onKeyDown={seekKeydownHandler}
         className={CommonStyles["seek-input"]}
       />
+      {
+        (player.__chapterTags || []).map((tag, index) =>
+          <div
+            key={`chapter-${index}`}
+            style={{
+              width: `${100 * (tag.end_time - tag.start_time) / videoState.duration}%`,
+              left: `${100 * tag.start_time / videoState.duration}%`
+            }}
+            className={CommonStyles["seek-chapter-indicator"]}
+          />
+        )
+      }
       <Thumbnail
         player={player}
         progress={focused ? currentTime / videoState.duration : hoverPosition}

@@ -438,24 +438,37 @@ google-cast-launcher {
   }
 
   .info-container {
-    padding-right: 80px;
-    padding-top: 10px;
+    padding: 10px 80px 10px 10px;
+
+    * {
+      line-height: 1.8em;
+      margin: 0;
+    }
+  }
+
+  .info-text {
+    gap: 0;
   }
 
   .info-headers {
-    font-size: 12px;
+    font-size: 10px;
   }
 
   .info-title {
-    font-size: 16px;
+    font-size: 12px;
+  }
+
+  .info-subtitle {
+    font-size: 10px;
   }
 
   .info-description {
-    font-size: 11px;
+    font-size: 9px;
   }
 
   .time {
     font-size: 10px;
+    font-weight: 800;
     min-width: max-content;
   }
 

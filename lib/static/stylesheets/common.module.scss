@@ -73,12 +73,15 @@
 
 .seek-container {
   --progress-height: 3px;
-  --progress-height-expanded: 12px;
+  --progress-height-expanded: 16px;
   --progress-height-expanded-mobile: 12px;
-  --color-seek-background: rgba(255, 255, 255, 10%);
-  --color-seek-buffer: rgba(255, 255, 255, 10%);
+  --color-seek-background: rgba(255, 255, 255, 40%);
+  --color-seek-buffer: rgba(255, 255, 255, 30%);
   --color-seek-active: rgba(255, 255, 255, 50%);
+  --color-seek-chapter-indicator: rgba(255, 255, 255, 40%);
   --color-seek-active-focused: #FFF;
+  --color-thumbnail-text-background: #2F2F2F;
+  --thumbnail-width: 350px;
 
   align-items: center;
   display: flex;
@@ -94,38 +97,63 @@
   }
 
   .thumbnail {
-    animation: 0.5s fadein ease;
+    animation: 0.25s fadein ease;
     bottom: 100%;
     color: transparent;
     display: flex;
+    flex-direction: column;
+    height: max-content;
     opacity: 0;
     pointer-events: none;
     position: absolute;
     transition-delay: 0s;
     user-select: none;
-    width: 250px;
+    width: var(--thumbnail-width);
 
     &--visible {
       opacity: 1;
     }
 
+    &--with-text {
+      bottom: calc(100% + 50px);
+    }
+
     &__time {
       background: rgba(0, 0, 0, 50%);
-      border-radius: 5px;
-      bottom: 5px;
+      border-radius: 15px;
+      bottom: 8px;
       color: white;
       display: block;
       font-size: 14px;
       padding: 5px 10px;
       position: absolute;
-      right: 5px;
+      right: 8px;
       z-index: 1;
     }
 
+    &__text {
+      background-color: var(--color-thumbnail-text-background);
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 50%);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 5px;
+      overflow: hidden;
+      padding: 10px 15px;
+      position: absolute;
+      text-overflow: ellipsis;
+      top: 100%;
+      white-space: nowrap;
+      width: 100%;
+    }
+
     img {
-      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 50%);
+      border-radius: 20px;
+      box-shadow: 0 0 10px black;
       height: auto;
-      width: 250px;
+      width: var(--thumbnail-width);
     }
   }
 
@@ -135,6 +163,12 @@
   &:focus-visible,
   &:has(:focus-visible) {
     transition-delay: unset;
+
+    .seek-chapter-indicator {
+      height: var(--progress-height-expanded);
+      opacity: 1;
+      transition-delay: 0.15s;
+    }
 
     .seek-playhead,
     .seek-buffer,
@@ -167,6 +201,15 @@
   }
 }
 
+.seek-chapter-indicator {
+  border-right: 1px solid var(--color-seek-chapter-indicator);
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: var(--layer-controls);
+}
+
 .seek-playhead,
 .seek-buffer,
 .seek-input {
@@ -180,6 +223,7 @@
 
 .seek-playhead {
   background: transparent;
+  pointer-events: none;
 
   &::-webkit-progress-bar {
     background: transparent;
@@ -200,6 +244,7 @@
 
 .seek-buffer {
   background: var(--color-seek-background);
+  pointer-events: none;
 
   &::-webkit-progress-bar {
     background: transparent;
@@ -463,6 +508,7 @@
   &__group-text {
     display: grid;
     gap: 5px;
+    width: 100%;
   }
 
   &__group-title,
@@ -637,6 +683,9 @@
   }
 
   .verification-menu {
+    max-height: calc(0.5 * var(--portal-height))!important;
+    overflow-y: auto;
+
     &__inline-icon,
     &__group-icon {
       height: 20px;
@@ -659,15 +708,15 @@
 
     &__details,
     &__group {
-      padding-inline: 5px;
+      padding-inline: 10px;
     }
 
     &__group-title {
-      font-size: 10px;
+      font-size: 12px;
     }
 
     &__group-subtitle {
-      font-size: 9px;
+      font-size: 10px;
     }
 
     &__detail {
@@ -701,6 +750,18 @@
   }
 }
 
+:global(.__eluvio-player--size-md) {
+  .seek-container {
+    --thumbnail-width: 225px;
+  }
+
+  .thumbnail {
+    &__text {
+      font-size: 12px;
+    }
+  }
+}
+
 :global(.__eluvio-player--size-sm) {
   .volume-slider {
     display: none;
@@ -728,6 +789,8 @@
   }
 
   .seek-container {
+    --thumbnail-width: 150px;
+
     height: calc(var(--progress-height-expanded) + 5px);
     position: relative;
 
@@ -758,10 +821,13 @@
   }
 
   .thumbnail {
-    width: 150px;
-
     &__time {
       font-size: 12px;
+    }
+
+    &__text {
+      font-size: 10px;
+      padding: 7px 10px;
     }
   }
 }
