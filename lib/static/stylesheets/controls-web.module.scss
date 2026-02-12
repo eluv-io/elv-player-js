@@ -437,12 +437,27 @@ google-cast-launcher {
     right: 15px;
   }
 
+  .live-indicator {
+    padding: 1px 5px;
+    font-size: 10px;
+  }
+
   .info-container {
-    padding: 10px 80px 10px 10px;
+    padding: 10px 20px 20px 10px;
 
     * {
       line-height: 1.8em;
       margin: 0;
+    }
+  }
+
+  .error-message {
+    &__message {
+      font-size: 11px;
+    }
+
+    &__copy-debug-button {
+      display: none;
     }
   }
 
@@ -455,7 +470,7 @@ google-cast-launcher {
   }
 
   .info-title {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .info-subtitle {
