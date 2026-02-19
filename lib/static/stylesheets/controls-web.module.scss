@@ -52,7 +52,8 @@
 
   &:not(:has(:focus-visible)) {
     .info-container,
-    .bottom-controls-container--autohide {
+    .bottom-controls-container--autohide,
+    .floating-volume-toggle {
       opacity: 0;
       pointer-events: none;
       user-select: none;
@@ -323,7 +324,15 @@ google-cast-launcher {
   height: 30px;
   position: absolute;
   right: 30px;
+  transition: opacity 0.5s ease;
   width: 30px;
+
+  &.floating-volume-toggle {
+    button {
+      height: 100%;
+      width: 100%;
+    }
+  }
 }
 
 .watermark {
@@ -438,8 +447,8 @@ google-cast-launcher {
   }
 
   .live-indicator {
-    padding: 1px 5px;
     font-size: 10px;
+    padding: 1px 5px;
   }
 
   .info-container {

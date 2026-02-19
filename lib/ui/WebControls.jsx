@@ -225,7 +225,7 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
 
   // Title autohide is not dependent on controls settings
   const showUI = recentlyInteracted || !playbackStarted || menuVisible;
-  const hideControls = !showUI && player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE;
+  const hideControls = !showUI && [EluvioPlayerParameters.controls.AUTO_HIDE, EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE].includes(player.playerOptions.controls);
 
   player.__SetControlsVisibility(!hideControls);
 
@@ -322,7 +322,7 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
       }
       {
         // Floating volume control for 'off with volume toggle' setting
-        player.playerOptions.controls !== EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE ? null :
+        player.playerOptions.controls !== EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE || !player.controls.HasAudio() ? null :
           <div className={ControlStyles["floating-volume-toggle"]}>
             <IconButton
               key="mute-button"
