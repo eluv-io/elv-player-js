@@ -165,16 +165,16 @@ const PlayerUI = ({
 
       // Can play
       const disposeCanPlayListener = newPlayer.controls.RegisterVideoEventListener("canplay", () => setCanPlay(true));
+      const disposePlaybackStartedListener = newPlayer.controls.RegisterVideoEventListener("play", () => setPlaybackStarted(true));
 
       return () => {
-        videoRef && videoRef.current && videoRef.current.removeEventListener("play", setPlaybackStarted);
-
         disposePlayerSettingsListener && disposePlayerSettingsListener();
         disposeVisibilityObserver && disposeVisibilityObserver();
         disposeInteractionObserver && disposeInteractionObserver();
         disposeKeyboardControls && disposeKeyboardControls();
         disposeMediaSessionObserver && disposeMediaSessionObserver();
         disposeCanPlayListener && disposeCanPlayListener();
+        disposePlaybackStartedListener && disposePlaybackStartedListener();
 
         newPlayer && newPlayer.__DestroyPlayer();
       };
