@@ -123,7 +123,7 @@ const PlayerUI = ({
       const disposePlayerSettingsListener = newPlayer.controls.RegisterSettingsListener(
         () => {
           setAllowRotation(newPlayer.controls.AllowRotation());
-          setPlaybackStarted(newPlayer.playbackStarted);
+          setPlaybackStarted(newPlayer.playbackStarted || (newPlayer.controls && newPlayer.controls.IsPlaying()));
           setPlayerInitialized(!newPlayer.loading);
           setShowPlayerProfileForm(newPlayer.__showPlayerProfileForm);
           setCasting(newPlayer && newPlayer.casting);

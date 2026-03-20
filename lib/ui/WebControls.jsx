@@ -258,7 +258,7 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
                 // Take focus off of this button because it should no longer be selectable after playback starts
                 player.target.firstChild.focus();
               }}
-              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted && !(player && player.casting) ? "" : ControlStyles["center-play-button--hidden"]}`}
+              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted && !(player && player.casting) && !(player && player.controls && player.controls.IsPlaying() && !player.casting) ? "" : ControlStyles["center-play-button--hidden"]}`}
             />
             <div className={`${ControlStyles["bottom-controls-container"]} ${hideControls ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
               <div className={ControlStyles["bottom-controls-gradient"]} />
