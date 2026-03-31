@@ -19,7 +19,6 @@ import {Copy, Spinner, SVG, UserActionIndicator} from "./Components.jsx";
 import TVControls from "./TVControls.jsx";
 import PlayerProfileForm from "./PlayerProfileForm.jsx";
 import {ImageUrl, MergeDefaultParameters, MergeParameters} from "./Common.js";
-import {ChromecastIcon} from "../static/icons/Icons.js";
 import * as Icons from "../static/icons/Icons";
 
 const Poster = ({player}) => {
@@ -264,7 +263,7 @@ const PlayerUI = ({
       {
         !casting ? null :
           <div className={PlayerStyles["cast-indicator-container"]}>
-            <div dangerouslySetInnerHTML={{ __html: ChromecastIcon }} />
+            <div dangerouslySetInnerHTML={{ __html: Icons.ChromecastIcon }} />
           </div>
       }
       {
