@@ -198,7 +198,14 @@ const ContentVerificationControls = ({player}) => {
   );
 };
 
-const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRecentUserAction, className=""}) => {
+const WebControls = ({
+  player,
+  playbackStarted,
+  canPlay,
+  recentlyInteracted,
+  setRecentUserAction,
+  className=""
+}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
   const [menuVisible, setMenuVisible] = useState(player.controls.IsMenuVisible());
@@ -289,6 +296,19 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
                       aria-label="Airplay"
                       onClick={() => player.video.webkitShowPlaybackTargetPicker()}
                       icon={Icons.AirplayIcon}
+                    />
+                }
+
+                {
+                  !player.controls.OverlayAvailable() ? null :
+                    <IconButton
+                      aria-label="Toggle Overlay"
+                      onClick={() => player.controls.ToggleOverlayVisibility()}
+                      icon={Icons.OverlayIcon}
+                      className={[
+                        ControlStyles["icon-button--no-padding"],
+                        player.controls.OverlayVisible() ? ControlStyles["icon-button-active"] : ""
+                      ].join(" ")}
                     />
                 }
 

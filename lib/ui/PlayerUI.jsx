@@ -20,6 +20,7 @@ import TVControls from "./TVControls.jsx";
 import PlayerProfileForm from "./PlayerProfileForm.jsx";
 import {ImageUrl, MergeDefaultParameters, MergeParameters} from "./Common.js";
 import * as Icons from "../static/icons/Icons";
+import Overlay from "./Overlay";
 
 const Poster = ({player}) => {
   const [imageUrl, setImageUrl] = useState(undefined);
@@ -75,6 +76,7 @@ const PlayerUI = ({
   const [recentUserAction, setRecentUserAction] = useState(undefined);
   const [allowRotation, setAllowRotation] = useState(undefined);
   const [casting, setCasting] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
   const videoRef = useRef();
 
   const playerSet = !!player;
@@ -126,6 +128,7 @@ const PlayerUI = ({
           setPlayerInitialized(!newPlayer.loading);
           setShowPlayerProfileForm(newPlayer.__showPlayerProfileForm);
           setCasting(newPlayer && newPlayer.casting);
+          setShowOverlay(newPlayer.controls.OverlayVisible());
         }
       );
 
@@ -255,6 +258,10 @@ const PlayerUI = ({
           <Poster player={player} />
       }
       {
+        !showOverlay ? null :
+          <Overlay player={player} />
+      }
+      {
         playerInitialized || errorMessage || !parameters.playerOptions.showLoader ? null :
           <div className={PlayerStyles["spinner-container"]}>
             <Spinner className={PlayerStyles["spinner"]} />
@@ -290,6 +297,8 @@ const PlayerUI = ({
               canPlay={canPlay}
               recentlyInteracted={recentlyInteracted}
               setRecentUserAction={onUserAction}
+              showOverlay={showOverlay}
+              setShowOverlay={setShowOverlay}
               className={PlayerStyles.controls}
             /> :
             <TVControls

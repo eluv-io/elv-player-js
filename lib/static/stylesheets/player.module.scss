@@ -12,6 +12,7 @@
   font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   height: 100%;
   inset: 0;
+  overflow: hidden;
   position: absolute;
   width: 100%;
 
@@ -128,6 +129,12 @@
     height: 18px;
     width: 18px;
   }
+}
+
+.overlay {
+  pointer-events: none;
+  position: absolute;
+  z-index: 1000;
 }
 
 :global(.__eluvio-player--size-md),
