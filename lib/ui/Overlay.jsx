@@ -1,5 +1,6 @@
 import PlayerStyles from "../static/stylesheets/player.module.scss";
-import {useEffect, useState} from "react";
+// eslint-disable-next-line no-unused-vars
+import React, {useEffect, useState} from "react";
 
 const POINT_CONNECTIONS = [["Nose","LEyeIn"],["LEyeIn","LEye"],["LEye","REyeOut"],["REyeOut","LEar"],["Nose","REyeIn"],["REyeIn","REye"],["REye","REyeOut"],["REyeOut","REar"],["MouthL","MouthR"],["LShoulder","RShoulder"],["LShoulder","LElbow"],["LElbow","LWrist"],["LWrist","LPinky"],["LWrist","LIndex"],["LWrist","LThumb"],["LPinky","LIndex"],["RShoulder","RElbow"],["RElbow","RWrist"],["RWrist","RPinky"],["RWrist","RIndex"],["RWrist","RThumb"],["RPinky","RIndex"],["LShoulder","LHip"],["RShoulder","RHip"],["LHip","RHip"],["LHip","LKnee"],["RHip","RKnee"],["LKnee","LAnkle"],["RKnee","RAnkle"],["LAnkle","LHeel"],["RAnkle","RHeel"],["LHeel","LFootIdx"],["RHeel","RFootIdx"],["LAnkle","LFootIdx"],["RAnkle","RFootIdx"]];
 
@@ -62,7 +63,7 @@ const Canvas = ({tags, portalDimensions, videoDimensions}) => {
           context.stroke();
         });
     });
-  }, [tags]);
+  }, [canvas, tags, portalDimensions, videoDimensions]);
 
 
   if(!portalDimensions || videoDimensions.videoWidth === 0) { return null; }
@@ -133,6 +134,8 @@ const Overlay = ({player}) => {
     if(!player.video.paused) {
       StartInterval();
     }
+
+    setTimeout(() => setFrame(Math.floor(player.video.currentTime * frameRate)), 100);
   }, [(player.playoutInfo || {}).frameRate]);
 
   let tags;
