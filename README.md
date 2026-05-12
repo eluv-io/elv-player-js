@@ -20,9 +20,6 @@ import {InitializeEluvioPlayer, EluvioPlayerParameters} from "@eluvio/elv-player
 // Or import the player and player parameter options from source (recommended if using @eluvio/elv-client-js in your project)
 import {InitializeEluvioPlayer, EluvioPlayerParameters} from "@eluvio/elv-player-js/lib/index.js";
 
-// Import CSS (if not importing from source)
-import "@eluvio/elv-player-js/dist/elv-player-js.css";
-
 const player = await InitializeEluvioPlayer(
   targetContainerElement,
   {
@@ -178,7 +175,9 @@ The library includes a helpful collection of configuration options in `EluvioPla
 * `keyboardControls` - Whether or not the player's keyboard controls will be active
   * `ON (default)` - Keyboard controls active
   * `OFF` - Keyboard controls disabled
-  * `ARROW_KEYS_DISABLED` - Keyboard controls active except for arrow keys (useful if supporting directional navigation)
+  * `SPATIAL_NAVIGATION` - Arrow keys will move focus between the player controls, other keyboard controls identical to `ON`
+* `keyboardBackKeys` - Which keys will be used to trigger the "back" action (close menus, hide player ui).
+  * `DEFAULT` - Escape/Backspace and some known TV "Back" keys.
 * `watermark`: Whether or not the Eluvio watermark will be shown.
   * `ON (default)` - Watermark will be shown
   * `OFF` - Watermark will not be shown
