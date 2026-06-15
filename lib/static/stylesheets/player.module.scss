@@ -116,12 +116,12 @@
     border-radius: sp(5px);
     color: #000;
     display: flex;
+    font-size: sp(16px);
     gap: sp(10px);
     height: sp(45px);
     opacity: 0.9;
     padding: sp(10px) sp(20px);
     transition: opacity 0.15s ease;
-    font-size: sp(16px);
 
     &:hover {
       opacity: 1;

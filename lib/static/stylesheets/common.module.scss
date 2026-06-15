@@ -117,7 +117,7 @@
     }
 
     &--with-text {
-      bottom: calc(100% + 50px);
+      bottom: calc(100% + sp(50px));
     }
 
     &__time {
@@ -135,14 +135,14 @@
 
     &__text {
       background-color: var(--color-thumbnail-text-background);
-      border-radius: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 50%);
+      border-radius: sp(20px);
+      box-shadow: 0 0 sp(10px) rgba(0, 0, 0, 50%);
       color: white;
-      font-size: 14px;
+      font-size: sp(14px);
       font-weight: 600;
-      margin-top: 5px;
+      margin-top: sp(5px);
       overflow: hidden;
-      padding: 10px 15px;
+      padding: sp(10px) sp(15px);
       position: absolute;
       text-overflow: ellipsis;
       top: 100%;
@@ -202,7 +202,7 @@
 }
 
 .seek-chapter-indicator {
-  border-right: 1px solid var(--color-seek-chapter-indicator);
+  border-right: sp(1px) solid var(--color-seek-chapter-indicator);
   height: 0;
   opacity: 0;
   pointer-events: none;
@@ -213,8 +213,8 @@
 .seek-playhead,
 .seek-buffer,
 .seek-input {
-  border-radius: sp(4px);
   background: transparent;
+  border-radius: sp(4px);
   height: var(--progress-height);
   left: 0;
   overflow: hidden;
@@ -468,9 +468,9 @@
 .menu-option-icon {
   align-items: center;
   display: flex;
+  height: sp(27px);
   justify-content: center;
   padding-left: sp(30px);
-  height: sp(27px);
 
   svg {
     height: 75%;
@@ -490,8 +490,8 @@
   padding: sp(10px) 0 sp(5px);
 
   &__group {
-    display: flex;
     align-items: center;
+    display: flex;
     gap: sp(20px);
     padding: sp(10px) sp(30px);
   }
@@ -799,7 +799,7 @@
 
   .thumbnail {
     &__text {
-      font-size: 12px;
+      font-size: sp(12px);
     }
   }
 }
@@ -869,8 +869,8 @@
     }
 
     &__text {
-      font-size: 10px;
-      padding: 7px 10px;
+      font-size: sp(10px);
+      padding: sp(7px) sp(10px);
     }
   }
 }
