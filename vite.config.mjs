@@ -3,8 +3,29 @@ import path from "path";
 import autoprefixer from "autoprefixer";
 import react from "@vitejs/plugin-react-swc";
 
+// only serve what the test page and the Cast receiver need, everything else gets a 404.
+const servedPages = ["/", "/index.html", "/receiver/index.html"];
+const servedPrefixes = ["/test/", "/lib/", "/node_modules/", "/@vite/", "/@id/", "/@react-refresh", "/__vite_ping"];
+
+const restrictServedPaths = () => ({
+  name: "restrict-served-paths",
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      const urlPath = (req.url || "").split("?")[0];
+
+      if(servedPages.includes(urlPath) || servedPrefixes.some(prefix => urlPath.startsWith(prefix))) {
+        return next();
+      }
+
+      res.statusCode = 404;
+      res.end();
+    });
+  }
+});
+
 let plugins = [
-  react()
+  react(),
+  restrictServedPaths()
 ];
 
 export default defineConfig(() => {
