@@ -12,6 +12,7 @@
     "serve-https": "SERVE_HTTPS=true vite --host 0.0.0.0 --port 8089",
     "build": "npm run build-icons ; vite build",
     "build-analyze": "vite-bundle-visualizer",
+    "build-receiver": "rm -rf dist && mkdir -p dist && cp receiver/index.html dist/index.html",
     "build-docs": "./node_modules/.bin/jsdoc --configure ./.jsdoc.json --readme README.md",
     "preview": "vite preview",
     "build-icons": "node lib/ui/BuildIcons.cjs",
