@@ -6,6 +6,8 @@ import {ACTIONS, SeekSliderKeyDown, Time, VolumeSliderKeydown} from "./Common.js
 import {ObserveVideoBuffer, ObserveVideoTime, RegisterModal} from "./Observers.js";
 import * as Icons from "../static/icons/Icons.js";
 import {IconButton} from "./WebControls";
+import {ElvPlayerControlIds} from "../player/PlayerParameters";
+import { EluvioPlayerParameters } from "../index";
 
 // Components
 
@@ -127,7 +129,7 @@ const Thumbnail = ({player, time, progress, duration, visible}) => {
 };
 
 let mouseLeaveTimeout;
-export const SeekBar = ({player, videoState, setRecentUserAction, className=""}) => {
+export const SeekBar = ({id, player, videoState, setRecentUserAction, showInLive=false, className=""}) => {
   const [currentTime, setCurrentTime] = useState(player.controls.GetCurrentTime());
   const [bufferFraction, setBufferFraction] = useState(0);
   const [seekKeydownHandler, setSeekKeydownHandler] = useState(undefined);
@@ -154,7 +156,7 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
     };
   }, [player && player.controls]);
 
-  if(player.isLive && !dvrEnabled) {
+  if(!showInLive && player.isLive && !dvrEnabled) {
     return null;
   }
 
@@ -190,6 +192,7 @@ export const SeekBar = ({player, videoState, setRecentUserAction, className=""})
         className={CommonStyles["seek-playhead"]}
       />
       <input
+        id={id}
         aria-label="Seek slider"
         type="range"
         min={0}
@@ -270,7 +273,7 @@ export const VolumeControls = ({player, videoState}) => {
   );
 };
 
-export const SettingsMenu = ({player, Hide, className=""}) => {
+export const SettingsMenu = ({player, Close, className=""}) => {
   const [activeMenu, setActiveMenu] = useState(undefined);
   const [options, setOptions] = useState(undefined);
   const menuRef = createRef();
@@ -288,7 +291,13 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
+    const RemoveMenuListener = RegisterModal({
+      player,
+      element: menuRef.current.parentElement,
+      Close,
+      IsSubmenuOpen: () => activeMenu,
+      CloseSubmenu: () => setActiveMenu(undefined),
+    });
 
     return () => {
       RemoveMenuListener && RemoveMenuListener();
@@ -318,7 +327,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
       Update: index => {
         if(index === "custom") {
           player.controls.ShowPlayerProfileForm();
-          Hide();
+          Close();
         } else {
           player.controls.SetPlayerProfile({profile: index});
         }
@@ -333,7 +342,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
       Update: option => {
         if(option === "copy_debug_info") {
           Copy(JSON.stringify(player.controls.GetDebugInfo(), null, 2));
-          Hide();
+          Close();
         }
       }
     }
@@ -483,12 +492,14 @@ export const DVRToggle = ({player}) => {
   return (
     <div className={CommonStyles["dvr-toggle"]}>
       <button
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.live_toggle)}
         onClick={() => player.controls.SetDVREnabled(false)}
         className={`${CommonStyles["dvr-toggle__live"]} ${!dvrEnabled ? CommonStyles["dvr-toggle__live--active"] : ""}`}
       >
         LIVE
       </button>
       <button
+        id={player.controls.__GetPlayerControlId(ElvPlayerControlIds.dvr_toggle)}
         onClick={() => player.controls.SetDVREnabled(true)}
         className={`${CommonStyles["dvr-toggle__dvr"]} ${dvrEnabled ? CommonStyles["dvr-toggle__dvr--active"] : ""}`}
       >
@@ -538,11 +549,13 @@ const ContentDetail = ({label, value, copyable}) => {
   );
 };
 
-export const ContentVerificationMenu = ({player, Hide, className=""}) => {
+export const ContentVerificationMenu = ({player, Close, className=""}) => {
   const menuRef = createRef();
   const [audit, setAudit] = useState();
   const [showDetails, setShowDetails] = useState(false);
   const [, setLoaded] = useState(false);
+  // Only display the "copy" icon for non-tv UIs.
+  const copyable = player.playerOptions.ui !== EluvioPlayerParameters.ui.TV;
 
   useEffect(() => {
     player.__LoadVerificationDetails()
@@ -560,7 +573,13 @@ export const ContentVerificationMenu = ({player, Hide, className=""}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
+    const RemoveMenuListener = RegisterModal({
+      player,
+      element: menuRef.current.parentElement,
+      Close,
+      IsSubmenuOpen: () => showDetails,
+      CloseSubmenu: () => setShowDetails(false),
+    });
 
     return () => {
       RemoveMenuListener && RemoveMenuListener();
@@ -589,7 +608,7 @@ export const ContentVerificationMenu = ({player, Hide, className=""}) => {
         <div className={CommonStyles["verification-menu__group"]}>
           <div dangerouslySetInnerHTML={{__html: Icons.ContentCredentialsIcon}} className={[CommonStyles["verification-menu__group-icon"], CommonStyles["verification-menu__group-icon--cc"]].join(" ")} />
           <div className={CommonStyles["verification-menu__group-text"]}>
-            <button onClick={() => setShowDetails(true)} className={CommonStyles["verification-menu__group-title"]}>
+            <button autoFocus onClick={() => setShowDetails(true)} className={`${CommonStyles["verification-menu__group-title"]} ${CommonStyles["menu-option"]}`}>
               View Content Credentials
               <div className={CommonStyles["verification-menu__inline-icon"]} dangerouslySetInnerHTML={{__html: Icons.ChevronRightIcon}} />
             </button>
@@ -626,10 +645,10 @@ export const ContentVerificationMenu = ({player, Hide, className=""}) => {
           </div>
         </div>
         <div className={CommonStyles["verification-menu__details"]} key={`details-${audit.details._state}`}>
-          <ContentDetail label="Content Fabric Object ID" value={audit.details.objectId} copyable />
-          <ContentDetail label="Organization Address" value={audit.details.tenantAddress} copyable />
+          <ContentDetail label="Content Fabric Object ID" value={audit.details.objectId} copyable={copyable} />
+          <ContentDetail label="Organization Address" value={audit.details.tenantAddress} copyable={copyable} />
           <ContentDetail label="Organization Name" value={audit.details.tenantName && audit.details.tenantName.toString()} />
-          <ContentDetail label="Owner Address" value={audit.details.ownerAddress} copyable />
+          <ContentDetail label="Owner Address" value={audit.details.ownerAddress} copyable={copyable} />
           <ContentDetail
             label="Content Object Contract Address"
             value={
@@ -639,15 +658,15 @@ export const ContentVerificationMenu = ({player, Hide, className=""}) => {
               </a> :
               audit.details.address
             }
-            copyable
+            copyable={copyable}
           />
           <ContentDetail label="Versions" value={audit.details.versionCount} />
-          <ContentDetail label="Content Version Hash" value={audit.details.versionHash} copyable />
+          <ContentDetail label="Content Version Hash" value={audit.details.versionHash} copyable={copyable} />
           {
             !audit.details.lastCommittedAt ? null :
               <ContentDetail label="Latest Commit" value={new Date(audit.details.lastCommittedAt).toLocaleTimeString(navigator.language || "en-us", {year: "numeric", "month": "long", day: "numeric"})} />
           }
-          <ContentDetail label="Latest Version Hash" value={audit.details.latestVersionHash} copyable />
+          <ContentDetail label="Latest Version Hash" value={audit.details.latestVersionHash} copyable={copyable} />
           <ContentDetail
             label="Latest Transaction"
             value={
@@ -685,7 +704,7 @@ export const ContentVerificationMenu = ({player, Hide, className=""}) => {
   );
 };
 
-export const CollectionMenu = ({player, Hide, className=""}) => {
+export const CollectionMenu = ({player, Close, className=""}) => {
   const menuRef = createRef();
   const [collectionInfo, setCollectionInfo] = useState(undefined);
 
@@ -702,7 +721,7 @@ export const CollectionMenu = ({player, Hide, className=""}) => {
   useEffect(() => {
     if(!menuRef || !menuRef.current) { return; }
 
-    const RemoveMenuListener = RegisterModal({element: menuRef.current.parentElement, Hide});
+    const RemoveMenuListener = RegisterModal({player, element: menuRef.current.parentElement, Close});
 
     return () => RemoveMenuListener && RemoveMenuListener();
   }, [menuRef]);
@@ -711,7 +730,7 @@ export const CollectionMenu = ({player, Hide, className=""}) => {
 
   const Select = mediaIndex => {
     player.controls.CollectionPlay({mediaIndex});
-    Hide();
+    Close();
   };
 
   return (
