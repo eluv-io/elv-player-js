@@ -287,7 +287,14 @@ const WebControls = ({
 
                 {
                   !player.chromecastAvailable ? null :
-                    <google-cast-launcher></google-cast-launcher>
+                    player.playerOptions.castButton === EluvioPlayerParameters.castButton.ALWAYS &&
+                    player.castHandler && !player.castHandler.DevicesAvailable() ?
+                      <IconButton
+                        aria-label="Cast"
+                        onClick={() => player.castHandler.RequestSession()}
+                        icon={Icons.ChromecastIcon}
+                      /> :
+                      <google-cast-launcher></google-cast-launcher>
                 }
 
                 {

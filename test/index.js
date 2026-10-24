@@ -80,6 +80,7 @@ const Initialize = async () => {
         //controls: EluvioPlayerParameters.controls.ON,
         controls: EluvioPlayerParameters.controls.AUTO_HIDE,
         watermark: EluvioPlayerParameters.watermark.ON,
+        castButton: EluvioPlayerParameters.castButton.ALWAYS,
         autoplay: EluvioPlayerParameters.autoplay.ON,
         title: EluvioPlayerParameters.title.FULLSCREEN_ONLY,
         keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
