@@ -10,41 +10,10 @@ import {InitializeEluvioPlayer, EluvioPlayerParameters} from "../lib";
 
 
 
-// Public test content from the Shaka Player demo (https://shaka-player-demo.appspot.com/)
-const publicAssets = {
-  PUBLIC_CLEAR: {
-    dash: {
-      playoutMethods: {
-        clear: {
-          playoutUrl: "https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd"
-        }
-      }
-    }
-  },
-  PUBLIC_WIDEVINE: {
-    dash: {
-      playoutMethods: {
-        widevine: {
-          playoutUrl: "https://storage.googleapis.com/shaka-demo-assets/angel-one-widevine/dash.mpd",
-          drms: {
-            widevine: {
-              licenseServers: ["https://proxy.uat.widevine.com/proxy"]
-            }
-          }
-        }
-      }
-    }
-  }
-};
-
 const Initialize = async () => {
   let network = "MAIN";
   let objectId, versionHash, authorizationToken, mediaCatalogId, mediaCollectionId;
   const ticketCode = "BkiWYk";
-
-  // Set to a key of publicAssets to play public content instead of fabric content, or leave undefined
-  const publicSource = undefined;
-  const isPublic = !!publicSource;
 
   // Clear
   //versionHash = "hq__CcdV4wnCNq9wv6jXpYeCQ2GE4FLQBFtVSSSt2XKfBJMrH89DFDGsfkpWWvBy16QBGGYeF5mLGo";
@@ -84,13 +53,11 @@ const Initialize = async () => {
         //ticketCode: "BkiWYk"
       },
       sourceOptions: {
-        playoutOptions: isPublic ? publicAssets[publicSource] : undefined,
-        protocols: isPublic ? ["dash"] : ["hls", "dash"],
+        //protocols: ["dash"],
         //drms: ["clear"],
         playoutParameters: {
-          // Public content is not on the fabric, so no object to look offerings up on
-          objectId: isPublic ? undefined : objectId,
-          versionHash: isPublic ? undefined : versionHash,
+          objectId,
+          versionHash,
           authorizationToken,
           //offering: "default",
           //offerings: ["none", "some"]
@@ -112,17 +79,14 @@ const Initialize = async () => {
         backgroundColor: "black",
         //controls: EluvioPlayerParameters.controls.ON,
         controls: EluvioPlayerParameters.controls.AUTO_HIDE,
-        watermark: isPublic ? EluvioPlayerParameters.watermark.OFF : EluvioPlayerParameters.watermark.ON,
-        collectVideoAnalytics: isPublic ? EluvioPlayerParameters.collectVideoAnalytics.OFF : EluvioPlayerParameters.collectVideoAnalytics.ON,
-        verifyContent: isPublic ? EluvioPlayerParameters.verifyContent.OFF : EluvioPlayerParameters.verifyContent.ON,
-        // Chromecast: set to your registered custom receiver's application ID for Widevine (see receiver/README.md)
-        //castReceiverApplicationId: "XXXXXXXX",
+        watermark: EluvioPlayerParameters.watermark.ON,
         autoplay: EluvioPlayerParameters.autoplay.ON,
         title: EluvioPlayerParameters.title.FULLSCREEN_ONLY,
         keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
         maxBitrate: 50000,
         debugLogging: true,
         //startProgress: 0.75,
+        verifyContent: EluvioPlayerParameters.verifyContent.ON,
         hlsjsOptions: {
           //maxBufferLength: 1,
           //maxBufferSize: 0.5 * 1000 * 1000

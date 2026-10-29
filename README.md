@@ -142,7 +142,7 @@ The library includes a helpful collection of configuration options in `EluvioPla
     capLevelToPlayerSize: EluvioPlayerParameters.capLevelToPlayerSize.OFF,
     collectVideoAnalytics: EluvioPlayerParameters.collectVideoAnalytics.ON,
     allowCasting: EluvioPlayerParameters.allowCasting.ON,
-    castReceiverApplicationId: undefined,
+    castReceiverApplicationId: "2D9FB156",
     startTime: undefined,
     startProgress: undefined,
     posterUrl: undefined,
@@ -194,7 +194,7 @@ The library includes a helpful collection of configuration options in `EluvioPla
 * `allowCasting` - Whether or not the Chromecast button is offered when the player controls are shown
   * `ON (default)` - Casting available
   * `OFF` - Casting disabled
-* `castReceiverApplicationId` - Cast receiver application ID to launch. Defaults to Google's default media receiver, which plays clear DASH only. Widevine content needs a custom receiver that reads `licenseUrl` and `drm` from the load request's `customData`.
+* `castReceiverApplicationId` - Cast receiver application ID to launch. Defaults to Eluvio's receiver (see `receiver/`), which plays clear and Widevine DASH. A custom receiver must read `licenseUrl` and `drm` from the load request's `customData` to play Widevine content; Google's default media receiver plays clear DASH only.
 * `startTime` - Start the video at the specified time, in seconds
 * `startProgress` - Start the video at the specified progress amount, from 0.0 for the start of the video to 1.0 for the end of the video.
 * `backgroundColor` - Specify the background color of the player. Must be a valid option for css `background-color`
