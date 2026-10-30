@@ -142,7 +142,7 @@ The library includes a helpful collection of configuration options in `EluvioPla
     capLevelToPlayerSize: EluvioPlayerParameters.capLevelToPlayerSize.OFF,
     collectVideoAnalytics: EluvioPlayerParameters.collectVideoAnalytics.ON,
     allowCasting: EluvioPlayerParameters.allowCasting.ON,
-    castReceiverApplicationId: "2D9FB156",
+    castReceiverApplicationId: "060F9B74",
     startTime: undefined,
     startProgress: undefined,
     posterUrl: undefined,
