@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FairPlay Test</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: -apple-system, sans-serif; margin: 16px; max-width: 900px; }
+    label { display: block; margin-top: 12px; font-weight: 600; }
+    input[type=text], textarea, select { width: 100%; box-sizing: border-box; font-family: monospace; font-size: 13px; padding: 6px; }
+    textarea { height: 70px; }
+    button { margin: 12px 8px 0 0; padding: 8px 16px; }
+    video { width: 100%; background: black; margin-top: 16px; }
+    pre { background: #111; color: #ddd; padding: 8px; height: 220px; overflow: auto; font-size: 12px; white-space: pre-wrap; }
+    .hint { font-weight: 400; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h2>Eluvio Player FairPlay Test</h2>
+
+  <label>Playlist URL (.m3u8)</label>
+  <input type="text" id="playlist" />
+
+  <label>License server URL</label>
+  <input type="text" id="license" />
+
+  <label>Certificate URL <span class="hint">(or paste cert below)</span></label>
+  <input type="text" id="certUrl" />
+
+  <label>Certificate bytes <span class="hint">(base64 - optional if URL given)</span></label>
+  <textarea id="certB64"></textarea>
+
+  <label>Authorization token <span class="hint">(optional - sent as Bearer to license server; defaults to the "authorization" query param of the playlist URL)</span></label>
+  <input type="text" id="token" />
+
+  <button id="play">Play</button>
+  <button id="stop">Stop</button>
+
+  <video id="video" controls playsinline muted></video>
+  <pre id="log"></pre>
+
+  <script type="module" src="/tmp/hlsjs-fairplay.js"></script>
+</body>
+</html>
