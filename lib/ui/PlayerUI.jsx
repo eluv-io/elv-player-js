@@ -21,6 +21,7 @@ import PlayerProfileForm from "./PlayerProfileForm.jsx";
 import {ImageUrl, MergeDefaultParameters, MergeParameters} from "./Common.js";
 import * as Icons from "../static/icons/Icons";
 import Overlay from "./Overlay";
+import MobileControls from "./MobileControls";
 
 const Poster = ({player}) => {
   const [imageUrl, setImageUrl] = useState(undefined);
@@ -291,6 +292,17 @@ const PlayerUI = ({
       {
         !player ? null :
           parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB ?
+            true ?
+              <MobileControls
+              player={player}
+              playbackStarted={!!playbackStarted}
+              canPlay={canPlay}
+              recentlyInteracted={recentlyInteracted}
+              setRecentUserAction={onUserAction}
+              showOverlay={showOverlay}
+              setShowOverlay={setShowOverlay}
+              className={PlayerStyles.controls}
+            /> :
             <WebControls
               player={player}
               playbackStarted={!!playbackStarted}

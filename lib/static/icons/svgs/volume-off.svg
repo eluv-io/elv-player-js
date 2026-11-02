@@ -1,12 +1,1 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 26.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 13 12" style="enable-background:new 0 0 10.2 12;" xml:space="preserve">
-<path d="M5.3,1.4c0.1,0,0.1,0.1,0.2,0.2c0,0.1,0.1,0.2,0.1,0.2v7.4c0,0.1,0,0.2-0.1,0.2c0,0.1-0.1,0.1-0.2,0.2c-0.1,0-0.2,0.1-0.3,0
-	c-0.1,0-0.2,0-0.2-0.1L2.6,7.8H0.5c-0.1,0-0.2,0-0.3-0.1C0,7.6,0,7.5,0,7.4V3.7c0-0.1,0-0.2,0.1-0.3c0.1-0.1,0.2-0.1,0.3-0.1h2.1
-	l2.2-1.7C4.9,1.4,4.9,1.4,5,1.4C5.1,1.4,5.2,1.4,5.3,1.4L5.3,1.4z" fill="currentColor"/>
-<g>
-	<rect x="7.7" y="3.4" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -1.4992 7.4586)" width="1.2" height="4.2" fill="currentColor"/>
-	<rect x="6.1" y="4.9" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -1.5119 7.4281)" width="4.2" height="1.2" fill="currentColor"/>
-</g>
-</svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.439 5.04191L7.10794 8.37224H3.28676C2.7903 8.37224 2.38818 8.77436 2.38818 9.27082V14.6623C2.38818 15.1583 2.7903 15.5608 3.28676 15.5608H7.10794L10.439 18.8912C11.0018 19.4539 11.973 19.0585 11.973 18.2558V5.67727C11.973 4.8738 11.001 4.47992 10.439 5.04191Z" fill="white"/><path d="M20.3056 9.5498L15.5278 14.3276" stroke-width="1.19443" stroke-linecap="round" stroke-linejoin="round" stroke="white"/><path d="M15.5278 9.5498L20.3056 14.3276" stroke-width="1.19443" stroke-linecap="round" stroke-linejoin="round" stroke="white"/></svg>

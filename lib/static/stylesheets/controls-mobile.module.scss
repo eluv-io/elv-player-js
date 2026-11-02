@@ -1,0 +1,159 @@
+.container {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  color: var(--color-text);
+
+  --layer-gradient: 1;
+  --layer-title: 2;
+  --layer-controls: 3;
+  --layer-menu: 5;
+
+  --color-text: #FFF;
+  --color-text-secondary: #DDD;
+  --color-text-highlight: #5e9ff3;
+
+  --color-button: #FFF;
+
+  --color-button-background: rgba(0, 0, 0, 60%);
+
+  --color-menu-background: rgba(0, 0, 0, 75%);
+  --color-menu-background-secondary: #000;
+  --color-menu-button-active: rgba(255, 255, 255, 10%);
+  --color-menu-button-focused: rgba(255, 255, 255, 15%);
+  --color-menu-text: #EEE;
+  --color-menu-text-secondary: #AEAEAE;
+  --color-menu-text-header: #FFF;
+
+  --content-image-size: 125px;
+
+  :global(.focus-visible) {
+    outline: 1px solid var(--color-highlight) !important;
+  }
+
+  &--default-controls {
+    pointer-events: none;
+    user-select: none;
+  }
+
+  &:global(.menu-active) {
+    .bottom-controls-container {
+      z-index: var(--layer-menu);
+    }
+  }
+}
+
+.control {
+  transition: opacity 0.5s ease;
+}
+
+.autohide {
+  //cursor: none;
+
+  &:not(:has(:focus-visible)) {
+    .control {
+      opacity: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+  }
+}
+
+.button {
+  --button-size: 40px;
+  background: var(--color-button-background);
+  backdrop-filter: blur(10px);
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  min-height: var(--button-size);
+  min-width: var(--button-size);
+  max-height: var(--button-size);
+  max-width: var(--button-size);
+
+  svg {
+    height: 50%;
+    width: 50%;
+  }
+
+  &--play {
+    // Play icon needs to be pushed a few pixels right to look balanced
+    padding-left: 4px;
+  }
+
+  &--small {
+    min-height: calc(var(--button-size) * 0.75);
+    min-width: calc(var(--button-size) * 0.75);
+    max-height: calc(var(--button-size) * 0.75);
+    max-width: calc(var(--button-size) * 0.75);
+
+    svg {
+      height: 65%;
+      width: 65%;
+    }
+  }
+
+  &--large {
+    min-height: calc(var(--button-size) * 1.50);
+    min-width: calc(var(--button-size) * 1.50);
+    max-height: calc(var(--button-size) * 1.50);
+    max-width: calc(var(--button-size) * 1.50);
+  }
+}
+
+.time {
+  background: var(--color-button-background);
+  backdrop-filter: blur(10px);
+  font-size: 14px;
+  padding: 5px;
+  border-radius: 5px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.top-controls {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  padding: 10px;
+
+  .controls-row {
+    width: 100%;
+  }
+}
+
+.bottom-controls {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  padding: 10px;
+
+  .controls-row {
+    width: 100%;
+  }
+}
+
+.seek-container {
+  width: 100%;
+}

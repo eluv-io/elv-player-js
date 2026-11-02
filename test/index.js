@@ -68,6 +68,7 @@ const Initialize = async () => {
           description: "My big description",
           headers: ["pg-13"],
           image: "/public/display_image",
+          liveDVR: true,
           //type: EluvioPlayerParameters.type.LIVE,
           //posterImage: "https://demov3.net955210.contentfabric.io/s/demov3/q/hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD/meta/public/display_image"
         }
