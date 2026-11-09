@@ -1,6 +1,6 @@
 {
   "name": "@eluvio/elv-player-js",
-  "version": "2.1.38",
+  "version": "2.1.41",
   "description": "![Eluvio Logo](lib/static/images/Logo.png \"Eluvio Logo\")",
   "main": "dist/elv-player-js.es.js",
   "license": "MIT",
@@ -41,7 +41,7 @@
     "package-lock.json"
   ],
   "dependencies": {
-    "@eluvio/elv-client-js": "^4.2.15",
+    "@eluvio/elv-client-js": "^4.2.39",
     "dashjs": "^5.1.1",
     "focus-visible": "^5.2.0",
     "hls.js": "1.6.15",
