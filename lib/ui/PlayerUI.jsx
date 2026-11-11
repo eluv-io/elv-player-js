@@ -205,7 +205,7 @@ const PlayerUI = ({
     if(!recentUserAction) { return; }
     clearTimeout(clearInteractionTimeout);
 
-    setTimeout(() => {
+    clearInteractionTimeout = setTimeout(() => {
       setRecentUserAction(undefined);
     }, 1000);
   }, [recentUserAction]);

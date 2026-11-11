@@ -45,6 +45,13 @@
     user-select: none;
   }
 
+  &--with-content-info {
+    .bottom-controls {
+      background: linear-gradient(transparent, rgba(0,0,0,50%) 40%, black);
+      padding-top: 50px;
+    }
+  }
+
   &:global(.menu-active) {
     .bottom-controls-container {
       z-index: var(--layer-menu);
@@ -116,7 +123,7 @@
 .time {
   align-items: center;
   backdrop-filter: blur(10px);
-  background: var(--color-button-background);
+  background: rgba(0, 0, 0, 75%);
   border-radius: 5px;
   color: var(--color-text-secondary);
   display: flex;
@@ -188,9 +195,8 @@
 }
 
 .bottom-controls {
-  background: linear-gradient(transparent, rgba(0,0,0,50%) 40%, black);
   bottom: 0;
-  padding: 50px 10px 10px;
+  padding: 10px;
   position: absolute;
   width: 100%;
 
@@ -305,9 +311,9 @@
     align-items: center;
     border-radius: 5px;
     display: flex;
+    gap: 20px;
     justify-content: space-between;
     padding: 10px;
-    gap: 20px;
 
     &--active,
     &:focus-visible {

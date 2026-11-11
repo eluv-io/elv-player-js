@@ -60,8 +60,11 @@ export const UserActionIndicator = ({action}) => {
       <div className={CommonStyles["user-action-indicator"]}>
         <SVG
           icon={icons[action.action]}
-          aria-label={`Action indicator ${action}`}
-          className={CommonStyles["user-action-indicator-icon"]}
+          aria-label={`Action indicator ${action.action}`}
+          className={[
+            CommonStyles["user-action-indicator-icon"],
+            CommonStyles[`user-action-indicator-icon--${action.action}`]
+          ].join(" ")}
         />
       </div>
       {

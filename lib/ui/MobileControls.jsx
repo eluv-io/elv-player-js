@@ -211,6 +211,12 @@ const MobileControls = ({
 
   player.__SetControlsVisibility(!hideControls);
 
+  const hasContentInfo = !(
+    !(player.controls.GetContentInfo() || {}).title ||
+    (player.playerOptions.title === EluvioPlayerParameters.title.FULLSCREEN_ONLY && !player.controls.IsFullscreen()) ||
+    player.playerOptions.title === EluvioPlayerParameters.title.OFF
+  );
+
   return (
     <div
       onClick={playerClickHandler}
@@ -218,6 +224,7 @@ const MobileControls = ({
         S(
           "container",
           hideControls ? "autohide" : "",
+          hasContentInfo ? "container--with-content-info" : "",
           player.playerOptions.controls === EluvioPlayerParameters.controls.DEFAULT ? "container--default-controls" : "",
         ),
         className,
