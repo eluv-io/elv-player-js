@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Eluvio Cast Receiver</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+    }
+
+    cast-media-player {
+      --background-color: black;
+      --splash-image: none;
+      --logo-image: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Google Cast Web Receiver (CAF v3) for @eluvio/elv-player-js.
+
+       The sender (lib/player/Cast.js) loads a DASH URL and, for protected content, puts the license
+       server in the load request's customData:
+
+         customData: {
+           drm: "widevine",
+           licenseUrl: "<Widevine license server URL>"
+         }
+
+       This page copies those into the receiver's PlaybackConfig before the media loads. Clear content
+       has no customData and plays with the framework defaults. The fabric carries the viewer's
+       authorization in the query string of the playout and license URLs, so no credential is passed
+       separately: the TV's license request is the same request the browser player makes.
+
+       Add ?debug=1 to the registered receiver URL to show the on-screen debug overlay. -->
+  <cast-media-player></cast-media-player>
+
+  <script src="https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <script src="https://www.gstatic.com/cast/sdk/libs/devtools/debug_layer/caf_receiver_logger.js"></script>
+  <script>
+    const context = cast.framework.CastReceiverContext.getInstance();
+    const playerManager = context.getPlayerManager();
+
+    const debug = new URLSearchParams(window.location.search).has("debug");
+    const LOG_TAG = "elv-receiver";
+
+    let debugLogger;
+    if(debug) {
+      debugLogger = cast.debug.CastDebugLogger.getInstance();
+      debugLogger.loggerLevelByEvents = {
+        "cast.framework.events.category.CORE": cast.framework.LoggerLevel.INFO,
+        "cast.framework.events.EventType.MEDIA_STATUS": cast.framework.LoggerLevel.DEBUG,
+        "cast.framework.events.EventType.ERROR": cast.framework.LoggerLevel.ERROR
+      };
+      debugLogger.loggerLevelByTags = {[LOG_TAG]: cast.framework.LoggerLevel.DEBUG};
+      context.setLoggerLevel(cast.framework.LoggerLevel.DEBUG);
+
+      // The logger and its on-screen overlay only take effect once the receiver context is ready
+      context.addEventListener(cast.framework.system.EventType.READY, () => {
+        if(!debugLogger.debugOverlayElement_) {
+          debugLogger.setEnabled(true);
+          debugLogger.showDebugLogs(true);
+        }
+      });
+    }
+
+    const Log = (...args) => {
+      // eslint-disable-next-line no-console
+      console.log("[" + LOG_TAG + "]", ...args);
+      debugLogger && debugLogger.info(LOG_TAG, args.map(a => typeof a === "string" ? a : JSON.stringify(a)).join(" "));
+    };
+
+    // Apply the DRM settings the sender put in customData before the media is loaded
+    playerManager.setMessageInterceptor(
+      cast.framework.messages.MessageType.LOAD,
+      loadRequestData => {
+        const media = loadRequestData.media || {};
+        const customData = media.customData || {};
+
+        Log("load", {
+          contentId: media.contentId,
+          contentUrl: media.contentUrl,
+          contentType: media.contentType,
+          drm: customData.drm,
+          licenseUrl: customData.licenseUrl
+        });
+
+        if(!media.contentType) {
+          media.contentType = "application/dash+xml";
+        }
+
+        const playbackConfig = Object.assign(new cast.framework.PlaybackConfig(), playerManager.getPlaybackConfig());
+
+        if(customData.drm === "widevine" && customData.licenseUrl) {
+          playbackConfig.licenseUrl = customData.licenseUrl;
+          playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+        } else {
+          playbackConfig.licenseUrl = undefined;
+          playbackConfig.protectionSystem = undefined;
+        }
+
+        playerManager.setPlaybackConfig(playbackConfig);
+
+        return loadRequestData;
+      }
+    );
+
+    playerManager.addEventListener(
+      cast.framework.events.EventType.ERROR,
+      event => Log("error", {
+        detailedErrorCode: event.detailedErrorCode,
+        error: event.error,
+        reason: event.reason
+      })
+    );
+
+    playerManager.addEventListener(
+      cast.framework.events.EventType.PLAYER_LOAD_COMPLETE,
+      () => Log("load complete")
+    );
+
+    context.start();
+  </script>
+</body>
+</html>
