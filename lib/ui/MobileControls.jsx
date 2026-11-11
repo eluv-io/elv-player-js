@@ -232,7 +232,7 @@ const MobileControls = ({
                 <google-cast-launcher></google-cast-launcher>
             }
             {
-              player.airplayAvailable ? null :
+              !player.airplayAvailable ? null :
                 <IconButton
                   aria-label="Airplay"
                   onClick={() => player.video.webkitShowPlaybackTargetPicker()}
@@ -246,14 +246,17 @@ const MobileControls = ({
               onClick={() => player.controls.ToggleMuted()}
               className={S("button")}
             />
-            <MenuButton
-              label="Content Verification Menu"
-              icon={Icons.ContentBadgeIcon}
-              player={player}
-              setModalComponent={setModalComponent}
-              Hide={HideMenu}
-              MenuComponent={ContentVerificationMenu}
-            />
+            {
+              !player.controls.GetContentVerificationDetails() ? null :
+                <MenuButton
+                  label="Content Verification Menu"
+                  icon={Icons.ContentBadgeIcon}
+                  player={player}
+                  setModalComponent={setModalComponent}
+                  Hide={HideMenu}
+                  MenuComponent={ContentVerificationMenu}
+                />
+            }
             {
               !player.controls.OverlayAvailable() ? null :
                 <IconButton
