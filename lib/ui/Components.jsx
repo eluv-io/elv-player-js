@@ -364,7 +364,7 @@ export const SettingsMenuBase = ({
               aria-label="Copy Debug Info"
               onClick={() => {
                 settings[activeMenu].Update("copy_debug_info");
-                SetSubmenu(undefined);
+                Hide();
               }}
               className={classNames.option}
             >

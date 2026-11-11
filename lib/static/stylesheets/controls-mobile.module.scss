@@ -24,7 +24,7 @@
 
   --color-button: #FFF;
 
-  --color-button-background: rgba(0, 0, 0, 60%);
+  --color-button-background: rgba(0, 0, 0, 30%);
 
   --color-menu-background: rgba(0, 0, 0, 75%);
   --color-menu-background-secondary: #000;
@@ -133,6 +133,7 @@
   &__current,
   &__duration,
   &__separator {
+    font-weight: 500;
     pointer-events: none;
   }
 }
@@ -253,15 +254,15 @@
 }
 
 .menu-modal {
-  place-items: center center;
   animation: 0.25s fadein ease;
-  backdrop-filter: blur(10px);
-  background: rgba(0, 0, 0, 50%);
+  backdrop-filter: blur(15px);
+  background: rgba(0, 0, 0, 75%);
   display: grid;
   height: 100%;
   inset: 0;
   overflow: hidden auto;
-  padding: 50px 0 20px;
+  padding: 10px 0 50px;
+  place-items: center center;
   position: absolute;
   transition: opacity 0.25s ease;
   width: 100%;
@@ -306,6 +307,7 @@
     display: flex;
     justify-content: space-between;
     padding: 10px;
+    gap: 20px;
 
     &--active,
     &:focus-visible {
@@ -338,6 +340,37 @@
 }
 
 /* Player size/orientation adjustments */
+
+:global(.__eluvio-player--size-xl),
+:global(.__eluvio-player--size-lg) {
+  .container {
+    font-size: 20px;
+  }
+
+  .bottom-controls {
+    padding-inline: 20px;
+  }
+}
+
+:global(.__eluvio-player--size-sm) {
+  .button {
+    --button-size: 30px;
+  }
+
+  .controls-row__group {
+    gap: 5px;
+  }
+
+  .menu-modal {
+    padding: 10px 0 50px;
+  }
+
+  .settings {
+    &__option {
+      font-size: 14px;
+    }
+  }
+}
 
 :global(.__eluvio-player--orientation-landscape) {
   .player-buttons-container {

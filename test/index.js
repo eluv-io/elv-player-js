@@ -31,6 +31,7 @@ const Initialize = async () => {
   // First item in collection
   //versionHash = "hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD";
   objectId = "iq__3ZiTAEQarHZL7P1qSQ5W3a3gSPKj";
+  versionHash = "hq__2TZXUH586RUXTefNUnHEjwhTQNeWke1AjuH4RwVtyZjtrBFWAZDgDhoE42DmyGLK1SxxcJs3RRSD"
 
   // Ticket content
   //network = "DEMO";
@@ -67,7 +68,7 @@ const Initialize = async () => {
           subtitle: "My subtitle",
           description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
           headers: ["pg-13"],
-          image: "/public/display_image",
+          //image: "/public/display_image",
           liveDVR: true,
           //type: EluvioPlayerParameters.type.LIVE,
           //posterImage: "https://demov3.net955210.contentfabric.io/s/demov3/q/hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD/meta/public/display_image"

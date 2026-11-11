@@ -289,7 +289,7 @@ const MobileControls = ({
           aria-label={videoState.playing ? "Pause" : "Play"}
           icon={videoState.playing ? Icons.PauseIcon : Icons.PlayIcon}
           onClick={() => player.controls.TogglePlay()}
-          className={S("button", "button--large", !videoState.playing ? "button--play" : "")}
+          className={S("button", "button--large", "button--center", !videoState.playing ? "button--play" : "")}
         />
       </div>
       <div className={S("control", "bottom-controls")}>
