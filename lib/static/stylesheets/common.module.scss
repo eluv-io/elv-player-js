@@ -438,16 +438,6 @@
     justify-content: flex-start;
   }
 
-  .menu-option-back-icon {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    margin-right: 10px;
-
-    svg {
-      height: 10px;
-    }
-  }
 
   &:hover,
   &:focus-visible,
@@ -457,8 +447,19 @@
     outline: 0!important;
   }
 
-  &.menu-option-active {
+  &.menu-option--active {
     background: var(--color-menu-button-active);
+  }
+}
+
+.menu-option-back-icon {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-right: 10px;
+
+  svg {
+    height: 10px;
   }
 }
 
@@ -683,7 +684,6 @@
   }
 
   .verification-menu {
-    max-height: calc(0.5 * var(--portal-height))!important;
     overflow-y: auto;
 
     &__inline-icon,
@@ -727,10 +727,15 @@
 
     &__detail-label,
     &__detail-value {
-      font-size: 10px;
+      font-size: 10px!important;
+
+      * {
+        font-size: 10px!important;
+      }
     }
 
     &__detail-copy {
+      font-size: 10px;
       height: 15px;
     }
   }

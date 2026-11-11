@@ -226,6 +226,9 @@ const PlayerUI = ({
     player.controls.IsRotatable() &&
     allowRotation;
 
+  const actualOrientation = !shouldRotate ? orientation :
+    (orientation === "landscape" ? "portrait" : "landscape");
+
   return (
     <div
       role="complementary"
@@ -236,7 +239,12 @@ const PlayerUI = ({
         "--portal-width": `${shouldRotate ? dimensions.height : dimensions.width}px`,
         "--portal-height": `${shouldRotate ? dimensions.width : dimensions.height}px`
       }}
-      className={[PlayerStyles["player-container"], shouldRotate ? PlayerStyles["player-container--rotated"] : "", `__eluvio-player--size-${size}`, `__eluvio-player--orientation-${orientation}`].join(" ")}
+      className={[
+        PlayerStyles["player-container"],
+        shouldRotate ? PlayerStyles["player-container--rotated"] : "",
+        `__eluvio-player--size-${size}`,
+        `__eluvio-player--orientation-${actualOrientation}`
+      ].join(" ")}
     >
       {
         !showPlayerProfileForm || !playerInitialized ? null :

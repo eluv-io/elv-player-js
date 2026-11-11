@@ -63,9 +63,9 @@ const Initialize = async () => {
           //offerings: ["none", "some"]
         },
         contentInfo: {
-          title: "My Big Title",
+          title: "Los Angeles Lakers vs Boston Celtics",
           subtitle: "My subtitle",
-          description: "My big description",
+          description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
           headers: ["pg-13"],
           image: "/public/display_image",
           liveDVR: true,
@@ -82,7 +82,7 @@ const Initialize = async () => {
         controls: EluvioPlayerParameters.controls.AUTO_HIDE,
         watermark: EluvioPlayerParameters.watermark.ON,
         autoplay: EluvioPlayerParameters.autoplay.ON,
-        title: EluvioPlayerParameters.title.FULLSCREEN_ONLY,
+        title: EluvioPlayerParameters.title.ON,
         keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
         maxBitrate: 50000,
         debugLogging: true,

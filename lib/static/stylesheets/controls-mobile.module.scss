@@ -1,7 +1,9 @@
 .container {
   align-items: center;
   bottom: 0;
+  color: var(--color-text);
   display: flex;
+  font-size: 16px;
   height: 100%;
   justify-content: center;
   left: 0;
@@ -9,15 +11,15 @@
   right: 0;
   top: 0;
   width: 100%;
-  color: var(--color-text);
 
   --layer-gradient: 1;
   --layer-title: 2;
   --layer-controls: 3;
+  --layer-top-controls: 4;
   --layer-menu: 5;
 
   --color-text: #FFF;
-  --color-text-secondary: #DDD;
+  --color-text-secondary: #999;
   --color-text-highlight: #5e9ff3;
 
   --color-button: #FFF;
@@ -55,7 +57,7 @@
 }
 
 .autohide {
-  //cursor: none;
+  cursor: none;
 
   &:not(:has(:focus-visible)) {
     .control {
@@ -68,17 +70,18 @@
 
 .button {
   --button-size: 40px;
-  background: var(--color-button-background);
-  backdrop-filter: blur(10px);
-  border-radius: 100%;
-  display: flex;
+
   align-items: center;
-  justify-content: center;
+  backdrop-filter: blur(10px);
+  background: var(--color-button-background);
+  border-radius: 100%;
   color: white;
-  min-height: var(--button-size);
-  min-width: var(--button-size);
+  display: flex;
+  justify-content: center;
   max-height: var(--button-size);
   max-width: var(--button-size);
+  min-height: var(--button-size);
+  min-width: var(--button-size);
 
   svg {
     height: 50%;
@@ -86,57 +89,97 @@
   }
 
   &--play {
-    // Play icon needs to be pushed a few pixels right to look balanced
+    /* Play icon needs to be pushed a few pixels right to look balanced */
     padding-left: 4px;
   }
 
   &--small {
-    min-height: calc(var(--button-size) * 0.75);
-    min-width: calc(var(--button-size) * 0.75);
     max-height: calc(var(--button-size) * 0.75);
     max-width: calc(var(--button-size) * 0.75);
+    min-height: calc(var(--button-size) * 0.75);
+    min-width: calc(var(--button-size) * 0.75);
 
     svg {
-      height: 65%;
-      width: 65%;
+      height: 60%;
+      width: 60%;
     }
   }
 
   &--large {
-    min-height: calc(var(--button-size) * 1.50);
-    min-width: calc(var(--button-size) * 1.50);
     max-height: calc(var(--button-size) * 1.50);
     max-width: calc(var(--button-size) * 1.50);
+    min-height: calc(var(--button-size) * 1.50);
+    min-width: calc(var(--button-size) * 1.50);
   }
 }
 
 .time {
-  background: var(--color-button-background);
+  align-items: center;
   backdrop-filter: blur(10px);
-  font-size: 14px;
-  padding: 5px;
+  background: var(--color-button-background);
   border-radius: 5px;
+  color: var(--color-text-secondary);
+  display: flex;
+  font-size: 0.75em;
+  font-variant-numeric: tabular-nums;
+  gap: 0.35em;
+  padding: 5px;
   user-select: none;
-  pointer-events: none;
+
+  &__current {
+    color: var(--color-text);
+  }
+
+  &__current,
+  &__duration,
+  &__separator {
+    pointer-events: none;
+  }
+}
+
+.live-indicator {
+  background: #F00;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 10px;
+  text-transform: uppercase;
+  transition: opacity 0.25s ease, background 0.15s ease, color 0.15s ease;
+  user-select: none;
+
+  &--faded {
+    background: #333;
+    opacity: 0.75;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.center-controls {
+  margin-bottom: 20px;
+  z-index: var(--layer-top-controls);
 }
 
 .controls-row {
-  display: flex;
   align-items: center;
+  display: flex;
   justify-content: space-between;
 
   &__group {
-    display: flex;
     align-items: center;
+    display: flex;
     gap: 10px;
   }
 }
 
 .top-controls {
-  width: 100%;
-  position: absolute;
-  top: 0;
   padding: 10px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: var(--layer-top-controls);
 
   .controls-row {
     width: 100%;
@@ -144,10 +187,11 @@
 }
 
 .bottom-controls {
-  width: 100%;
-  position: absolute;
+  background: linear-gradient(transparent, rgba(0,0,0,50%) 40%, black);
   bottom: 0;
-  padding: 10px;
+  padding: 50px 10px 10px;
+  position: absolute;
+  width: 100%;
 
   .controls-row {
     width: 100%;
@@ -156,4 +200,164 @@
 
 .seek-container {
   width: 100%;
+}
+
+
+.info {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  pointer-events: none;
+  user-select: none;
+
+  &__image-container {
+    height: 50px;
+    min-width: 50px;
+    width: 50px;
+  }
+
+  &__image {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    color: var(--color-text);
+    font-size: 1.2em;
+  }
+
+  &__subtitle,
+  &__description,
+  &__header {
+    color: var(--color-text-secondary);
+  }
+
+  &__subtitle {
+    font-size: 0.9em;
+  }
+
+  &__header,
+  &__description {
+    font-size: 0.75em;
+  }
+
+  &__description {
+    padding: 5px 0;
+  }
+}
+
+.menu-modal {
+  place-items: center center;
+  animation: 0.25s fadein ease;
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 50%);
+  display: grid;
+  height: 100%;
+  inset: 0;
+  overflow: hidden auto;
+  padding: 50px 0 20px;
+  position: absolute;
+  transition: opacity 0.25s ease;
+  width: 100%;
+  z-index: var(--layer-menu);
+
+  &--hiding {
+    backdrop-filter: unset;
+    opacity: 0;
+  }
+
+  &__close {
+    backdrop-filter: unset;
+    background: transparent;
+    position: absolute;
+    right: 10px;
+    top: 15px;
+  }
+}
+
+.settings {
+  display: grid;
+  max-height: 100%;
+  place-items: center center;
+
+  * {
+    transition: all 0.25s ease;
+  }
+
+  &__menu {
+    animation: 0.25s fadein ease-in;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: max-content;
+    min-width: 300px;
+    width: max-content;
+  }
+
+  &__option {
+    align-items: center;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+
+    &--active,
+    &:focus-visible {
+      background: var(--color-menu-background);
+    }
+
+    &--back {
+      color: var(--color-text-secondary);
+    }
+  }
+
+  &__option-icon {
+    color: var(--color-text-secondary);
+  }
+}
+
+.verification-menu {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  position: relative;
+  width: max-content;
+
+  & > div {
+    max-height: 100%!important;
+    max-width: var(--portal-width)!important;
+    position: initial;
+  }
+}
+
+/* Player size/orientation adjustments */
+
+:global(.__eluvio-player--orientation-landscape) {
+  .player-buttons-container {
+    justify-content: flex-end;
+  }
+}
+
+:global(.__eluvio-player--orientation-portrait) {
+  .player-buttons-container {
+    justify-content: flex-end;
+    padding-top: 5px;
+  }
+
+  .player-buttons {
+    flex-direction: column;
+  }
+}
+
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

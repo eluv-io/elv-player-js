@@ -270,7 +270,12 @@ export const VolumeControls = ({player, videoState}) => {
   );
 };
 
-export const SettingsMenu = ({player, Hide, className=""}) => {
+export const SettingsMenuBase = ({
+  player,
+  Hide,
+  classNames={base: "", menu: "", submenu: "", option: ""},
+  ...props
+}) => {
   const [activeMenu, setActiveMenu] = useState(undefined);
   const [options, setOptions] = useState(undefined);
   const menuRef = createRef();
@@ -342,11 +347,11 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
   let content;
   if(activeMenu) {
     content = (
-      <div key="submenu" role="menu" className={`${CommonStyles["menu"]} ${CommonStyles["submenu"]} ${className}`}>
+      <div key="submenu" role="menu" className={`${classNames.menu} ${classNames.submenu}`}>
         <button
           onClick={() => SetSubmenu(undefined)}
           aria-label="Back to settings menu"
-          className={`${CommonStyles["menu-option"]} ${CommonStyles["menu-option-back"]}`}
+          className={`${classNames.option} ${classNames.back}`}
         >
           <div dangerouslySetInnerHTML={{__html: Icons.LeftArrowIcon}} className={CommonStyles["menu-option-back-icon"]} />
           <div>{ settings[activeMenu].label }</div>
@@ -361,7 +366,7 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
                 settings[activeMenu].Update("copy_debug_info");
                 SetSubmenu(undefined);
               }}
-              className={CommonStyles["menu-option"]}
+              className={classNames.option}
             >
               Copy Debug Info
             </button> :
@@ -376,10 +381,10 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
                   settings[activeMenu].Update(option.index);
                   SetSubmenu(undefined);
                 }}
-                className={`${CommonStyles["menu-option"]} ${option.active ? CommonStyles["menu-option-active"] : ""}`}
+                className={`${classNames.option} ${option.active ? classNames.activeOption : ""}`}
               >
                 {option.label || ""}
-                {option.active ? <SVG icon={Icons.CheckmarkIcon} className={CommonStyles["menu-option-icon"]}/> : null}
+                {option.active ? <SVG icon={Icons.CheckmarkIcon} className={classNames.optionIcon}/> : null}
               </button>
             )
         }
@@ -387,16 +392,16 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
     );
   } else {
     content = (
-      <div key="menu" role="menu" className={`${CommonStyles["menu"]} ${className}`}>
+      <div key="menu" role="menu" className={`${classNames.menu}`}>
         {
           !options.hasQualityOptions ? null :
             <button
               autoFocus role="menuitem"
               onClick={() => SetSubmenu("quality")}
-              className={CommonStyles["menu-option"]}
+              className={classNames.option}
             >
               {`${settings.quality.label}: ${(options.quality.active && options.quality.active.activeLabel) || ""}`}
-              <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
+              <SVG icon={Icons.ChevronRightIcon} className={classNames.optionIcon}/>
             </button>
         }
         {
@@ -405,10 +410,10 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
               autoFocus={!options.hasQualityOptions}
               role="menuitem"
               onClick={() => SetSubmenu("audio")}
-              className={CommonStyles["menu-option"]}
+              className={classNames.option}
             >
               {`${settings.audio.label}: ${(options.audio.active && options.audio.active.label) || ""}`}
-              <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
+              <SVG icon={Icons.ChevronRightIcon} className={classNames.optionIcon}/>
             </button>
         }
         {
@@ -417,10 +422,10 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
               autoFocus={!options.hasQualityOptions && !options.hasAudioOptions}
               role="menuitem"
               onClick={() => SetSubmenu("text")}
-              className={CommonStyles["menu-option"]}
+              className={classNames.option}
             >
               {`${settings.text.label}: ${(options.text.active && options.text.active.label) || ""}`}
-              <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
+              <SVG icon={Icons.ChevronRightIcon} className={classNames.optionIcon}/>
             </button>
         }
         {
@@ -429,10 +434,10 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
               autoFocus={!options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions}
               role="menuitem"
               onClick={() => SetSubmenu("profile")}
-              className={CommonStyles["menu-option"]}
+              className={classNames.option}
             >
               {`${settings.profile.label}: ${(options.profile.active && options.profile.active.label) || ""}`}
-              <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
+              <SVG icon={Icons.ChevronRightIcon} className={classNames.optionIcon}/>
             </button>
         }
         {
@@ -441,29 +446,47 @@ export const SettingsMenu = ({player, Hide, className=""}) => {
               autoFocus={!options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions && !options.hasProfileOptons}
               role="menuitem"
               onClick={() => SetSubmenu("rate")}
-              className={CommonStyles["menu-option"]}
+              className={classNames.option}
             >
               {`${settings.rate.label}: ${(options.rate.active && options.rate.active.label) || ""}`}
-              <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
+              <SVG icon={Icons.ChevronRightIcon} className={classNames.optionIcon}/>
             </button>
         }
         <button
           autoFocus={!options.hasRateOptions && !options.hasQualityOptions && !options.hasAudioOptions && !options.hasTextOptions && !options.hasProfileOptons}
           role="button"
           onClick={() => SetSubmenu("advanced")}
-          className={CommonStyles["menu-option"]}
+          className={classNames.option}
         >
           { settings.advanced.label }
-          <SVG icon={Icons.ChevronRightIcon} className={CommonStyles["menu-option-icon"]}/>
+          <SVG icon={Icons.ChevronRightIcon} className={classNames.optionIcon}/>
         </button>
       </div>
     );
   }
 
   return (
-    <div ref={menuRef}>
+    <div {...props} ref={menuRef} className={classNames.base || ""}>
       {content}
     </div>
+  );
+};
+
+export const SettingsMenu = ({player, Hide, className=""}) => {
+  return (
+    <SettingsMenuBase
+      player={player}
+      Hide={Hide}
+      classNames={{
+        base: className,
+        menu: CommonStyles["menu"],
+        submenu: CommonStyles["submenu"],
+        option: CommonStyles["menu-option"],
+        activeOption: CommonStyles["menu-option--active"],
+        optionIcon: CommonStyles["menu-option-icon"],
+        back: CommonStyles["menu-option-back"]
+      }}
+    />
   );
 };
 
@@ -677,8 +700,8 @@ export const ContentVerificationMenu = ({player, Hide, className=""}) => {
   }
 
   return (
-    <div ref={menuRef}>
-      <div key="menu" role="menu" className={`${CommonStyles["menu"]} ${CommonStyles["verification-menu"]} ${showDetails ? CommonStyles["verification-menu--details"] : ""} ${className}`}>
+    <div ref={menuRef} className={className}>
+      <div key="menu" role="menu" className={`${CommonStyles["menu"]} ${CommonStyles["verification-menu"]} ${showDetails ? CommonStyles["verification-menu--details"] : ""}`}>
         { content }
       </div>
     </div>

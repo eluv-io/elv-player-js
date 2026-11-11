@@ -8,10 +8,9 @@ import "focus-visible";
 import {ImageUrl, PlayerClick, Time} from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 
-import EluvioLogo from "../static/images/Logo.png";
-import {ContentVerificationMenu, DVRToggle, SeekBar, SettingsMenu, VolumeControls} from "./Components.jsx";
+import {ContentVerificationMenu as VerificationMenuComponent, DVRToggle, SeekBar, SettingsMenuBase} from "./Components.jsx";
 
-const S = (...classes) => classes.map(c => ControlStyles[c] || "").join(" ");
+const S = (...classes) => classes.map(c => ControlStyles[c] || "").filter(c => c).join(" ");
 
 export const IconButton = ({icon, className="", ...props}) => {
   return (
@@ -28,7 +27,7 @@ const TimeIndicator = ({player, videoState}) => {
     return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
 
-  if(player.isLive && !player.controls.IsDVRAvailable()) {
+  if(player.controls.IsLive() && !player.controls.IsDVRAvailable()) {
     return (
       <div className={S("live-indicator")}>
         Live
@@ -39,81 +38,76 @@ const TimeIndicator = ({player, videoState}) => {
   return (
     <div className={S("time")}>
       {
-        !player.isLive || !player.controls.IsDVRAvailable() ? null :
+        !player.controls.IsLive() || !player.controls.IsDVRAvailable() ? null :
           <DVRToggle player={player} />
       }
       {
-        player.isLive && !player.behindLiveEdge ? null :
-          `${Time(currentTime, videoState.duration)} / `
+        player.controls.IsLive() && !player.behindLiveEdge ? null :
+          <>
+            <div className={S("time__current")}>
+              {Time(currentTime, videoState.duration)}
+            </div>
+            <div className={S("time__separator")}>
+              /
+            </div>
+          </>
+
       }
       {
-        (player.isLive && !player.dvrEnabled) ? null :
-          Time(videoState.duration, videoState.duration)
+        (player.controls.IsLive() && !player.controls.IsDVRAvailable()) ? null :
+          <div className={S("time__duration")}>
+            {Time(videoState.duration, videoState.duration)}
+          </div>
       }
     </div>
   );
 };
 
-const CollectionControls = ({player}) => {
-  const collectionInfo = player.controls.GetCollectionInfo();
-
-  if(!collectionInfo || collectionInfo.mediaLength === 0 || !collectionInfo.isPlaylist) { return null; }
-
-  const previousMedia = collectionInfo.content[collectionInfo.mediaIndex - 1];
-  const nextMedia = collectionInfo.content[collectionInfo.mediaIndex + 1];
-
-  const playerReady = player.controls.IsReady();
+const ContentVerificationMenu = ({player, Hide}) => {
   return (
-      <>
-        {
-          !previousMedia ? null :
-            <div
-              key={`media-previous-${collectionInfo.mediaIndex}`}
-              className={`${ControlStyles["collection-button-container"]} ${!playerReady ? ControlStyles["collection-button-container--loading"] : ""}`}
-            >
-              <IconButton aria-label={`Play Previous: ${previousMedia.title}`} disabled={!playerReady} icon={Icons.PreviousTrackIcon} onClick={() => player.controls.CollectionPlayPrevious()} />
-              <div className={ControlStyles["collection-button-text"]}>{ previousMedia.title }</div>
-            </div>
-        }
-        {
-          !nextMedia ? null :
-            <div
-              key={`media-next-${collectionInfo.mediaIndex}`}
-              className={`${ControlStyles["collection-button-container"]} ${!playerReady ? ControlStyles["collection-button-container--loading"] : ""}`}
-            >
-              <IconButton aria-label={`Play Next: ${nextMedia.title}`} disabled={!playerReady} icon={Icons.NextTrackIcon} onClick={() => player.controls.CollectionPlayNext()} />
-              <div className={ControlStyles["collection-button-text"]}>{ nextMedia.title }</div>
-            </div>
-        }
-      </>
+    <VerificationMenuComponent
+      player={player}
+      Hide={Hide}
+      className={S("verification-menu")}
+    />
   );
 };
 
-const MenuButton = ({label, icon, player, MenuComponent, className=""}) => {
-  const [show, setShow] = useState(false);
+const SettingsMenu = ({player, Hide}) => {
+  return (
+    <SettingsMenuBase
+      player={player}
+      Hide={Hide}
+      classNames={{
+        base: S("settings"),
+        menu: S("settings__menu"),
+        submenu: S("settings__submenu"),
+        option: S("settings__option"),
+        activeOption: S("settings__option--active"),
+        optionIcon: S("settings__option-icon"),
+        back: S("settings__option--back"),
+      }}
+    />
+  );
+};
 
+const MenuButton = ({label, icon, player, setModalComponent, Hide, MenuComponent, className=""}) => {
   return (
     <div className={S("menu-button-container")}>
       <IconButton
-        aria-label={show ? `Hide ${label} Menu` : label}
+        aria-label={label}
         aria-haspopup
         icon={icon}
-        onClick={() => {
-          player.controls.__ToggleMenu(!show);
-          setShow(!show);
-        }}
+        onClick={() =>
+          setModalComponent(
+            <MenuComponent
+              player={player}
+              Hide={Hide}
+            />
+          )
+        }
         className={[S("button"), className].join(" ")}
       />
-      {
-        !show ? null :
-          <MenuComponent
-            player={player}
-            Hide={() => {
-              setShow(false);
-              player.controls.__ToggleMenu(false);
-            }}
-          />
-      }
     </div>
   );
 };
@@ -141,69 +135,35 @@ const ContentInfo = ({player}) => {
   }
 
   return (
-    <div className={ControlStyles["info-container"]}>
+    <div className={ControlStyles["info"]}>
       {
         !imageUrl ? null :
-          <div className={ControlStyles["info-image-container"]}>
-            <img src={imageUrl} alt="Image" className={ControlStyles["info-image"]} />
+          <div className={ControlStyles["info__image-container"]}>
+            <img src={imageUrl} alt="Image" className={ControlStyles["info__image"]} />
           </div>
       }
-      <div className={ControlStyles["info-text"]}>
+      <div className={ControlStyles["info__text"]}>
         {
           headers.length === 0 ? null :
-            <div className={ControlStyles["info-headers"]}>
+            <div className={ControlStyles["info__headers"]}>
               {headers.map((text, index) =>
-                <div key={`header-${index}`} className={ControlStyles["info-header"]}>
+                <div key={`header-${index}`} className={ControlStyles["info__header"]}>
                   { text }
                 </div>
               )}
             </div>
         }
-        { !title ? null : <div className={ControlStyles["info-title"]}>{title}</div> }
-        { !subtitle ? null : <div className={ControlStyles["info-subtitle"]}>{subtitle}</div> }
-        { !description ? null : <div className={ControlStyles["info-description"]}>{description}</div> }
+        { !title ? null : <div className={ControlStyles["info__title"]}>{title}</div> }
+        { !subtitle ? null : <div className={ControlStyles["info__subtitle"]}>{subtitle}</div> }
+        { !description ? null : <div className={ControlStyles["info__description"]}>{description}</div> }
       </div>
     </div>
-  );
-};
-
-const ContentVerificationControls = ({player}) => {
-  const [contentVerified, setContentVerified] = useState(false);
-
-  useEffect(() => {
-    const UpdateVerification = () => player && player.controls && setContentVerified(player.controls.ContentVerified());
-
-    UpdateVerification();
-
-    const disposeSettingsListener = player.controls && player.controls.RegisterSettingsListener(UpdateVerification);
-
-    return () => disposeSettingsListener && disposeSettingsListener();
-  }, []);
-
-  if(!contentVerified) {
-    return null;
-  }
-
-  return (
-    <>
-      <div className={ControlStyles["content-verified-badge"]}>
-        VERIFIED
-      </div>
-      <MenuButton
-        label="Content Verification Menu"
-        icon={Icons.ContentBadgeIcon}
-        player={player}
-        MenuComponent={ContentVerificationMenu}
-        className={ControlStyles["content-verification-menu-button"]}
-      />
-    </>
   );
 };
 
 const MobileControls = ({
   player,
   playbackStarted,
-  canPlay,
   recentlyInteracted,
   setRecentUserAction,
   className=""
@@ -211,6 +171,21 @@ const MobileControls = ({
   const [videoState, setVideoState] = useState(undefined);
   const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
   const [menuVisible, setMenuVisible] = useState(player.controls.IsMenuVisible());
+  const [menuHiding, setMenuHiding] = useState(false);
+  const [modalComponent, setModalComponent] = useState(undefined);
+
+  const HideMenu = () => {
+    setMenuHiding(true);
+
+    setTimeout(() => {
+      setMenuHiding(false);
+      setModalComponent(false);
+    }, 250);
+  };
+
+  useEffect(() => {
+    player.controls.__ToggleMenu(!!modalComponent);
+  }, [!!modalComponent]);
 
   useEffect(() => {
     if(!player.controls) { return; }
@@ -242,7 +217,7 @@ const MobileControls = ({
       className={[
         S(
           "container",
-          !showUI ? "autohide" : "",
+          hideControls ? "autohide" : "",
           player.playerOptions.controls === EluvioPlayerParameters.controls.DEFAULT ? "container--default-controls" : "",
         ),
         className,
@@ -250,16 +225,12 @@ const MobileControls = ({
       ].join(" ")}
     >
       <div className={S("control", "top-controls")}>
-        <div className={S("controls-row")}>
-          <div className={S("controls-row__group")}>
-
-          </div>
-          <div className={S("controls-row__group")}>
+        <div className={S("controls-row", "player-buttons-container")}>
+          <div className={S("controls-row__group", "player-buttons")}>
             {
               !player.chromecastAvailable ? null :
                 <google-cast-launcher></google-cast-launcher>
             }
-
             {
               player.airplayAvailable ? null :
                 <IconButton
@@ -269,14 +240,22 @@ const MobileControls = ({
                   className={S("button")}
                 />
             }
+            <IconButton
+              aria-label={videoState.muted ? "Unmute" : "Mute"}
+              icon={videoState.muted ? Icons.MutedIcon : Icons.VolumeHighIcon}
+              onClick={() => player.controls.ToggleMuted()}
+              className={S("button")}
+            />
             <MenuButton
               label="Content Verification Menu"
               icon={Icons.ContentBadgeIcon}
               player={player}
+              setModalComponent={setModalComponent}
+              Hide={HideMenu}
               MenuComponent={ContentVerificationMenu}
             />
             {
-              player.controls.OverlayAvailable() ? null :
+              !player.controls.OverlayAvailable() ? null :
                 <IconButton
                   aria-label="Toggle Overlay"
                   onClick={() => player.controls.ToggleOverlayVisibility()}
@@ -285,21 +264,12 @@ const MobileControls = ({
                 />
             }
             {
-              player.controls.IsRotatable() ? null :
+              !player.controls.IsRotatable() ? null :
                 <IconButton
                   aria-label="Rotate Video"
                   icon={Icons.RotateIcon}
                   onClick={() => player.controls.SetAllowRotation(!player.controls.AllowRotation())}
                   className={S("button")}
-                />
-            }
-            {
-              !player.controls.GetOptions().hasAnyOptions ? null :
-                <MenuButton
-                  label="Settings Menu"
-                  icon={Icons.SettingsIcon}
-                  player={player}
-                  MenuComponent={SettingsMenu}
                 />
             }
             <IconButton
@@ -320,28 +290,54 @@ const MobileControls = ({
         />
       </div>
       <div className={S("control", "bottom-controls")}>
-        <div className={S("controls-row")}>
-          <div className={S("controls-row__group")}>
-            <TimeIndicator player={player} videoState={videoState}/>
-          </div>
-          <div className={S("controls-row__group")}>
-            <IconButton
-              aria-label={videoState.playing ? "Pause" : "Play"}
-              icon={videoState.muted ? Icons.MutedIcon : Icons.VolumeHighIcon}
-              onClick={() => player.controls.ToggleMuted()}
-              className={S("button", !videoState.playing ? "button--play" : "")}
-            />
-          </div>
-        </div>
+        <ContentInfo player={player}/>
         <div className={S("seek-container")}>
           <SeekBar
             player={player}
             videoState={videoState}
             setRecentUserAction={setRecentUserAction}
-            className={S("seeke")}
+            className={S("seek")}
           />
         </div>
+        <div className={S("controls-row")}>
+          <div className={S("controls-row__group")}>
+            <TimeIndicator player={player} videoState={videoState}/>
+          </div>
+          <div className={S("controls-row__group")}>
+            {
+              !player.controls.GetOptions().hasAnyOptions ? null :
+                <MenuButton
+                  label="Settings Menu"
+                  icon={Icons.MenuIcon}
+                  player={player}
+                  setModalComponent={setModalComponent}
+                  Hide={HideMenu}
+                  MenuComponent={SettingsMenu}
+                  className={S("button")}
+                />
+            }
+          </div>
+        </div>
       </div>
+      {
+        !modalComponent ? null :
+          <div
+            onClick={event => {
+              if(event.currentTarget === event.target) {
+                HideMenu();
+              }
+            }}
+            className={S("menu-modal", menuHiding ? "menu-modal--hiding" : "")}
+          >
+            {modalComponent}
+            <IconButton
+              aria-label="Close Menu"
+              icon={Icons.CloseIcon}
+              onClick={HideMenu}
+              className={S("button", "menu-modal__close")}
+            />
+          </div>
+      }
     </div>
   );
 };
