@@ -8,16 +8,35 @@
   --layer-video: 1;
   --layer-error: 4;
   --layer-controls: 5;
+  --color-highlight: #3784eb;
+  --color-error: #FFF;
 
+  scrollbar-color: #343434 #141414;
+  scrollbar-width: thin;
   font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   height: 100%;
   inset: 0;
   overflow: hidden;
   position: absolute;
   width: 100%;
+  -webkit-overflow-scrolling: touch;
 
-  --color-highlight: #3784eb;
-  --color-error: #FFF;
+  ::-webkit-scrollbar {
+    opacity: 1;
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #333;
+    opacity: 1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 100px;
+    opacity: 1;
+  }
+
 
   &--rotated {
     height: 100vw;

@@ -332,7 +332,7 @@
 
   & > div {
     max-height: 100%!important;
-    max-width: var(--portal-width)!important;
+    max-width: calc(var(--portal-width) - 10px)!important;
     position: initial;
   }
 }
