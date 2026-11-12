@@ -301,14 +301,12 @@ const MobileControls = ({
       </div>
       <div className={S("control", "bottom-controls")}>
         <ContentInfo player={player}/>
-        <div className={S("seek-container")}>
-          <SeekBar
-            player={player}
-            videoState={videoState}
-            setRecentUserAction={setRecentUserAction}
-            className={S("seek")}
-          />
-        </div>
+        <SeekBar
+          player={player}
+          videoState={videoState}
+          setRecentUserAction={setRecentUserAction}
+          className={S("seek")}
+        />
         <div className={S("controls-row")}>
           <div className={S("controls-row__group")}>
             <TimeIndicator player={player} videoState={videoState}/>

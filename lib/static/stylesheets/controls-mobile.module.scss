@@ -241,8 +241,7 @@
   }
 
   &__subtitle,
-  &__description,
-  &__header {
+  &__description {
     color: var(--color-text-secondary);
   }
 
@@ -256,13 +255,34 @@
   }
 
   &__headers {
-    display: flex;
     align-items: center;
+    display: flex;
     gap: 0.75em;
+  }
+
+  &__header {
+    text-shadow: 0 0 1px black;
   }
 
   &__description {
     padding: 5px 0;
+  }
+}
+
+.seek {
+  margin-bottom: 3px;
+
+  /* Increased specificity to ensure variables are overriden */
+  &.seek {
+    --color-seek-active-focused: white;
+    --color-seek-active: white;
+    --color-seek-indicator: white;
+    --color-seek-background: rgba(255, 255, 255, 20%);
+    --progress-height: 4px;
+  }
+
+  progress {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 10%);
   }
 }
 
@@ -366,8 +386,10 @@
 }
 
 :global(.__eluvio-player--size-sm) {
-  .button {
-    --button-size: 30px;
+  :global(.__eluvio-player--orientation-landscape) {
+    .button {
+      --button-size: 30px;
+    }
   }
 
   .controls-row__group {
