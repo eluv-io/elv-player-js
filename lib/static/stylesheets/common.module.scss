@@ -96,6 +96,7 @@
   transition: height 0.25s ease, opacity 0.25s ease, border-radius 1.25s ease, filter 0.25s ease;
   transition-delay: 0.25s;
   width: 100%;
+  z-index: var(--layer-controls);
 
   * {
     transition: height 0.25s ease, width 0.25s ease, opacity 0.25s ease, border-radius 0.25s ease;
@@ -177,8 +178,7 @@
     }
 
     .seek-playhead,
-    .seek-buffer,
-    .seek-input {
+    .seek-buffer {
       height: var(--progress-height-expanded);
       transition-delay: unset;
     }
@@ -268,8 +268,9 @@
 .seek-input {
   appearance: none;
   cursor: pointer;
+  height: 100%;
   width: 100%;
-  z-index: 10000;
+  z-index: 1;
 
   &::-webkit-slider-runnable-track {
     background: transparent;
@@ -802,7 +803,6 @@
   .seek-container {
     --thumbnail-width: 150px;
 
-    height: calc(var(--progress-height-expanded) + 5px);
     position: relative;
 
     &:hover,
@@ -811,8 +811,7 @@
     &:focus-visible,
     &:has(:focus-visible) {
       .seek-playhead,
-      .seek-buffer,
-      .seek-input {
+      .seek-buffer {
         border-radius: 10px;
         height: var(--progress-height-expanded-mobile);
       }

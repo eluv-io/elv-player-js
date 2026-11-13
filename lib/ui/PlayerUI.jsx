@@ -248,7 +248,7 @@ const PlayerUI = ({
     >
       {
         !showPlayerProfileForm || !playerInitialized ? null :
-          <PlayerProfileForm player={player} Close={() => player.controls.HidePlayerProfileForm()} />
+          <PlayerProfileForm player={player} Close={() => player.controls.HidePlayerProfileForm()}/>
       }
       <video
         playsInline
@@ -264,29 +264,29 @@ const PlayerUI = ({
         !posterReady ||
         !canPlay ||
         (playbackStarted && !parameters.playerOptions.permanentPoster) ? null :
-          <Poster player={player} />
+          <Poster player={player}/>
       }
       {
         !showOverlay ? null :
-          <Overlay player={player} />
+          <Overlay player={player}/>
       }
       {
         playerInitialized || errorMessage || !parameters.playerOptions.showLoader ? null :
           <div className={PlayerStyles["spinner-container"]}>
-            <Spinner className={PlayerStyles["spinner"]} />
+            <Spinner className={PlayerStyles["spinner"]}/>
           </div>
       }
       {
         !casting ? null :
           <div className={PlayerStyles["cast-indicator-container"]}>
-            <div dangerouslySetInnerHTML={{ __html: Icons.ChromecastIcon }} />
+            <div dangerouslySetInnerHTML={{__html: Icons.ChromecastIcon}}/>
           </div>
       }
       {
         !errorMessage ? null :
           <div className={PlayerStyles["error-message"]}>
             <div className={PlayerStyles["error-message__message"]}>
-              { errorMessage }
+              {errorMessage}
             </div>
             <button
               className={PlayerStyles["error-message__copy-debug-button"]}
@@ -302,25 +302,25 @@ const PlayerUI = ({
           parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB ?
             true ?
               <MobileControls
-              player={player}
-              playbackStarted={!!playbackStarted}
-              canPlay={canPlay}
-              recentlyInteracted={recentlyInteracted}
-              setRecentUserAction={onUserAction}
-              showOverlay={showOverlay}
-              setShowOverlay={setShowOverlay}
-              className={PlayerStyles.controls}
-            /> :
-            <WebControls
-              player={player}
-              playbackStarted={!!playbackStarted}
-              canPlay={canPlay}
-              recentlyInteracted={recentlyInteracted}
-              setRecentUserAction={onUserAction}
-              showOverlay={showOverlay}
-              setShowOverlay={setShowOverlay}
-              className={PlayerStyles.controls}
-            /> :
+                player={player}
+                playbackStarted={!!playbackStarted}
+                canPlay={canPlay}
+                recentlyInteracted={recentlyInteracted}
+                setRecentUserAction={onUserAction}
+                showOverlay={showOverlay}
+                setShowOverlay={setShowOverlay}
+                className={PlayerStyles.controls}
+              /> :
+              <WebControls
+                player={player}
+                playbackStarted={!!playbackStarted}
+                canPlay={canPlay}
+                recentlyInteracted={recentlyInteracted}
+                setRecentUserAction={onUserAction}
+                showOverlay={showOverlay}
+                setShowOverlay={setShowOverlay}
+                className={PlayerStyles.controls}
+              /> :
             <TVControls
               player={player}
               playbackStarted={!!playbackStarted}

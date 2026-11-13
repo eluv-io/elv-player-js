@@ -16,7 +16,7 @@
   --layer-title: 2;
   --layer-controls: 3;
   --layer-top-controls: 4;
-  --layer-menu: 5;
+  --layer-menu: 10;
 
   --color-text: #FFF;
   --color-text-secondary: #aaa;
@@ -77,7 +77,7 @@
 
 .button {
   --button-size: 40px;
-
+  animation: 0.5s fadein ease;
   align-items: center;
   backdrop-filter: blur(10px);
   background: var(--color-button-background);
@@ -166,7 +166,7 @@
 }
 
 .center-controls {
-  margin-bottom: 20px;
+  margin-bottom: 7%;
   z-index: var(--layer-top-controls);
 }
 
@@ -204,11 +204,6 @@
     width: 100%;
   }
 }
-
-.seek-container {
-  width: 100%;
-}
-
 
 .info {
   display: flex;
@@ -270,19 +265,15 @@
 }
 
 .seek {
-  margin-bottom: 3px;
-
   /* Increased specificity to ensure variables are overriden */
   &.seek {
     --color-seek-active-focused: white;
-    --color-seek-active: white;
+    --color-seek-active: rgba(255, 255, 255, 75%);
     --color-seek-indicator: white;
-    --color-seek-background: rgba(255, 255, 255, 20%);
+    --color-seek-background: rgba(255, 255, 255, 15%);
     --progress-height: 4px;
-  }
-
-  progress {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 10%);
+    --progress-height-expanded: 10px;
+    --progress-height-expanded-mobile: 10px;
   }
 }
 
@@ -386,9 +377,22 @@
 }
 
 :global(.__eluvio-player--size-sm) {
-  :global(.__eluvio-player--orientation-landscape) {
+  &:global(.__eluvio-player--orientation-landscape) {
+    .container {
+      font-size: 12px;
+    }
+
+    .info {
+      margin-bottom: 2px;
+    }
+
     .button {
-      --button-size: 30px;
+      --button-size: 25px;
+    }
+
+    .bottom-controls {
+      padding-bottom: 5px;
+      padding-inline: 7px;
     }
   }
 

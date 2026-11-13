@@ -166,6 +166,7 @@ const MobileControls = ({
   playbackStarted,
   recentlyInteracted,
   setRecentUserAction,
+  canPlay,
   className=""
 }) => {
   const [videoState, setVideoState] = useState(undefined);
@@ -291,14 +292,17 @@ const MobileControls = ({
           </div>
         </div>
       </div>
-      <div className={S("control", "center-controls", "controls-row")}>
-        <IconButton
-          aria-label={videoState.playing ? "Pause" : "Play"}
-          icon={videoState.playing ? Icons.PauseIcon : Icons.PlayIcon}
-          onClick={() => player.controls.TogglePlay()}
-          className={S("button", "button--large", "button--center", !videoState.playing ? "button--play" : "")}
-        />
-      </div>
+      {
+        !canPlay ? false :
+          <div className={S("control", "center-controls", "controls-row")}>
+            <IconButton
+              aria-label={videoState.playing ? "Pause" : "Play"}
+              icon={videoState.playing ? Icons.PauseIcon : Icons.PlayIcon}
+              onClick={() => player.controls.TogglePlay()}
+              className={S("button", "button--large", "button--center", !videoState.playing ? "button--play" : "")}
+            />
+          </div>
+      }
       <div className={S("control", "bottom-controls")}>
         <ContentInfo player={player}/>
         <SeekBar

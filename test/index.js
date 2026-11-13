@@ -29,9 +29,9 @@ const Initialize = async () => {
   //mediaCatalogId = "iq__3LKLFvsujiwnMbiH9sGZVVWe4Ro2";
   //mediaCollectionId = "JN8ecVA5Jt5cK2PjHXz12A";
   // First item in collection
-  //versionHash = "hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD";
-  objectId = "iq__3ZiTAEQarHZL7P1qSQ5W3a3gSPKj";
-  versionHash = "hq__2TZXUH586RUXTefNUnHEjwhTQNeWke1AjuH4RwVtyZjtrBFWAZDgDhoE42DmyGLK1SxxcJs3RRSD"
+  versionHash = "hq__8f7LgwsG7qBtTNSPKkv3Ano4UPoNh4rzF3iPJ4dUbVv2bDBbVzk516q2E4Vg4bkHaEHuPxXFiD";
+  //objectId = "iq__36nE7LFoXRjnvYudzpfgfyoddz5z";
+  //versionHash = "hq__2TZXUH586RUXTefNUnHEjwhTQNeWke1AjuH4RwVtyZjtrBFWAZDgDhoE42DmyGLK1SxxcJs3RRSD"
 
   // Ticket content
   //network = "DEMO";
@@ -42,6 +42,8 @@ const Initialize = async () => {
   // PlayReady
   // network = "DEMO_LOCAL";
   // versionHash = "hq__s5J7DRGyi4CMMS8Sqb7CfhbskZcyMDK2Cv1BbLbuENafE271gW2q1ddAp6koTVx8roDKJPhpo";
+
+  document.getElementById("player-target-container").classList.add("portal");
 
   window.player = await InitializeEluvioPlayer(
     document.getElementById("player-target"),
@@ -65,9 +67,9 @@ const Initialize = async () => {
         },
         contentInfo: {
           title: "Los Angeles Lakers vs Boston Celtics",
-          subtitle: "My subtitle",
-          description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
-          headers: ["pg-13"],
+          subtitle: "Live at the Crypto.com Arena",
+          //description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
+          //headers: ["LA Lakers", "Boston Celtics"],
           //image: "/public/display_image",
           liveDVR: true,
           //type: EluvioPlayerParameters.type.LIVE,
@@ -79,10 +81,10 @@ const Initialize = async () => {
         //ui: EluvioPlayerParameters.ui.TV,
         muted: EluvioPlayerParameters.muted.ON,
         backgroundColor: "black",
-        //controls: EluvioPlayerParameters.controls.ON,
+        controls: EluvioPlayerParameters.controls.ON,
         controls: EluvioPlayerParameters.controls.AUTO_HIDE,
         watermark: EluvioPlayerParameters.watermark.ON,
-        autoplay: EluvioPlayerParameters.autoplay.ON,
+        //autoplay: EluvioPlayerParameters.autoplay.ON,
         title: EluvioPlayerParameters.title.ON,
         keyboardControls: EluvioPlayerParameters.keyboardControls.ON,
         maxBitrate: 50000,
