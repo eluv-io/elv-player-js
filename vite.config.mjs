@@ -2,9 +2,11 @@ import { defineConfig } from "vite";
 import path from "path";
 import autoprefixer from "autoprefixer";
 import react from "@vitejs/plugin-react-swc";
+import { libInjectCss } from "vite-plugin-lib-inject-css";
 
 let plugins = [
-  react()
+  react(),
+  libInjectCss()
 ];
 
 export default defineConfig(() => {

@@ -24,6 +24,20 @@
       {
         "ignorePseudoClasses": ["global", "export"]
       }
+    ],
+    "function-no-unknown": [
+      true,
+      {
+        "ignoreFunctions": ["sp"]
+      }
+    ],
+    "declaration-property-value-disallowed-list": [
+      {
+        "/.+/": ["/(?<![\\w-])(?<!sp\\()-?\\d*\\.?\\d+px/"]
+      },
+      {
+        "message": "Wrap pixel values in sp() so they scale across TV resolutions (see lib/static/stylesheets/functions.scss)"
+      }
     ]
   }
 }

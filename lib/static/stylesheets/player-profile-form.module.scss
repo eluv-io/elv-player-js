@@ -1,3 +1,5 @@
+@use "functions" as *;
+
 .container {
   height: 100%;
   inset: 0;
@@ -9,7 +11,7 @@
 .overlay {
   align-items: center;
   animation: 0.25s fadein ease;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(sp(3px));
   background: rgba(0, 0, 0, 50%);
   display: flex;
   height: 100%;
@@ -20,24 +22,24 @@
 }
 
 .form {
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(sp(10px));
   background: rgba(0, 0, 0, 75%);
-  border-radius: 7px;
-  box-shadow: 0 0 50px 0 rgba(0, 0, 0, 100%);
+  border-radius: sp(7px);
+  box-shadow: 0 0 sp(50px) 0 rgba(0, 0, 0, 100%);
   color: #FFF;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: sp(10px);
   height: 100%;
-  max-height: 500px;
+  max-height: sp(500px);
   max-width: 100%;
-  min-width: 500px;
-  padding: 20px 30px;
+  min-width: sp(500px);
+  padding: sp(20px) sp(30px);
   width: max-content;
 }
 
 .header {
-  font-size: 16px;
+  font-size: sp(16px);
   font-weight: 600;
   height: max-content;
 }
@@ -49,64 +51,64 @@
 }
 
 .input {
-  border: 1px solid #333;
-  border-radius: 5px;
+  border: sp(1px) solid #333;
+  border-radius: sp(5px);
   flex-grow: 1;
-  font-size: 14px;
+  font-size: sp(14px);
   height: 100%;
   line-height: 1.3em;
   max-height: 100%;
   overflow-y: auto;
-  padding: 10px;
+  padding: sp(10px);
   resize: both;
   transition: border 0.15s ease, box-shadow 0.15s ease;
   width: 100%;
 
   &--invalid {
-    border: 1px solid rgba(255, 0, 0, 50%);
-    box-shadow: 0 0 10px #F00;
+    border: sp(1px) solid rgba(255, 0, 0, 50%);
+    box-shadow: 0 0 sp(10px) #F00;
   }
 
   &:focus-visible {
-    box-shadow: 0 0 10px var(--color-highlight);
-    outline: 1px solid var(--color-highlight);
+    box-shadow: 0 0 sp(10px) var(--color-highlight);
+    outline: sp(1px) solid var(--color-highlight);
   }
 }
 
 .player-info {
   align-items: center;
   display: flex;
-  font-size: 12px;
+  font-size: sp(12px);
   justify-content: space-between;
-  margin-top: 5px;
+  margin-top: sp(5px);
   width: 100%;
 }
 
 .api-link {
-  border-bottom: 1px solid transparent;
+  border-bottom: sp(1px) solid transparent;
   transition: color 0.15s ease, border 0.15s ease;
 
   &:hover,
   &:focus-visible {
-    border-bottom: 1px solid var(--color-highlight);
+    border-bottom: sp(1px) solid var(--color-highlight);
     color: var(--color-highlight);
   }
 }
 
 .actions {
   display: flex;
-  gap: 10px;
+  gap: sp(10px);
   justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: sp(20px);
 
   .submit,
   .cancel {
     background-color: #FFF;
-    border: 1px solid #FFF;
-    border-radius: 5px;
+    border: sp(1px) solid #FFF;
+    border-radius: sp(5px);
     color: #000;
-    height: 35px;
-    padding: 5px 30px;
+    height: sp(35px);
+    padding: sp(5px) sp(30px);
     transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.25s ease, border 0.15s ease;
 
     &:disabled {
@@ -115,7 +117,7 @@
 
     &:hover,
     &:focus-visible {
-      box-shadow: 0 0 10px #FFF;
+      box-shadow: 0 0 sp(10px) #FFF;
     }
   }
 
@@ -125,12 +127,13 @@
   }
 }
 
-:global(.__eluvio-player--size-sm) {
+:global(.__eluvio-player--size-sm),
+:global(.__eluvio-player--size-xs) {
   .form {
     max-height: unset;
     max-width: 100%;
     min-width: unset;
-    padding: 30px 30px 65px;
+    padding: sp(30px) sp(30px) sp(65px);
     width: 100%;
   }
 }
