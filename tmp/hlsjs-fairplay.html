@@ -18,20 +18,17 @@
 <body>
   <h2>Eluvio Player FairPlay Test</h2>
 
-  <label>Playlist URL (.m3u8)</label>
+  <label>Playlist URL (.m3u8) <span class="hint">(include ?authorization)</span></label>
   <input type="text" id="playlist" />
 
-  <label>License server URL</label>
+  <label>License server URL <span class="hint">(include ?authorization)</span></label>
   <input type="text" id="license" />
 
   <label>Certificate URL <span class="hint">(or paste cert below)</span></label>
   <input type="text" id="certUrl" />
 
-  <label>Certificate bytes <span class="hint">(base64 - optional if URL given)</span></label>
+  <label>Certificate bytes <span class="hint">(base64 - optional if cert URL is specified)</span></label>
   <textarea id="certB64"></textarea>
-
-  <label>Authorization token <span class="hint">(optional - sent as Bearer to license server; defaults to the "authorization" query param of the playlist URL)</span></label>
-  <input type="text" id="token" />
 
   <button id="play">Play</button>
   <button id="stop">Stop</button>

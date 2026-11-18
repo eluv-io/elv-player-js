@@ -4,7 +4,7 @@
  */
 
 const $ = id => document.getElementById(id);
-const fields = ["playlist", "license", "certUrl", "certB64", "token"];
+const fields = ["playlist", "license", "certUrl", "certB64"];
 
 fields.forEach(id => {
   try { $(id).value = localStorage.getItem(`fp-${id}`) || $(id).value; } catch(e) {}
@@ -24,6 +24,42 @@ window.addEventListener("error", e => log("window error:", e.message));
 window.addEventListener("unhandledrejection", e => log("unhandled rejection:", e.reason));
 
 const ParseCert = text => Uint8Array.from(atob(text.trim()), c => c.charCodeAt(0));
+
+// Trace raw EME calls 
+if(window.MediaKeySession && !MediaKeySession.prototype.__traced) {
+  MediaKeySession.prototype.__traced = true;
+
+  const generateRequest = MediaKeySession.prototype.generateRequest;
+  MediaKeySession.prototype.generateRequest = function(type, data) {
+    log(`EME session.generateRequest("${type}", ${data.byteLength} bytes)`);
+    const pending = setTimeout(() => log("EME generateRequest still PENDING after 5s"), 5000);
+    const result = generateRequest.call(this, type, data);
+    result.then(() => log("EME generateRequest resolved")).catch(error => log("EME generateRequest REJECTED:", error)).finally(() => clearTimeout(pending));
+    const Hex = buffer => Array.from(new Uint8Array(buffer.buffer || buffer), b => b.toString(16).padStart(2, "0")).join("");
+    this.addEventListener("keystatuseschange", () => {
+      const statuses = [];
+      this.keyStatuses.forEach((status, keyId) => statuses.push({keyId: Hex(keyId), status}));
+      log("EME keystatuseschange:", statuses);
+    });
+    const update = this.update;
+    this.update = function(response) {
+      log(`EME session.update(${response.byteLength} bytes)`);
+      const updateResult = update.call(this, response);
+      updateResult.then(() => log("EME update resolved")).catch(error => log("EME update REJECTED:", error));
+      return updateResult;
+    };
+    this.addEventListener("message", event => log(`EME session message: ${event.messageType}, ${event.message.byteLength} bytes`));
+    return result;
+  };
+
+  const setServerCertificate = window.MediaKeys.prototype.setServerCertificate;
+  window.MediaKeys.prototype.setServerCertificate = function(cert) {
+    log(`EME setServerCertificate (${cert.byteLength} bytes)`);
+    const result = setServerCertificate.call(this, cert);
+    result.then(ok => log("EME setServerCertificate resolved:", ok)).catch(error => log("EME setServerCertificate REJECTED:", error));
+    return result;
+  };
+}
 
 const GetCert = async () => {
   const pasted = $("certB64").value.trim();
@@ -46,7 +82,8 @@ const Stop = () => {
   video.load();
 };
 
-const GetToken = playlist => $("token").value.trim() || new URL(playlist).searchParams.get("authorization") || "";
+// The token is taken from the "authorization" parameter of the playlist URL
+const GetToken = playlist => new URL(playlist).searchParams.get("authorization") || "";
 
 const PlayHLSJS = async ({playlist, license, cert, token}) => {
   const Hls = (await import("hls.js")).default;
@@ -56,7 +93,7 @@ const PlayHLSJS = async ({playlist, license, cert, token}) => {
   const certUrl = URL.createObjectURL(new Blob([cert]));
 
   hls = new Hls({
-    debug: false,
+    debug: true,
     emeEnabled: true,
     drmSystems: {
       "com.apple.fps": {
@@ -64,9 +101,31 @@ const PlayHLSJS = async ({playlist, license, cert, token}) => {
         licenseUrl: license
       }
     },
-    licenseXhrSetup: (xhr, url) => {
-      xhr.open("POST", url, true);
+    // Playlist / segment requests (the main player does the same)
+    xhrSetup: xhr => {
       if(token) { xhr.setRequestHeader("Authorization", `Bearer ${token}`); }
+    },
+    // Eluvio FPS license request: POST JSON {spc: base64 SPC, assetId}, response is <ckc>base64 CKC</ckc>
+    // SPC carries the 16 byte key ID from the "sinf" init data - which is the hls.js default)
+    licenseXhrSetup: (xhr, url, keyContext, licenseChallenge) => {
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      if(token) { xhr.setRequestHeader("Authorization", `Bearer ${token}`); }
+
+      const skdUri = keyContext.decryptdata.uri;
+      // The skd:// host is the Eluvio asset ID (drm_...); the server matches the key ID in the SPC against it
+      const assetId = skdUri.replace(/^skd:\/\//, "").split(/[/?#]/)[0];
+      log("License request:", {skdUri, assetId, spcBytes: licenseChallenge.length});
+
+      let spc = "";
+      licenseChallenge.forEach(b => spc += String.fromCharCode(b));
+
+      return new TextEncoder().encode(JSON.stringify({spc: btoa(spc), assetId}));
+    },
+    licenseResponseCallback: xhr => {
+      let text = new TextDecoder().decode(xhr.response).trim();
+      if(text.startsWith("<ckc>") && text.endsWith("</ckc>")) { text = text.slice(5, -6); }
+      return Uint8Array.from(atob(text), c => c.charCodeAt(0)).buffer;
     }
   });
 
