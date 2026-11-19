@@ -43,7 +43,7 @@ const Initialize = async () => {
   // network = "DEMO_LOCAL";
   // versionHash = "hq__s5J7DRGyi4CMMS8Sqb7CfhbskZcyMDK2Cv1BbLbuENafE271gW2q1ddAp6koTVx8roDKJPhpo";
 
-  document.getElementById("player-target-container").classList.add("portal");
+  //document.getElementById("player-target-container").classList.add("portal");
 
   window.player = await InitializeEluvioPlayer(
     document.getElementById("player-target"),

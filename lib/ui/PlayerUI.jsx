@@ -300,8 +300,9 @@ const PlayerUI = ({
       {
         !player ? null :
           parameters.playerOptions.ui === EluvioPlayerParameters.ui.WEB ?
-            true ?
+            orientation === "portrait" || dimensions.width < 1250 ?
               <MobileControls
+                key="controls-mobile"
                 player={player}
                 playbackStarted={!!playbackStarted}
                 canPlay={canPlay}
@@ -312,6 +313,7 @@ const PlayerUI = ({
                 className={PlayerStyles.controls}
               /> :
               <WebControls
+                key="controls-desktop"
                 player={player}
                 playbackStarted={!!playbackStarted}
                 canPlay={canPlay}

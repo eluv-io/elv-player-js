@@ -77,8 +77,8 @@
 
 .button {
   --button-size: 40px;
-  animation: 0.5s fadein ease;
   align-items: center;
+  animation: 0.5s fadein ease;
   backdrop-filter: blur(10px);
   background: var(--color-button-background);
   border-radius: 100%;
@@ -120,6 +120,12 @@
   }
 }
 
+.time-container {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
 .time {
   align-items: center;
   backdrop-filter: blur(10px);
@@ -130,7 +136,7 @@
   font-size: 0.75em;
   font-variant-numeric: tabular-nums;
   gap: 0.35em;
-  padding: 5px;
+  padding: 5px 8px;
   user-select: none;
 
   &__current {
@@ -142,6 +148,25 @@
   &__separator {
     font-weight: 500;
     pointer-events: none;
+  }
+
+  &--no-current,
+  &--no-duration {
+    .time__separator {
+      display: none;
+    }
+  }
+
+  &--no-current {
+    .time__current {
+      display: none;
+    }
+  }
+
+  &--no-duration {
+    .time__duration {
+      display: none;
+    }
   }
 }
 
@@ -369,6 +394,10 @@
 :global(.__eluvio-player--size-lg) {
   .container {
     font-size: 20px;
+  }
+
+  .button {
+    --button-size: 50px;
   }
 
   .bottom-controls {

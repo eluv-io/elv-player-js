@@ -36,29 +36,30 @@ const TimeIndicator = ({player, videoState}) => {
   }
 
   return (
-    <div className={S("time")}>
+    <div className={S("time-container")}>
       {
         !player.controls.IsLive() || !player.controls.IsDVRAvailable() ? null :
           <DVRToggle player={player} />
       }
-      {
-        player.controls.IsLive() && !player.behindLiveEdge ? null :
-          <>
-            <div className={S("time__current")}>
-              {Time(currentTime, videoState.duration)}
-            </div>
-            <div className={S("time__separator")}>
-              /
-            </div>
-          </>
-
-      }
-      {
-        (player.controls.IsLive() && !player.controls.IsDVRAvailable()) ? null :
-          <div className={S("time__duration")}>
-            {Time(videoState.duration, videoState.duration)}
-          </div>
-      }
+      <div
+        className={
+          S(
+            "time",
+            player.controls.IsLive() && !player.controls.IsDVREnabled() ? "time--no-current" : "",
+            player.controls.IsLive() && !player.controls.IsDVRAvailable() ? "time--no-duration" : ""
+          )
+        }
+      >
+        <div className={S("time__current")}>
+          {Time(currentTime, videoState.duration)}
+        </div>
+        <div className={S("time__separator")}>
+          /
+        </div>
+        <div className={S("time__duration")}>
+          {Time(videoState.duration || 1, videoState.duration || 1)}
+        </div>
+      </div>
     </div>
   );
 };
@@ -161,17 +162,7 @@ const ContentInfo = ({player}) => {
   );
 };
 
-const MobileControls = ({
-  player,
-  playbackStarted,
-  recentlyInteracted,
-  setRecentUserAction,
-  canPlay,
-  className=""
-}) => {
-  const [videoState, setVideoState] = useState(undefined);
-  const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
-  const [menuVisible, setMenuVisible] = useState(player.controls.IsMenuVisible());
+const Controls = ({player, videoState, canPlay, setRecentUserAction}) => {
   const [menuHiding, setMenuHiding] = useState(false);
   const [modalComponent, setModalComponent] = useState(undefined);
 
@@ -188,50 +179,26 @@ const MobileControls = ({
     player.controls.__ToggleMenu(!!modalComponent);
   }, [!!modalComponent]);
 
-  useEffect(() => {
-    if(!player.controls) { return; }
 
-    setPlayerClickHandler(PlayerClick({player, setRecentUserAction}));
-
-    const UpdateMenuVisibility = () => player && player.controls && setMenuVisible(player.controls.IsMenuVisible());
-    const disposeSettingsListener = player.controls.RegisterSettingsListener(UpdateMenuVisibility);
-
-    const disposeVideoObserver = ObserveVideo({player, setVideoState});
-
-    return () => {
-      disposeSettingsListener && disposeSettingsListener();
-      disposeVideoObserver && disposeVideoObserver();
-    };
-  }, []);
-
-  if(!videoState) { return null; }
-
-  // Title autohide is not dependent on controls settings
-  const showUI = recentlyInteracted || !playbackStarted || menuVisible;
-  const hideControls = !showUI && [EluvioPlayerParameters.controls.AUTO_HIDE, EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE].includes(player.playerOptions.controls);
-
-  player.__SetControlsVisibility(!hideControls);
-
-  const hasContentInfo = !(
-    !(player.controls.GetContentInfo() || {}).title ||
-    (player.playerOptions.title === EluvioPlayerParameters.title.FULLSCREEN_ONLY && !player.controls.IsFullscreen()) ||
-    player.playerOptions.title === EluvioPlayerParameters.title.OFF
-  );
+  if(player.playerOptions.controls === EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE) {
+    return (
+      <div className={S("control", "top-controls")}>
+        <div className={S("controls-row", "player-buttons-container")}>
+          <div className={S("controls-row__group", "player-buttons")}>
+            <IconButton
+              aria-label={videoState.muted ? "Unmute" : "Mute"}
+              icon={videoState.muted ? Icons.MutedIcon : Icons.VolumeHighIcon}
+              onClick={() => player.controls.ToggleMuted()}
+              className={S("button")}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div
-      onClick={playerClickHandler}
-      className={[
-        S(
-          "container",
-          hideControls ? "autohide" : "",
-          hasContentInfo ? "container--with-content-info" : "",
-          player.playerOptions.controls === EluvioPlayerParameters.controls.DEFAULT ? "container--default-controls" : "",
-        ),
-        className,
-        player.controls.IsMenuVisible() ? "menu-active" : ""
-      ].join(" ")}
-    >
+    <>
       <div className={S("control", "top-controls")}>
         <div className={S("controls-row", "player-buttons-container")}>
           <div className={S("controls-row__group", "player-buttons")}>
@@ -349,6 +316,79 @@ const MobileControls = ({
               className={S("button", "menu-modal__close")}
             />
           </div>
+      }
+    </>
+  );
+};
+
+const MobileControls = ({
+  player,
+  playbackStarted,
+  recentlyInteracted,
+  setRecentUserAction,
+  canPlay,
+  className=""
+}) => {
+  const [videoState, setVideoState] = useState(undefined);
+  const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
+  const [menuVisible, setMenuVisible] = useState(player.controls.IsMenuVisible());
+
+  useEffect(() => {
+    if(!player.controls) { return; }
+
+    setPlayerClickHandler(PlayerClick({player, setRecentUserAction}));
+
+    const UpdateMenuVisibility = () => player && player.controls && setMenuVisible(player.controls.IsMenuVisible());
+    const disposeSettingsListener = player.controls.RegisterSettingsListener(UpdateMenuVisibility);
+
+    const disposeVideoObserver = ObserveVideo({player, setVideoState});
+
+    return () => {
+      disposeSettingsListener && disposeSettingsListener();
+      disposeVideoObserver && disposeVideoObserver();
+    };
+  }, []);
+
+  if(!videoState) { return null; }
+
+  // Title autohide is not dependent on controls settings
+  const showUI = recentlyInteracted || !playbackStarted || menuVisible;
+  const hideControls = !showUI && [EluvioPlayerParameters.controls.AUTO_HIDE, EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE].includes(player.playerOptions.controls);
+
+  player.__SetControlsVisibility(!hideControls);
+
+  const hasContentInfo = !(
+    !(player.controls.GetContentInfo() || {}).title ||
+    (player.playerOptions.title === EluvioPlayerParameters.title.FULLSCREEN_ONLY && !player.controls.IsFullscreen()) ||
+    player.playerOptions.title === EluvioPlayerParameters.title.OFF
+  );
+
+  return (
+    <div
+      onClick={playerClickHandler}
+      className={[
+        S(
+          "container",
+          hideControls ? "autohide" : "",
+          hasContentInfo ? "container--with-content-info" : "",
+          player.playerOptions.controls === EluvioPlayerParameters.controls.DEFAULT ? "container--default-controls" : "",
+        ),
+        className,
+        player.controls.IsMenuVisible() ? "menu-active" : ""
+      ].join(" ")}
+    >
+      {
+        [
+          EluvioPlayerParameters.controls.DEFAULT,
+          EluvioPlayerParameters.controls.OFF
+        ].includes(player.playerOptions.controls) ? null :
+          <Controls
+            player={player}
+            videoState={videoState}
+            canPlay={canPlay}
+            recentlyInteracted={recentlyInteracted}
+            setRecentUserAction={setRecentUserAction}
+          />
       }
     </div>
   );
