@@ -23,7 +23,12 @@ const log = (...args) => {
 window.addEventListener("error", e => log("window error:", e.message));
 window.addEventListener("unhandledrejection", e => log("unhandled rejection:", e.reason));
 
-const ParseCert = text => Uint8Array.from(atob(text.trim()), c => c.charCodeAt(0));
+const ParseCert = text => Uint8Array.from(atob(text
+  .replace(/-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----/g, "")
+  .replace(/\s/g, "")), c => c.charCodeAt(0));
+const Bytes = buffer => ArrayBuffer.isView(buffer) ?
+  new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength) : new Uint8Array(buffer);
+const Hex = buffer => Array.from(Bytes(buffer), b => b.toString(16).padStart(2, "0")).join("");
 
 // Trace raw EME calls 
 if(window.MediaKeySession && !MediaKeySession.prototype.__traced) {
@@ -32,10 +37,14 @@ if(window.MediaKeySession && !MediaKeySession.prototype.__traced) {
   const generateRequest = MediaKeySession.prototype.generateRequest;
   MediaKeySession.prototype.generateRequest = function(type, data) {
     log(`EME session.generateRequest("${type}", ${data.byteLength} bytes)`);
+    if(type === "sinf") {
+      // Safari supplies JSON containing base64 protection boxes. Keep the exact
+      // payload visible so a rejected stream can be compared with a working one.
+      log("EME sinf init data:", new TextDecoder().decode(Bytes(data)));
+    }
     const pending = setTimeout(() => log("EME generateRequest still PENDING after 5s"), 5000);
     const result = generateRequest.call(this, type, data);
     result.then(() => log("EME generateRequest resolved")).catch(error => log("EME generateRequest REJECTED:", error)).finally(() => clearTimeout(pending));
-    const Hex = buffer => Array.from(new Uint8Array(buffer.buffer || buffer), b => b.toString(16).padStart(2, "0")).join("");
     this.addEventListener("keystatuseschange", () => {
       const statuses = [];
       this.keyStatuses.forEach((status, keyId) => statuses.push({keyId: Hex(keyId), status}));
@@ -70,7 +79,11 @@ const GetCert = async () => {
 
   const response = await fetch(certUrl);
   if(!response.ok) { throw Error(`Certificate fetch failed: ${response.status}`); }
-  return new Uint8Array(await response.arrayBuffer());
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  // DER certificates begin with an ASN.1 SEQUENCE (0x30). Fabric's drm.cert
+  // endpoint returns base64 text, which must be decoded before use with EME.
+  if(bytes[0] === 0x30) { return bytes; }
+  return ParseCert(new TextDecoder().decode(bytes));
 };
 
 let hls;
@@ -88,6 +101,7 @@ const GetToken = playlist => new URL(playlist).searchParams.get("authorization")
 const PlayHLSJS = async ({playlist, license, cert, token}) => {
   const Hls = (await import("hls.js")).default;
   if(!Hls.isSupported()) { throw Error("hls.js not supported in this browser"); }
+  log("Playback environment:", {hlsVersion: Hls.version, userAgent: navigator.userAgent});
 
   // hls.js only accepts a certificate URL so we need to serve the bytes from a blob
   const certUrl = URL.createObjectURL(new Blob([cert]));
@@ -98,7 +112,17 @@ const PlayHLSJS = async ({playlist, license, cert, token}) => {
     drmSystems: {
       "com.apple.fps": {
         serverCertificateUrl: certUrl,
-        licenseUrl: license
+        licenseUrl: license,
+        generateRequest: (initDataType, initData, context) => {
+          const key = context.decryptdata;
+          log("FairPlay request context:", {
+            initDataType,
+            method: key.method,
+            keyFormat: key.keyFormat,
+            keyId: key.keyId ? Hex(key.keyId) : null
+          });
+          return {initDataType, initData};
+        }
       }
     },
     // Playlist / segment requests (the main player does the same)
